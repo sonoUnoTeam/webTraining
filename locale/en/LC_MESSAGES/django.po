@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 14:52-0300\n"
+"POT-Creation-Date: 2025-11-29 10:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,8 +146,7 @@ msgstr "Home"
 msgid "Trainings"
 msgstr "Trainings"
 
-#: .\templates\navbar.html:31 .\userApp\templates\userApp\passwordChange.html:6
-#: .\userApp\templates\userApp\profile.html:6
+#: .\templates\navbar.html:31 .\userApp\templates\userApp\profile.html:6
 msgid "Profile"
 msgstr "Profile"
 
@@ -191,45 +190,45 @@ msgstr "Active"
 msgid "Inactive"
 msgstr "Inactive"
 
-#: .\trainingApp\models.py:113
+#: .\trainingApp\models.py:118
 #, fuzzy
 #| msgid "in_progress"
 msgid "In progress"
 msgstr "in_progress"
 
-#: .\trainingApp\models.py:114
+#: .\trainingApp\models.py:119
 msgid "Completed"
 msgstr "Completed"
 
-#: .\trainingApp\models.py:148
+#: .\trainingApp\models.py:153
 msgid "Well explained"
 msgstr "Well explained"
 
-#: .\trainingApp\models.py:149
+#: .\trainingApp\models.py:154
 msgid "Interesting"
 msgstr "Interesting"
 
-#: .\trainingApp\models.py:150
+#: .\trainingApp\models.py:155
 msgid "Easy to understand"
 msgstr "Easy to understand"
 
-#: .\trainingApp\models.py:153
+#: .\trainingApp\models.py:158
 msgid "Too difficult"
 msgstr "Too difficult"
 
-#: .\trainingApp\models.py:154
+#: .\trainingApp\models.py:159
 msgid "Not interesting"
 msgstr "Not interesting"
 
-#: .\trainingApp\models.py:155
+#: .\trainingApp\models.py:160
 msgid "Poorly explained"
 msgstr "Poorly explained"
 
-#: .\trainingApp\models.py:156
+#: .\trainingApp\models.py:161
 msgid "Confusing"
 msgstr "Confusing"
 
-#: .\trainingApp\models.py:157
+#: .\trainingApp\models.py:162
 msgid "Repetitive"
 msgstr "Repetitive"
 
@@ -509,47 +508,98 @@ msgstr "Reviews"
 msgid "review"
 msgstr "review"
 
-#: .\trainingApp\views.py:117
+#: .\trainingApp\views.py:31 .\trainingApp\views.py:89
+msgid "You need to be a trainee to access trainings."
+msgstr ""
+
+#: .\trainingApp\views.py:129
 msgid "not started"
 msgstr "not started"
 
-#: .\userApp\models.py:9
+#: .\trainingApp\views.py:245
+#, python-format
+msgid "You have completed: %(training)s"
+msgstr ""
+
+#: .\trainingApp\views.py:310 .\trainingApp\views.py:403
+#: .\trainingApp\views.py:415 .\userApp\views.py:134 .\userApp\views.py:148
+msgid "You need to be a trainee to access this page."
+msgstr ""
+
+#: .\trainingApp\views.py:433 .\userApp\views.py:162
+msgid "error"
+msgstr ""
+
+#: .\userApp\models.py:8
 msgid "Primary School"
 msgstr "Primary School"
 
-#: .\userApp\models.py:10
+#: .\userApp\models.py:9
 msgid "High School"
 msgstr "High School"
 
-#: .\userApp\models.py:11
+#: .\userApp\models.py:10
 msgid "Associate"
 msgstr "Associate"
 
-#: .\userApp\models.py:12
+#: .\userApp\models.py:11
 msgid "University"
 msgstr "University"
 
-#: .\userApp\models.py:13
+#: .\userApp\models.py:12
 msgid "Doctoral Student"
 msgstr "Doctoral Student"
 
-#: .\userApp\models.py:14
+#: .\userApp\models.py:13
 msgid "Magister"
 msgstr "Magister"
 
-#: .\userApp\models.py:15
+#: .\userApp\models.py:14
 msgid "Doctor"
 msgstr "Doctor"
 
-#: .\userApp\templates\userApp\passwordChange.html:10
-#: .\userApp\templates\userApp\passwordChange.html:16
-#: .\userApp\templates\userApp\profile.html:45
-msgid "Change Password"
+#: .\userApp\templates\userApp\passwordChange.html:6
+#, fuzzy
+#| msgid "Change Password"
+msgid "Reset Your Password"
 msgstr "Change Password"
 
-#: .\userApp\templates\userApp\passwordresetDone.html:7
+#: .\userApp\templates\userApp\passwordChange.html:10
+#, fuzzy
+#| msgid "Change Password"
+msgid "Enter New Password"
+msgstr "Change Password"
+
+#: .\userApp\templates\userApp\passwordChange.html:16
+#, fuzzy
+#| msgid "Change Password"
+msgid "Reset Password"
+msgstr "Change Password"
+
+#: .\userApp\templates\userApp\password_change_done.html:7
+#: .\userApp\templates\userApp\password_reset_complete.html:7
 msgid "Password Successfully Changed"
 msgstr "Password Successfully Changed"
+
+#: .\userApp\templates\userApp\password_reset.html:5
+#, fuzzy
+#| msgid "Change Password"
+msgid "Reset your password"
+msgstr "Change Password"
+
+#: .\userApp\templates\userApp\password_reset.html:9
+msgid "Send Reset Link"
+msgstr ""
+
+#: .\userApp\templates\userApp\password_reset_done.html:4
+msgid "Password reset sent"
+msgstr ""
+
+#: .\userApp\templates\userApp\password_reset_done.html:5
+msgid ""
+"We have sent you an email with instructions to reset your password. Please "
+"check your inbox."
+msgstr ""
 
 #: .\userApp\templates\userApp\profile.html:9
 msgid "User Information"
@@ -564,12 +614,20 @@ msgstr "Update"
 msgid "Trainee Information"
 msgstr "Trainee Information"
 
+#: .\userApp\templates\userApp\profile.html:45
+msgid "Change Password"
+msgstr "Change Password"
+
 #: .\userApp\templates\userApp\signin.html:5
 #: .\userApp\templates\userApp\signin.html:20
 #, fuzzy
 #| msgid "Sign-in"
 msgid "Signin"
 msgstr "Sign-in"
+
+#: .\userApp\templates\userApp\signin.html:29
+msgid "Forgot your password?"
+msgstr ""
 
 #: .\userApp\templates\userApp\signup.html:6
 #: .\userApp\templates\userApp\signup.html:79
@@ -682,6 +740,66 @@ msgstr ""
 #: .\userApp\templates\userApp\signup.html:71
 msgid "Occupation"
 msgstr ""
+
+#: .\userApp\views.py:65
+msgid "The email entered is already registered."
+msgstr ""
+
+#: .\userApp\views.py:80
+msgid "User created successfully"
+msgstr ""
+
+#: .\userApp\views.py:84
+msgid "Error creating user"
+msgstr ""
+
+#: .\userApp\views.py:99
+msgid "Your account has been activated successfully."
+msgstr ""
+
+#: .\userApp\views.py:102
+msgid "Error activating account"
+msgstr ""
+
+#: .\userApp\views.py:117
+msgid "Username or Password incorrect"
+msgstr ""
+
+#: .\userApp\views.py:121
+#, python-format
+msgid "You are logged in as %(username)s"
+msgstr ""
+
+#: .\userApp\views.py:158
+msgid "Your profile has been updated"
+msgstr ""
+
+#: .\userApp\views.py:183
+#, fuzzy
+#| msgid "Change Password"
+msgid "Password reset"
+msgstr "Change Password"
+
+#: .\userApp\views.py:194
+msgid "The email entered is not registered."
+msgstr ""
+
+#: .\userApp\views.py:215
+msgid ""
+"An error occurred while trying to send the email, contact the administrator."
+msgstr ""
+
+#: .\userApp\views.py:232
+#, fuzzy
+#| msgid "Change Password"
+msgid "Enter new password"
+msgstr "Change Password"
+
+#: .\userApp\views.py:304
+#, fuzzy
+#| msgid "Password Successfully Changed"
+msgid "Password reset unsuccessful"
+msgstr "Password Successfully Changed"
 
 #, python-format
 #~ msgid ""

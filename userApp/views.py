@@ -62,7 +62,7 @@ def signup(request):
             # Verificar si el email ya fue usado por otro usuario
             email = form.cleaned_data.get('email')
             if email and User.objects.filter(email__iexact=email).exists():
-                messages.error(request, "El correo ingresado ya está registrado.")
+                messages.error(request, _("The email entered is already registered."))
                 return render(request, 'userApp/signup.html', {"form": form})
 
             user = form.save()
@@ -77,11 +77,11 @@ def signup(request):
                 )
             trainee.save()
             login(request, user)
-            messages.success(request, "Usuario creado exitosamente")
+            messages.success(request, _("User created successfully"))
             return redirect('home')
         
         else:
-            messages.error(request, "Error al crear el usuario")
+            messages.error(request, _("Error creating user"))
             return render(request, 'userApp/signup.html', {"form": form})
 import traceback        
 def activate(request, uidb64, token):
@@ -96,10 +96,10 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        messages.success(request, "Your account has been activated successfully.")
+        messages.success(request, _("Your account has been activated successfully."))
         return redirect('home')
     else:
-        messages.error(request, "Error en la activacion de la cuenta")
+        messages.error(request, _("Error activating account"))
         return redirect('home')
         
 @login_required
@@ -114,11 +114,11 @@ def signin(request):
     else:
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
         if user is None:
-            messages.error(request, "Username or Password incorrect")
+            messages.error(request, _("Username or Password incorrect"))
             return render(request, 'userApp/signin.html', {"form": AuthenticationForm})
         else:
             login(request, user)
-            messages.success(request,f"Your are logged in as {request.POST['username']}")
+            messages.success(request, _("You are logged in as %(username)s") % {"username": request.POST['username']})
             return redirect('trainingApp:training_List')
 
 #Vista para modificar datos del user y trainee
@@ -128,7 +128,11 @@ class ProfileView(LoginRequiredMixin, View):
 
     def get(self, request, username):
         user = User.objects.get(username= username)
-        trainee = Trainee.objects.get(user_id=user.id)
+        try:
+            trainee = Trainee.objects.get(user_id=user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
         
         # Crea una instancia del formulario combinado y pasa el objeto user y Trainee como instancia
         userform = UserUpdateForm(instance=user)
@@ -138,7 +142,11 @@ class ProfileView(LoginRequiredMixin, View):
 
     def post(self, request, username):
         user = User.objects.get(username= username)
-        trainee = Trainee.objects.get(user_id=user.id)
+        try:
+            trainee = Trainee.objects.get(user_id=user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
 
         # Crea una instancia del formulario combinado y pasa el objeto Trainee como instancia
         userform = UserUpdateForm(request.POST, instance=user)
@@ -147,11 +155,11 @@ class ProfileView(LoginRequiredMixin, View):
         if userform.is_valid() and traineeform.is_valid():
             userform.save()
             traineeform.save()
-            messages.success(request,"Your profile has been updated")
+            messages.success(request, _("Your profile has been updated"))
             return redirect('userApp:profile', user.username)  # Redirige a la página de perfil después de guardar los cambios
 
         else:
-            messages.error(request," error")
+            messages.error(request, _("error"))
             return redirect('userApp:profile', user.username) 
 
 #Vista para modificar password
@@ -183,7 +191,7 @@ class CustomPasswordResetView(PasswordResetView):
         # Validación: comprobar si el email ingresado está registrado
         email = form.cleaned_data.get('email')
         if not get_user_model()._default_manager.filter(email__iexact=(email or '')).exists():
-            messages.error(self.request, _("El correo ingresado no está registrado."))
+            messages.error(self.request, _("The email entered is not registered."))
             return self.form_invalid(form)
 
         opts = {
@@ -204,7 +212,7 @@ class CustomPasswordResetView(PasswordResetView):
             messages.error(
                 self.request,
                 _(
-                    "Se produjo un error al intentar enviar el correo, contacta al administrador."
+                    "An error occurred while trying to send the email, contact the administrator."
                 ),
             )
             return super().form_valid(form)

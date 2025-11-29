@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 14:52-0300\n"
+"POT-Creation-Date: 2025-11-29 10:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Español <LL@li.org>\n"
@@ -147,8 +147,7 @@ msgstr "Inicio"
 msgid "Trainings"
 msgstr "Entrenamientos"
 
-#: .\templates\navbar.html:31 .\userApp\templates\userApp\passwordChange.html:6
-#: .\userApp\templates\userApp\profile.html:6
+#: .\templates\navbar.html:31 .\userApp\templates\userApp\profile.html:6
 msgid "Profile"
 msgstr "Perfil"
 
@@ -192,43 +191,43 @@ msgstr "Activo"
 msgid "Inactive"
 msgstr "Inactivo"
 
-#: .\trainingApp\models.py:113
+#: .\trainingApp\models.py:118
 msgid "In progress"
 msgstr "En progreso"
 
-#: .\trainingApp\models.py:114
+#: .\trainingApp\models.py:119
 msgid "Completed"
 msgstr "Completado"
 
-#: .\trainingApp\models.py:148
+#: .\trainingApp\models.py:153
 msgid "Well explained"
 msgstr "Bien explicado"
 
-#: .\trainingApp\models.py:149
+#: .\trainingApp\models.py:154
 msgid "Interesting"
 msgstr "Interesante"
 
-#: .\trainingApp\models.py:150
+#: .\trainingApp\models.py:155
 msgid "Easy to understand"
 msgstr "Fácil de entender"
 
-#: .\trainingApp\models.py:153
+#: .\trainingApp\models.py:158
 msgid "Too difficult"
 msgstr "Demasiado difícil"
 
-#: .\trainingApp\models.py:154
+#: .\trainingApp\models.py:159
 msgid "Not interesting"
 msgstr "No es interesante"
 
-#: .\trainingApp\models.py:155
+#: .\trainingApp\models.py:160
 msgid "Poorly explained"
 msgstr "Pobremente explicado"
 
-#: .\trainingApp\models.py:156
+#: .\trainingApp\models.py:161
 msgid "Confusing"
 msgstr "Confuso"
 
-#: .\trainingApp\models.py:157
+#: .\trainingApp\models.py:162
 msgid "Repetitive"
 msgstr "Repetitivo"
 
@@ -511,47 +510,101 @@ msgstr "Revisiones"
 msgid "review"
 msgstr "Revisiones"
 
-#: .\trainingApp\views.py:117
+#: .\trainingApp\views.py:31 .\trainingApp\views.py:89
+msgid "You need to be a trainee to access trainings."
+msgstr "Necesitas ser un aprendiz para acceder a los entrenamientos."
+
+#: .\trainingApp\views.py:129
 msgid "not started"
 msgstr "No iniciado"
 
-#: .\userApp\models.py:9
+#: .\trainingApp\views.py:245
+#, python-format
+#| msgid "Great! You have completes: {training.name_training}"
+msgid "You have completed: %(training)s"
+msgstr "¡Excelente! Has completado: %(training)s"
+
+#: .\trainingApp\views.py:310 .\trainingApp\views.py:403
+#: .\trainingApp\views.py:415 .\userApp\views.py:134 .\userApp\views.py:148
+msgid "You need to be a trainee to access this page."
+msgstr ""
+
+#: .\trainingApp\views.py:433 .\userApp\views.py:162
+msgid "error"
+msgstr "Error"
+
+#: .\userApp\models.py:8
 msgid "Primary School"
 msgstr "Primaria"
 
-#: .\userApp\models.py:10
+#: .\userApp\models.py:9
 msgid "High School"
 msgstr "Secundaria"
 
-#: .\userApp\models.py:11
+#: .\userApp\models.py:10
 msgid "Associate"
 msgstr "Terciario"
 
-#: .\userApp\models.py:12
+#: .\userApp\models.py:11
 msgid "University"
 msgstr "Universidad"
 
-#: .\userApp\models.py:13
+#: .\userApp\models.py:12
 msgid "Doctoral Student"
 msgstr "Estudiante de doctoradoz"
 
-#: .\userApp\models.py:14
+#: .\userApp\models.py:13
 msgid "Magister"
 msgstr "Magister"
 
-#: .\userApp\models.py:15
+#: .\userApp\models.py:14
 msgid "Doctor"
 msgstr "Doctor/Doctora"
 
-#: .\userApp\templates\userApp\passwordChange.html:10
-#: .\userApp\templates\userApp\passwordChange.html:16
-#: .\userApp\templates\userApp\profile.html:45
-msgid "Change Password"
-msgstr "Cambiar contraseña"
+#: .\userApp\templates\userApp\passwordChange.html:6
+#, fuzzy
+#| msgid "Repeat password"
+msgid "Reset Your Password"
+msgstr "Repita la contraseña"
 
-#: .\userApp\templates\userApp\passwordresetDone.html:7
+#: .\userApp\templates\userApp\passwordChange.html:10
+#, fuzzy
+#| msgid "Enter new password"
+msgid "Enter New Password"
+msgstr "Ingrese nueva contraseña"
+
+#: .\userApp\templates\userApp\passwordChange.html:16
+#, fuzzy
+#| msgid "Repeat password"
+msgid "Reset Password"
+msgstr "Repita la contraseña"
+
+#: .\userApp\templates\userApp\password_change_done.html:7
+#: .\userApp\templates\userApp\password_reset_complete.html:7
 msgid "Password Successfully Changed"
 msgstr "contraseña actualizada con éxito"
+
+#: .\userApp\templates\userApp\password_reset.html:5
+#, fuzzy
+#| msgid "Repeat password"
+msgid "Reset your password"
+msgstr "Repita la contraseña"
+
+#: .\userApp\templates\userApp\password_reset.html:9
+msgid "Send Reset Link"
+msgstr ""
+
+#: .\userApp\templates\userApp\password_reset_done.html:4
+#, fuzzy
+#| msgid "Password reset"
+msgid "Password reset sent"
+msgstr "Restablecimiento de contraseña"
+
+#: .\userApp\templates\userApp\password_reset_done.html:5
+msgid ""
+"We have sent you an email with instructions to reset your password. Please "
+"check your inbox."
+msgstr ""
 
 #: .\userApp\templates\userApp\profile.html:9
 msgid "User Information"
@@ -566,10 +619,18 @@ msgstr "Actualizar"
 msgid "Trainee Information"
 msgstr "Información del usuario como aprendiz"
 
+#: .\userApp\templates\userApp\profile.html:45
+msgid "Change Password"
+msgstr "Cambiar contraseña"
+
 #: .\userApp\templates\userApp\signin.html:5
 #: .\userApp\templates\userApp\signin.html:20
 msgid "Signin"
 msgstr "Iniciar sesión"
+
+#: .\userApp\templates\userApp\signin.html:29
+msgid "Forgot your password?"
+msgstr ""
 
 #: .\userApp\templates\userApp\signup.html:6
 #: .\userApp\templates\userApp\signup.html:79
@@ -669,6 +730,67 @@ msgstr "Nivel educativo."
 msgid "Occupation"
 msgstr "Ocupación"
 
+#: .\userApp\views.py:65
+msgid "The email entered is already registered."
+msgstr "El correo electrónico ingresado ya está registrado."
+
+#: .\userApp\views.py:80
+#, fuzzy
+#| msgid "Your account is create successfully"
+msgid "User created successfully"
+msgstr "Su cuenta se creó correctamente"
+
+#: .\userApp\views.py:84
+msgid "Error creating user"
+msgstr ""
+
+#: .\userApp\views.py:99
+#, fuzzy
+#| msgid "Your account is create successfully"
+msgid "Your account has been activated successfully."
+msgstr "Su cuenta se creó correctamente"
+
+#: .\userApp\views.py:102
+msgid "Error activating account"
+msgstr ""
+
+#: .\userApp\views.py:117
+msgid "Username or Password incorrect"
+msgstr "Usuario o contraseña incorrectos"
+
+#: .\userApp\views.py:121
+#, fuzzy, python-format
+#| msgid "Your are logged in as {request.POST['username']}"
+msgid "You are logged in as %(username)s"
+msgstr "Has iniciado sesión como {request.POST['username']}"
+
+#: .\userApp\views.py:158
+msgid "Your profile has been updated"
+msgstr "Tu perfil ha sido actualizado"
+
+#: .\userApp\views.py:183
+msgid "Password reset"
+msgstr "Restablecimiento de contraseña"
+
+#: .\userApp\views.py:194
+msgid "The email entered is not registered."
+msgstr "El correo electrónico ingresado no está registrado."
+
+#: .\userApp\views.py:215
+msgid ""
+"An error occurred while trying to send the email, contact the administrator."
+msgstr ""
+"Ocurrió un error al intentar enviar el correo electrónico, contacte al "
+"administrador."
+
+#: .\userApp\views.py:232
+msgid "Enter new password"
+msgstr "Ingrese nueva contraseña"
+
+#: .\userApp\views.py:304
+msgid "Password reset unsuccessful"
+msgstr "Restablecimiento de contraseña fallido"
+
 #, python-format
 #~ msgid ""
 #~ "\n"
@@ -685,26 +807,7 @@ msgstr "Ocupación"
 #~ "                        </p>\n"
 #~ "                        "
 
-#, python-brace-format
-#~ msgid "Great! You have completes: {training.name_training}"
-#~ msgstr "¡Excelente! Tienes completo: {training.name_training}"
-
-#~ msgid "Your account is create successfully"
-#~ msgstr "Su cuenta se creó correctamente"
-
 #~ msgid "Error"
-#~ msgstr "Error"
-
-#~ msgid "Username or Password incorrect"
-#~ msgstr "Usuario o contraseña incorrectos"
-
-#~ msgid "Your are logged in as {request.POST['username']}"
-#~ msgstr "Has iniciado sesión como {request.POST['username']}"
-
-#~ msgid "Your profile has been updated"
-#~ msgstr "Tu perfil ha sido actualizado"
-
-#~ msgid "error"
 #~ msgstr "Error"
 
 #~ msgid "Spanish"

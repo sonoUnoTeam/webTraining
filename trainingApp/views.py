@@ -25,7 +25,11 @@ class TrainingList(ListView):
     paginate_by = 5  # Especifica la cantidad de objetos por página
     
     def get_queryset(self):
-        trainee = Trainee.objects.get(user = self.request.user)
+        try:
+            trainee = Trainee.objects.get(user = self.request.user)
+        except Trainee.DoesNotExist:
+            messages.error(self.request, _("You need to be a trainee to access trainings."))
+            return Training.objects.none()
         # Filtra los objetos TraineeTraining por training_id y user_id
         queryset = Training.objects.filter(state_training = 'Active',groups__in=[trainee.group]).order_by('id') #el subfijo __in indica que estamos buscando coincidencias en una lista de valores. 
         
@@ -34,7 +38,10 @@ class TrainingList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        trainee = Trainee.objects.get(user_id=user.id)
+        try:
+            trainee = Trainee.objects.get(user_id=user.id)
+        except Trainee.DoesNotExist:
+            return context
         
         # Añado un diccionario al context donde esta el id de cada training con la cantidad de veces realizado por el trainee
         context['num_trainee_trainings'] = {training.id: training.get_num_trainee_trainings(trainee.id)      for training in context['training_list']}
@@ -76,7 +83,11 @@ class BlockDeployList(ListView):
         # Verifica si es la primera vez que el trainee ingresa al entrenamiento
         if f'current_trainee_training_id_{training_id}' not in request.session:
             usuario = request.user
-            trainee= Trainee.objects.get(user_id=usuario.id)
+            try:
+                trainee= Trainee.objects.get(user_id=usuario.id)
+            except Trainee.DoesNotExist:
+                messages.error(request, _("You need to be a trainee to access trainings."))
+                return redirect('home')
             # Se crea un nuevo objeto TraineeTraining y se guarda en la base de datos
             trainee_training = TraineeTraining.objects.create(
                 trainee=trainee,
@@ -231,7 +242,7 @@ class DeployDetailView(View):
                     del request.session[f'current_trainee_training_id_{training_id}']
                 
                     training = Training.objects.get(pk=training_id) 
-                    messages.success(request,f" You have completed:  {training.name_training}")
+                    messages.success(request, _("You have completed: %(training)s") % {"training": training.name_training})
                     return HttpResponseRedirect(reverse('trainingApp:comment', args=[training_id]))
                 
                 #Si completo el Block pero aun quedan mas por completar entonces lo redirecciona a la lista de blocks
@@ -293,10 +304,16 @@ class ReviewListTT(ListView):
         # Obtén el training_id de la URL
         training_id = self.kwargs['training_id']
         
+        try:
+            trainee = Trainee.objects.get(user=self.request.user)
+        except Trainee.DoesNotExist:
+            messages.error(self.request, _("You need to be a trainee to access this page."))
+            return TraineeTraining.objects.none()
+        
         # Filtra los objetos TraineeTraining por training_id y user_id
         queryset = TraineeTraining.objects.filter(
             training_id=training_id,
-            trainee_id=self.request.user.trainee.id,
+            trainee_id=trainee.id,
             state = "Completed"
         )
            # Agregar un campo 'item_number' a cada objeto TraineeTraining
@@ -380,7 +397,11 @@ class CommentView(LoginRequiredMixin, View):
 
     def get(self, request, training_id):
         user = self.request.user
-        trainee = Trainee.objects.get(user_id= user.id)
+        try:
+            trainee = Trainee.objects.get(user_id= user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
         
         commentform = CommentForm()
 
@@ -388,7 +409,11 @@ class CommentView(LoginRequiredMixin, View):
 
     def post(self, request, training_id):
         user = self.request.user
-        trainee = Trainee.objects.get(user_id= user.id)
+        try:
+            trainee = Trainee.objects.get(user_id= user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
         
         commentform = CommentForm(request.POST)
         
@@ -405,5 +430,5 @@ class CommentView(LoginRequiredMixin, View):
             return HttpResponseRedirect(reverse('home'))
 
         else:
-            messages.error(request," error")
+            messages.error(request, _("error"))
             return HttpResponseRedirect(reverse('home'))
