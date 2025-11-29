@@ -10,7 +10,7 @@
             <form action="" method="POST" class="mb-4">
                 {% csrf_token %}
                 {{ userform.as_p }}
-                <button type="submit" aria-pressed="true" class="btn btn-primary">
+                <button type="submit" name="update_user" class="btn btn-primary">
                     {% trans 'Update' %}
                 </button>
             </form>
@@ -28,7 +28,7 @@
             <form action="" method="POST" class="mb-4">
                 {% csrf_token %}
                 {{ traineeform.as_p }}
-                <button type="submit" aria-pressed="true" class="btn btn-primary">
+                <button type="submit" name="update_trainee" class="btn btn-primary">
                     {% trans 'Update' %}
                 </button>
             </form>

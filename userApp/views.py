@@ -127,7 +127,14 @@ class ProfileView(LoginRequiredMixin, View):
     template_name = "userApp/profile.html"
 
     def get(self, request, username):
-        user = User.objects.get(username= username)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return redirect('home')
+        
+        if user != request.user:
+            return redirect('userApp:profile', request.user.username)
+        
         try:
             trainee = Trainee.objects.get(user_id=user.id)
         except Trainee.DoesNotExist:
@@ -141,25 +148,43 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
 
     def post(self, request, username):
-        user = User.objects.get(username= username)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return redirect('home')
+        
+        if user != request.user:
+            return redirect('userApp:profile', request.user.username)
+        
         try:
             trainee = Trainee.objects.get(user_id=user.id)
         except Trainee.DoesNotExist:
             messages.error(request, _("You need to be a trainee to access this page."))
             return redirect('home')
 
-        # Crea una instancia del formulario combinado y pasa el objeto Trainee como instancia
-        userform = UserUpdateForm(request.POST, instance=user)
-        traineeform = TraineeUpdateForm(request.POST,instance=trainee)
-        
-        if userform.is_valid() and traineeform.is_valid():
-            userform.save()
-            traineeform.save()
-            messages.success(request, _("Your profile has been updated"))
-            return redirect('userApp:profile', user.username)  # Redirige a la página de perfil después de guardar los cambios
-
+        # Determine which form was submitted
+        if 'update_user' in request.POST:
+            userform = UserUpdateForm(request.POST, instance=user)
+            traineeform = TraineeUpdateForm(instance=trainee)  # Not submitted, so use instance
+            if userform.is_valid():
+                userform.save()
+                messages.success(request, _("Your profile has been updated"))
+                return redirect('userApp:profile', user.username)
+            else:
+                # Re-render with invalid userform
+                return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
+        elif 'update_trainee' in request.POST:
+            userform = UserUpdateForm(instance=user)  # Not submitted
+            traineeform = TraineeUpdateForm(request.POST, instance=trainee)
+            if traineeform.is_valid():
+                traineeform.save()
+                messages.success(request, _("Your profile has been updated"))
+                return redirect('userApp:profile', user.username)
+            else:
+                # Re-render with invalid traineeform
+                return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
         else:
-            messages.error(request, _("error"))
+            # No valid submit, redirect
             return redirect('userApp:profile', user.username) 
 
 #Vista para modificar password
