@@ -37,10 +37,10 @@
                     {% for block in block_list %}
                         <tr>
                             <td>
-                            {% if states_blocks_answers|get_state:block.id == BlockAnswer.StateBlockAnswer.Completed %}
+                            {% if states_blocks_answers|get_state:block.id == TrainingBlockAnswer.StateBlockAnswer.Completed %}
                                 <a>{{ block.name_block }}</a>
                             {% else %} 
-                                <a href="{% url 'trainingApp:forms' block.training.id block.id %}" class="btn btn-info">{{ block.name_block }}</a>
+                                <a href="{% url 'trainingApp:forms' course_id block.training.id block.id %}" class="btn btn-info">{{ block.name_block }}</a>
                             {% endif %}
                             </td>
                             <td>{{ block.estimed_duration_block }}</td>
@@ -51,7 +51,7 @@
             </table>
         {% else %}
             {% blocktrans %}
-                <p class="lead">Sorry, no trainings are available.</p>
+                <p class="lead">Sorry, no blocks are available for this training.</p>
             {% endblocktrans %}
         {% endif %}
     </div>

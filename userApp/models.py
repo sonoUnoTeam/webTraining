@@ -14,14 +14,15 @@ class Trainee(models.Model):
         Doctor  = 'Doctor', _('Doctor')
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age =  models.IntegerField(default=18)
+    age =  models.IntegerField(default=18, verbose_name=_('Age'))
     educationalLevel = models.CharField(
         max_length=50,
         choices=EducationalLevel.choices,
-        default=EducationalLevel.High_School
+        default=EducationalLevel.High_School,
+        verbose_name=_('Educational Level')
     )
-    occupation = models.CharField(max_length=50)
-    group =  models.ForeignKey('trainingApp.Group', on_delete=models.SET_NULL, null=True, blank=True)
+    occupation = models.CharField(max_length=50, verbose_name=_('Occupation'))
+    group =  models.ForeignKey('trainingApp.TraineeGroup', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Trainee_Id: {self.id}, Name Trainee: {self.user.first_name} {self.user.last_name}"

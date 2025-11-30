@@ -3,15 +3,17 @@ from django.db import models
 from userApp.models import Trainee
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.db.models import Sum
+from django.db.models import Sum, Max
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
-class Group (models.Model):
+class TraineeGroup(models.Model):
     name_group = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
     
     def __str__(self):
-        return f"Gruop_Id: {self.id}, name_group: {self.name_group}"
+        return f"Group_Id: {self.id}, name_group: {self.name_group}"
     
 class Training(models.Model):
     #Enumeracion para el tipo de entrenamiento
@@ -40,7 +42,7 @@ class Training(models.Model):
     )
     #Atributo que gestiona la cantidad de veces que se puede realizar el training
     attempts_allowed = models.IntegerField(default=1)
-    groups = models.ManyToManyField(Group)
+    groups = models.ManyToManyField(TraineeGroup)
     
     def was_published_recently(self):
         return self.pub_date >=timezone.now() - datetime.timedelta(days=1)
@@ -55,9 +57,9 @@ class Training(models.Model):
         """
         Calcula y devuelve la suma de los estimatedDuration de todos los bloques asociados a este entrenamiento.
         """
-        return self.block_set.aggregate(total_duration=Sum('estimed_duration_block'))['total_duration'] or 0
+        return self.trainingblock_set.aggregate(total_duration=Sum('estimed_duration_block'))['total_duration'] or 0
 
-class Block(models.Model):
+class TrainingBlock(models.Model):
     class StateBlock(models.TextChoices):
         Active = 'Active', _('Active')
         inactive = 'Inactive', _('Inactive')
@@ -76,8 +78,8 @@ class Block(models.Model):
         return f"BlockID: {self.id}, Name Block: {self.name_block}, Training: {self.training.name_training}"
     
     
-class Deploy(models.Model):
-    block = models.ForeignKey(Block, on_delete=models.CASCADE, null=True)
+class TrainingQuestion(models.Model):
+    block = models.ForeignKey(TrainingBlock, on_delete=models.CASCADE, null=True)
     question = models.CharField(max_length=100, null=True)
     deploy_image = models.ImageField(upload_to="trainingApp/images", blank=True)
     deploy_sound = models.FileField(upload_to="trainingApp/sound", blank=True)
@@ -91,7 +93,7 @@ class Deploy(models.Model):
 
 
 class Choice(models.Model):
-    deploy = models.ForeignKey(Deploy, on_delete=models.CASCADE)
+    deploy = models.ForeignKey(TrainingQuestion, on_delete=models.CASCADE)
     choice = models.CharField(max_length=100, null=True)
     correctChoice = models.BooleanField(default=False)
     def __str__(self):
@@ -103,17 +105,22 @@ class Choice(models.Model):
     
 class TraineeTraining(models.Model):
     #foreing Key de training
-    training = models.ForeignKey(Training, on_delete=models.CASCADE)
+    training = models.ForeignKey(Training, on_delete=models.PROTECT)
     #foreing Key de trainee
     trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE)
+    # Foreign Key de course
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
     pub_date = models.DateTimeField("upload date")
     state = models.CharField(max_length=100,default="in_progress")
     time_spent = models.DurationField(null=True, blank=True)
     
-    def __str__(self):
-        return f"T.T_Id: {self.id}, Name Training: {self.training.name_training}, Name Trainee: {self.trainee.user.first_name}"
+    class Meta:
+        pass
     
-class BlockAnswer(models.Model):
+    def __str__(self):
+        return f"T.T_Id: {self.id}, Name Training: {self.training.name_training}, Name Trainee: {self.trainee.user.first_name}, Course: {self.course.name_course}"
+    
+class TrainingBlockAnswer(models.Model):
     class StateBlockAnswer(models.TextChoices):
         in_progress = 'In progress', _('In progress')
         Completed = 'Completed', _('Completed')
@@ -124,19 +131,19 @@ class BlockAnswer(models.Model):
         default=StateBlockAnswer.in_progress
     )
     trainee_Training = models.ForeignKey(TraineeTraining, on_delete=models.CASCADE)
-    block = models.ForeignKey(Block, on_delete=models.CASCADE)
+    block = models.ForeignKey(TrainingBlock, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"Block_Answer_Id: {self.id}, Name block: {self.block.name_block}"
 
 
 #Clase para guardar la respuesta del usuario de cada deploy
-class DeployAnswer(models.Model):
+class TrainingQuestionAnswer(models.Model):
     
     #foreing Key de B.A
-    block_answer = models.ForeignKey(BlockAnswer, on_delete=models.CASCADE, null=True)
+    block_answer = models.ForeignKey(TrainingBlockAnswer, on_delete=models.CASCADE, null=True)
     #foreing Key de deploy
-    deploy = models.ForeignKey(Deploy, on_delete=models.CASCADE)
+    deploy = models.ForeignKey(TrainingQuestion, on_delete=models.CASCADE)
     #Respuesta a deploy
     #user_response = models.CharField(max_length=50, null=True)
     
@@ -187,3 +194,83 @@ class Comment(models.Model):
     
     def __str__(self):
         return f"Comment_Id: {self.id}, Training: {self.training.name_training}, Trainee: {self.trainee.user.first_name}"
+
+
+# Modelo para la tabla intermedia de Course y Training
+class CourseTraining(models.Model):
+    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+    training = models.ForeignKey(Training, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField()  # Orden del training en el curso
+
+    class Meta:
+        unique_together = (('course', 'training'), ('course', 'order'))  # Un training no puede repetirse en el mismo curso, y order único por curso
+        ordering = ['order']
+
+    def save(self, *args, **kwargs):
+        if not self.order:
+            max_order = CourseTraining.objects.filter(course=self.course).exclude(pk=self.pk).aggregate(Max('order'))['order__max'] or 0
+            self.order = max_order + 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Course: {self.course.name_course}, Training: {self.training.name_training}, Order: {self.order}"
+
+
+# Modelo para Course
+class Course(models.Model):
+    class StateCourse(models.TextChoices):
+        Active = 'Active', _('Active')
+        Inactive = 'Inactive', _('Inactive')
+
+    name_course = models.CharField(max_length=200)
+    description = models.CharField(max_length=500)
+    pub_date = models.DateTimeField("upload date", auto_now_add=True)
+    modification_date = models.DateTimeField(auto_now=True)
+    state_course = models.CharField(
+        max_length=20,
+        choices=StateCourse.choices,
+        default=StateCourse.Active
+    )
+    groups = models.ManyToManyField(TraineeGroup)  # Grupos que pueden acceder al curso
+    trainings = models.ManyToManyField(Training, through=CourseTraining, related_name='courses')
+    final_exam = models.ForeignKey(Training, on_delete=models.SET_NULL, null=True, blank=True, related_name='courses_as_final_exam')
+
+    def __str__(self):
+        return self.name_course
+
+@receiver(post_delete, sender=CourseTraining)
+def reorder_course_trainings(sender, instance, **kwargs):
+    course = instance.course
+    trainings = course.coursetraining_set.order_by('order')
+    for i, ct in enumerate(trainings, 1):
+        if ct.order != i:
+            ct.order = i
+            ct.save()
+            
+# Modelo para el progreso del trainee en un curso
+class TraineeCourse(models.Model):
+    class StateTraineeCourse(models.TextChoices):
+        Not_Started = 'Not Started', _('Not Started')
+        In_Progress = 'In Progress', _('In Progress')
+        Completed = 'Completed', _('Completed')
+        Failed = 'Failed', _('Failed')
+
+    trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    state = models.CharField(
+        max_length=20,
+        choices=StateTraineeCourse.choices,
+        default=StateTraineeCourse.Not_Started
+    )
+    current_training_index = models.PositiveIntegerField(default=0)  # Índice del training actual habilitado
+    exam_passed = models.BooleanField(default=False)
+    pub_date = models.DateTimeField("start date", auto_now_add=True)
+    completion_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('trainee', 'course')
+
+    def __str__(self):
+        return f"Trainee: {self.trainee.user.first_name}, Course: {self.course.name_course}, State: {self.state}"
+
+

@@ -11,7 +11,7 @@ from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin  #LoginRequiredMixin se utiliza como un mixin para requerir que un usuario esté autenticado antes de acceder a una vista específica.
 from django.contrib.auth.views import PasswordChangeView, PasswordResetDoneView
 from django.urls import reverse_lazy
-from trainingApp.models import Group
+from trainingApp.models import TraineeGroup
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -67,7 +67,7 @@ def signup(request):
 
             user = form.save()
             # Crear el objeto Trainee y se relaciona con el usuario y al grupo por defecto
-            group_defect, created = Group.objects.get_or_create(name_group='Group Defect')
+            group_defect, created = TraineeGroup.objects.get_or_create(name_group='Group Defect')
             trainee = Trainee(
                     user=user,
                     age=form.cleaned_data['age'],
@@ -119,7 +119,7 @@ def signin(request):
         else:
             login(request, user)
             messages.success(request, _("You are logged in as %(username)s") % {"username": request.POST['username']})
-            return redirect('trainingApp:training_List')
+            return redirect('trainingApp:course_list')
 
 #Vista para modificar datos del user y trainee
 class ProfileView(LoginRequiredMixin, View):

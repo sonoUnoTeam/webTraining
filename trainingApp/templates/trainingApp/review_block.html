@@ -86,7 +86,7 @@
 <p>If you want to return to the training page, press the back button</p>
 {% endblocktrans %}
 <div class="mt-4">
-    <a href="{% url 'trainingApp:review_list_tt' training_id %}" class="btn btn-primary">{% trans 'Back' %}</a>
+    <a href="{% url 'trainingApp:review_list_tt' course_id training_id %}" class="btn btn-primary">{% trans 'Back' %}</a>
 </div>
 
 {% endblock %}

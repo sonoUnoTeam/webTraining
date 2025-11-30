@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .course-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .course-card .card-body {
+        padding: 1.5rem;
+    }
+    .course-card .card-title {
+        color: #007bff;
+        font-weight: bold;
+    }
+    .course-card .btn {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: background-color 0.2s;
+    }
+    .course-card .btn:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .note-card {
+        background-color: #f8f9fa;
+        border-left: 5px solid #007bff;
+    }
+</style>
+<div>
+    <h1 class="mb-4">{% trans "Available Courses" %}</h1>
+    <div class="card my-3 border border-3 note-card">
+        <div class="card-header text-primary">
+            {% trans "Quick Guide" %}
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                {% blocktrans %}
+                <p>Select a course to view its trainings. Courses have sequential trainings and a final exam that unlocks after completion.</p>
+                {% endblocktrans %}
+            </blockquote>
+        </div>
+    </div>
+    <div class="row">
+        {% for course in course_list %}
+        <div class="col-md-4 mb-4">
+            <div class="card course-card h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ course.name_course }}</h5>
+                    <p class="card-text flex-grow-1">{{ course.description }}</p>
+                    <p class="mb-3"><strong>{% trans "Status" %}:</strong> <span class="badge bg-secondary">{{ course.status }}</span></p>
+                    <a href="{% url 'trainingApp:course_detail' course.id %}" class="btn btn-primary mt-auto">{% trans "View Course" %}</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
+                </li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+                <li class="page-item {% if i == page_obj.number %} active {% endif %}">
+                    <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                        <span aria-hidden="true">{% trans 'Next' %} &raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">{% trans 'Next' %} &raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+{% endblock %}

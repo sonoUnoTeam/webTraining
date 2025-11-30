@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load custom_filters %}
+
+{% block content %}
+<style>
+    .training-link {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .training-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+    .status-completed {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .status-available {
+        color: #17a2b8;
+        font-weight: bold;
+    }
+    .status-locked {
+        color: #6c757d;
+        font-weight: bold;
+    }
+    .exam-btn {
+        background-color: #28a745;
+        border-color: #28a745;
+        transition: background-color 0.2s;
+    }
+    .exam-btn:hover {
+        background-color: #218838;
+        border-color: #218838;
+    }
+    .exam-btn:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .note-card {
+        background-color: #f8f9fa;
+        border-left: 5px solid #007bff;
+    }
+    .note-card .card-header {
+        color: #007bff;
+        font-weight: bold;
+    }
+</style>
+
+<div>
+    <h1 class="mb-4">{{ course.name_course }}</h1>
+    <p class="lead mb-4">{{ course.description }}</p>
+
+    <div class="card my-3 border border-3 note-card">
+        <div class="card-header">
+            {% trans "Quick Guide" %}
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                {% blocktrans %}
+                <p>Trainings unlock sequentially after completing the previous one. Click the training name to start, review answers after each block. The final exam unlocks after all trainings and completes the course when passed.</p>
+                {% endblocktrans %}
+            </blockquote>
+        </div>
+    </div>
+
+    <h2 class="mb-3">{% trans "Course Modules" %}</h2>
+    <div class="table-responsive">
+        {% if course_trainings %}
+            <table class="table table-striped table-bordered border border-2 table-hover">
+                <thead>
+                    <tr class="table-primary">
+                        <th>{% trans "Order" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Difficulty" %}</th>
+                        <th>{% trans "Duration (minutes)" %}</th>
+                        <th>{% trans "Allowed Attempts" %}</th>
+                        <th>{% trans "Attempts Made" %}</th>
+                        <th>{% trans "Reviews" %}</th>
+                        <th>{% trans "Status" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ct in course_trainings %}
+                        <tr>
+                            <td>{{ ct.order }}</td>
+                            <td>
+                                {% if ct.enabled %}
+                                    <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="training-link">{{ ct.training.name_training }}</a>
+                                {% else %}
+                                    {{ ct.training.name_training }}
+                                {% endif %}
+                            </td>
+                            <td>{{ ct.training.get_difficulty_display }}</td>
+                            <td>{{ ct.training.total_estimated_duration }}</td>
+                            <td>{{ ct.training.attempts_allowed }}</td>
+                            <td>{{ num_trainee_trainings|get_value:ct.training.id }}</td>
+                            <td>
+                                <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="text-primary">{% trans "review" %}</a>
+                            </td>
+                            <td>
+                                {% if ct.completed %}
+                                    <span class="status-completed">{% trans "Completed" %}</span>
+                                {% elif ct.enabled %}
+                                    <span class="status-available">{% trans "Available" %}</span>
+                                {% else %}
+                                    <span class="status-locked">{% trans "Locked - Complete previous trainings" %}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {% blocktrans %}
+                <p class="lead">No trainings in this course.</p>
+            {% endblocktrans %}
+        {% endif %}
+    </div>
+
+    <h2 class="mb-3">{% trans "Final Exam" %}</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered border border-2 table-hover">
+            <thead>
+                <tr class="table-success">
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Difficulty" %}</th>
+                    <th>{% trans "Duration (minutes)" %}</th>
+                    <th>{% trans "Allowed Attempts" %}</th>
+                    <th>{% trans "Attempts Made" %}</th>
+                    <th>{% trans "Reviews" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Action" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if course.final_exam %}
+                    <tr>
+                        <td>{{ course.final_exam.name_training }}</td>
+                        <td>{{ course.final_exam.get_difficulty_display }}</td>
+                        <td>{{ course.final_exam.total_estimated_duration }}</td>
+                        <td>{{ course.final_exam.attempts_allowed }}</td>
+                        <td>{{ num_trainee_trainings|get_value:course.final_exam.id }}</td>
+                        <td>
+                            <a href="{% url 'trainingApp:review_list_tt' course.id course.final_exam.id %}" class="text-primary">{% trans "review" %}</a>
+                        </td>
+                        <td>
+                            {% if trainee_course.exam_passed %}
+                                <span class="status-completed">{% trans "Passed" %}</span>
+                            {% elif all_completed %}
+                                <span class="status-available">{% trans "Available" %}</span>
+                            {% else %}
+                                <span class="status-locked">{% trans "Locked - Complete all trainings" %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if all_completed %}
+                                <a href="{% url 'trainingApp:block_deploy_list' course.id course.final_exam.id %}" class="btn exam-btn">{% trans "Take Exam" %}</a>
+                            {% else %}
+                                <span class="btn exam-btn disabled">{% trans "Take Exam" %}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8">{% trans "No final exam defined for this course." %}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

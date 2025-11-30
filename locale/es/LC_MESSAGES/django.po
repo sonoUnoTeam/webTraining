@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-29 10:36-0300\n"
+"POT-Creation-Date: 2025-11-29 14:44-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Español <LL@li.org>\n"
@@ -184,10 +184,12 @@ msgid "Advanced"
 msgstr "Avanzado"
 
 #: .\trainingApp\models.py:24 .\trainingApp\models.py:62
+#: .\trainingApp\models.py:209
 msgid "Active"
 msgstr "Activo"
 
 #: .\trainingApp\models.py:25 .\trainingApp\models.py:63
+#: .\trainingApp\models.py:210
 msgid "Inactive"
 msgstr "Inactivo"
 
@@ -195,7 +197,8 @@ msgstr "Inactivo"
 msgid "In progress"
 msgstr "En progreso"
 
-#: .\trainingApp\models.py:119
+#: .\trainingApp\models.py:119 .\trainingApp\models.py:234
+#: .\trainingApp\templates\trainingApp\course_detail.html:110
 msgid "Completed"
 msgstr "Completado"
 
@@ -231,18 +234,32 @@ msgstr "Confuso"
 msgid "Repetitive"
 msgstr "Repetitivo"
 
+#: .\trainingApp\models.py:232 .\trainingApp\views.py:63
+#, fuzzy
+#| msgid "not started"
+msgid "Not Started"
+msgstr "No iniciado"
+
+#: .\trainingApp\models.py:233
+#, fuzzy
+#| msgid "In progress"
+msgid "In Progress"
+msgstr "En progreso"
+
+#: .\trainingApp\models.py:235
+msgid "Failed"
+msgstr ""
+
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:10
 msgid "List of Blocks"
 msgstr "Lista de Bloques"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:13
 #: .\trainingApp\templates\trainingApp\comment_form.html:7
-#: .\trainingApp\templates\trainingApp\training_List.html:13
 msgid "Note"
 msgstr "Nota:"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:17
-#: .\trainingApp\templates\trainingApp\training_List.html:17
 msgid ""
 "\n"
 "                <ul class=\"list-group list-group-flush\">\n"
@@ -266,13 +283,15 @@ msgstr ""
 "                "
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:31
-#: .\trainingApp\templates\trainingApp\training_List.html:31
+#: .\trainingApp\templates\trainingApp\course_detail.html:81
+#: .\trainingApp\templates\trainingApp\course_detail.html:133
 msgid "Name"
 msgstr "Nombre"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:32
+#: .\trainingApp\templates\trainingApp\course_detail.html:83
+#: .\trainingApp\templates\trainingApp\course_detail.html:135
 #: .\trainingApp\templates\trainingApp\review_block.html:22
-#: .\trainingApp\templates\trainingApp\training_List.html:33
 msgid "Duration (minutes)"
 msgstr "Duración (en minutos)"
 
@@ -281,7 +300,6 @@ msgid "State "
 msgstr "Estado"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:53
-#: .\trainingApp\templates\trainingApp\training_List.html:62
 msgid ""
 "\n"
 "                <p class=\"lead\">Sorry, no trainings are available.</p>\n"
@@ -294,24 +312,24 @@ msgstr ""
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:67
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:72
+#: .\trainingApp\templates\trainingApp\course_list.html:74
+#: .\trainingApp\templates\trainingApp\course_list.html:79
 #: .\trainingApp\templates\trainingApp\review_block.html:54
 #: .\trainingApp\templates\trainingApp\review_block.html:59
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:58
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:63
-#: .\trainingApp\templates\trainingApp\training_List.html:76
-#: .\trainingApp\templates\trainingApp\training_List.html:81
 msgid "Previous"
 msgstr "Previo"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:85
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:90
+#: .\trainingApp\templates\trainingApp\course_list.html:92
+#: .\trainingApp\templates\trainingApp\course_list.html:97
 #: .\trainingApp\templates\trainingApp\review_block.html:72
 #: .\trainingApp\templates\trainingApp\review_block.html:77
 #: .\trainingApp\templates\trainingApp\review_deploy.html:52
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:76
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:81
-#: .\trainingApp\templates\trainingApp\training_List.html:94
-#: .\trainingApp\templates\trainingApp\training_List.html:99
 msgid "Next"
 msgstr "Siguiente"
 
@@ -353,9 +371,160 @@ msgstr "Comentario Adicional "
 msgid "Send"
 msgstr "Enviar"
 
-#: .\trainingApp\templates\trainingApp\comment_form.html:62
+#: .\trainingApp\templates\trainingApp\comment_form.html:63
+#: .\trainingApp\templates\trainingApp\comment_form.html:65
 msgid "Skip Comment"
 msgstr "Omitir"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:63
+#: .\trainingApp\templates\trainingApp\course_list.html:40
+msgid "Quick Guide"
+msgstr "Guía Rápida"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:67
+msgid ""
+"\n"
+"                <p>Trainings unlock sequentially after completing the "
+"previous one. Click the training name to start, review answers after each "
+"block. The final exam unlocks after all trainings and completes the course "
+"when passed.</p>\n"
+"                "
+msgstr ""
+"\n"
+"                <p>Los entrenamientos se desbloquean secuencialmente después "
+"de completar el anterior. Haz clic en el nombre del entrenamiento para "
+"comenzar, revisa las respuestas después de cada bloque. El examen final se "
+"desbloquea después de todos los entrenamientos y completa el curso cuando se "
+"aprueba.</p>\n"
+"                "
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:74
+msgid "Course Modules"
+msgstr "Módulos del Curso"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:80
+msgid "Order"
+msgstr "Orden"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:82
+#: .\trainingApp\templates\trainingApp\course_detail.html:134
+msgid "Difficulty"
+msgstr "Dificultad"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:84
+#: .\trainingApp\templates\trainingApp\course_detail.html:136
+msgid "Allowed Attempts"
+msgstr "Intentos Permitidos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:85
+#: .\trainingApp\templates\trainingApp\course_detail.html:137
+msgid "Attempts Made"
+msgstr "Intentos Realizados"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:86
+#: .\trainingApp\templates\trainingApp\course_detail.html:138
+msgid "Reviews"
+msgstr "Revisiones"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:87
+#: .\trainingApp\templates\trainingApp\course_detail.html:139
+#: .\trainingApp\templates\trainingApp\course_list.html:57
+msgid "Status"
+msgstr "Estado"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:106
+#: .\trainingApp\templates\trainingApp\course_detail.html:152
+msgid "review"
+msgstr "revisar"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:112
+#: .\trainingApp\templates\trainingApp\course_detail.html:158
+msgid "Available"
+msgstr "Disponible"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:114
+msgid "Locked - Complete previous trainings"
+msgstr "Bloqueado - Completa los entrenamientos anteriores"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:122
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                <p class=\"lead\">Sorry, no trainings are available.</p>\n"
+#| "            "
+msgid ""
+"\n"
+"                <p class=\"lead\">No trainings in this course.</p>\n"
+"            "
+msgstr ""
+"\n"
+"                <p class=\"lead\">No hay entrenamientos en este curso.</p>\n"
+"            "
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:128
+#: .\trainingApp\templates\trainingApp\exam.html:6
+msgid "Final Exam"
+msgstr "Examen Final"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:140
+msgid "Action"
+msgstr "Acción"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:156
+msgid "Passed"
+msgstr "Aprobado"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:160
+#, fuzzy
+#| msgid "Locked - Complete previous trainings"
+msgid "Locked - Complete all trainings"
+msgstr "Bloqueado - Completa los entrenamientos anteriores"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:165
+#: .\trainingApp\templates\trainingApp\course_detail.html:167
+msgid "Take Exam"
+msgstr "Tomar Examen"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html:173
+msgid "No final exam defined for this course."
+msgstr "No hay examen final definido para este curso."
+
+#: .\trainingApp\templates\trainingApp\course_list.html:37
+msgid "Available Courses"
+msgstr ""
+
+#: .\trainingApp\templates\trainingApp\course_list.html:44
+msgid ""
+"\n"
+"                <p>Select a course to view its trainings. Courses have "
+"sequential trainings and a final exam that unlocks after completion.</p>\n"
+"                "
+msgstr ""
+"\n"
+"                <p>Selecciona un curso para ver sus entrenamientos. Los "
+"cursos tienen entrenamientos secuenciales y un examen final que se "
+"desbloquea después de la finalización.</p>\n"
+"                "
+
+#: .\trainingApp\templates\trainingApp\course_list.html:58
+msgid "View Course"
+msgstr "Ver Curso"
+
+#: .\trainingApp\templates\trainingApp\exam.html:7
+#, fuzzy
+#| msgid "You have completed: %(training)s"
+msgid "You have completed all trainings. Now, take the final exam."
+msgstr "¡Excelente! Has completado: %(training)s"
+
+#: .\trainingApp\templates\trainingApp\exam.html:10
+msgid "Click the button below to pass the exam."
+msgstr ""
+
+#: .\trainingApp\templates\trainingApp\exam.html:11
+#, fuzzy
+#| msgid "Take Exam"
+msgid "Pass Exam"
+msgstr "Tomar Examen"
 
 #: .\trainingApp\templates\trainingApp\forms.html:21
 msgid "Are you sure?"
@@ -486,52 +655,59 @@ msgstr "Hora"
 msgid "Time Spent"
 msgstr "Tiempo empleado"
 
-#: .\trainingApp\templates\trainingApp\training_List.html:10
-msgid "List of Trainings"
-msgstr "Lista de entrenamientos disponibles"
-
-#: .\trainingApp\templates\trainingApp\training_List.html:32
-msgid "Difficulty"
-msgstr "Dificultad"
-
-#: .\trainingApp\templates\trainingApp\training_List.html:34
-msgid "Attempts allowed"
-msgstr "Intentos permitidos"
-
-#: .\trainingApp\templates\trainingApp\training_List.html:35
-msgid "Attempts made"
-msgstr "Intentos realizados"
-
-#: .\trainingApp\templates\trainingApp\training_List.html:36
-msgid "Reviews"
-msgstr "Revisiones"
-
-#: .\trainingApp\templates\trainingApp\training_List.html:55
-msgid "review"
-msgstr "Revisiones"
-
-#: .\trainingApp\views.py:31 .\trainingApp\views.py:89
+#: .\trainingApp\views.py:31 .\trainingApp\views.py:173
 msgid "You need to be a trainee to access trainings."
 msgstr "Necesitas ser un aprendiz para acceder a los entrenamientos."
 
-#: .\trainingApp\views.py:129
-msgid "not started"
-msgstr "No iniciado"
-
-#: .\trainingApp\views.py:245
-#, python-format
-#| msgid "Great! You have completes: {training.name_training}"
-msgid "You have completed: %(training)s"
-msgstr "¡Excelente! Has completado: %(training)s"
-
-#: .\trainingApp\views.py:310 .\trainingApp\views.py:403
-#: .\trainingApp\views.py:415 .\userApp\views.py:134 .\userApp\views.py:148
+#: .\trainingApp\views.py:92 .\trainingApp\views.py:430
+#: .\trainingApp\views.py:523 .\trainingApp\views.py:542
+#: .\trainingApp\views.py:580 .\trainingApp\views.py:609 .\userApp\views.py:141
+#: .\userApp\views.py:162
 msgid "You need to be a trainee to access this page."
 msgstr ""
 
-#: .\trainingApp\views.py:433 .\userApp\views.py:162
+#: .\trainingApp\views.py:224
+msgid "not started"
+msgstr "No iniciado"
+
+#: .\trainingApp\views.py:365
+#, python-format
+msgid "You have completed: %(training)s"
+msgstr "¡Excelente! Has completado: %(training)s"
+
+#: .\trainingApp\views.py:566
 msgid "error"
 msgstr "Error"
+
+#: .\trainingApp\views.py:592
+msgid "You must complete all trainings before taking the exam."
+msgstr ""
+
+#: .\trainingApp\views.py:617
+msgid "Congratulations! You have passed the exam and completed the course."
+msgstr ""
+
+#: .\userApp\forms.py:20 .\userApp\templates\userApp\signup.html:26
+msgid "First Name"
+msgstr "Nombre"
+
+#: .\userApp\forms.py:21 .\userApp\templates\userApp\signup.html:31
+msgid "Last Name"
+msgstr "Apellido"
+
+#: .\userApp\forms.py:22 .\userApp\templates\userApp\signup.html:36
+msgid "Email"
+msgstr "Email"
+
+#: .\userApp\forms.py:48 .\userApp\models.py:17
+#: .\userApp\templates\userApp\signup.html:61
+msgid "Age"
+msgstr "Edad"
+
+#: .\userApp\forms.py:49 .\userApp\models.py:24
+#: .\userApp\templates\userApp\signup.html:71
+msgid "Occupation"
+msgstr "Ocupación"
 
 #: .\userApp\models.py:8
 msgid "Primary School"
@@ -560,6 +736,10 @@ msgstr "Magister"
 #: .\userApp\models.py:14
 msgid "Doctor"
 msgstr "Doctor/Doctora"
+
+#: .\userApp\models.py:22
+msgid "Educational Level"
+msgstr "Nivel Educativo"
 
 #: .\userApp\templates\userApp\passwordChange.html:6
 #, fuzzy
@@ -670,20 +850,6 @@ msgstr ""
 "contener letras, números y guiones bajos.</small>\n"
 "                    "
 
-#: .\userApp\templates\userApp\signup.html:26
-msgid "First Name"
-msgstr "Nombre"
-
-#: .\userApp\templates\userApp\signup.html:31
-#, fuzzy
-#| msgid "Name"
-msgid "Last Name"
-msgstr "Apellido"
-
-#: .\userApp\templates\userApp\signup.html:36
-msgid "Email"
-msgstr "Email"
-
 #: .\userApp\templates\userApp\signup.html:41
 #, fuzzy
 #| msgid "Change Password"
@@ -718,17 +884,9 @@ msgstr ""
 "\">Escriba su contraseña una vez más</small>\n"
 "                    "
 
-#: .\userApp\templates\userApp\signup.html:61
-msgid "Age"
-msgstr "Edad"
-
 #: .\userApp\templates\userApp\signup.html:66
 msgid "Educational Level:"
 msgstr "Nivel educativo."
-
-#: .\userApp\templates\userApp\signup.html:71
-msgid "Occupation"
-msgstr "Ocupación"
 
 #: .\userApp\views.py:65
 msgid "The email entered is already registered."
@@ -764,32 +922,112 @@ msgstr "Usuario o contraseña incorrectos"
 msgid "You are logged in as %(username)s"
 msgstr "Has iniciado sesión como {request.POST['username']}"
 
-#: .\userApp\views.py:158
+#: .\userApp\views.py:171 .\userApp\views.py:181
 msgid "Your profile has been updated"
 msgstr "Tu perfil ha sido actualizado"
 
-#: .\userApp\views.py:183
+#: .\userApp\views.py:208
 msgid "Password reset"
 msgstr "Restablecimiento de contraseña"
 
-#: .\userApp\views.py:194
+#: .\userApp\views.py:219
 msgid "The email entered is not registered."
 msgstr "El correo electrónico ingresado no está registrado."
 
-#: .\userApp\views.py:215
+#: .\userApp\views.py:240
 msgid ""
 "An error occurred while trying to send the email, contact the administrator."
 msgstr ""
 "Ocurrió un error al intentar enviar el correo electrónico, contacte al "
 "administrador."
 
-#: .\userApp\views.py:232
+#: .\userApp\views.py:257
 msgid "Enter new password"
 msgstr "Ingrese nueva contraseña"
 
-#: .\userApp\views.py:304
+#: .\userApp\views.py:329
 msgid "Password reset unsuccessful"
 msgstr "Restablecimiento de contraseña fallido"
+
+#~ msgid "first name"
+#~ msgstr "Nombre"
+
+#~ msgid "last name"
+#~ msgstr "Apellido"
+
+#, fuzzy
+#~| msgid ""
+#~| "\n"
+#~| "                <ul class=\"list-group list-group-flush\">\n"
+#~| "                    <li class=\"list-group-item\">Remember that at the "
+#~| "end of a training block, which is made up of 4 displays, you can review "
+#~| "your answers and/or repeat the block with new answers.</li>\n"
+#~| "                    <li class=\"list-group-item\">To start a workout you "
+#~| "must press the name of the desired workout in the table below.</li>\n"
+#~| "                </ul>\n"
+#~| "                "
+#~ msgid ""
+#~ "\n"
+#~ "                <ul class=\"list-group list-group-flush\">\n"
+#~ "                    <li class=\"list-group-item\">Remember that at the "
+#~ "end of a training block, which is made up of 4 displays, you can review "
+#~ "your answers and/or repeat the block with new answers.</li>\n"
+#~ "                    <li class=\"list-group-item\">To start a training you "
+#~ "must press the name of the desired training in the table below.</li>\n"
+#~ "                </ul>\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                <ul class=\"list-group list-group-flush\">\n"
+#~ "                    <li class=\"list-group-item\">Recuerda que al "
+#~ "finalizar un bloque de entrenamiento, que se compone de 4 pantallas, "
+#~ "podrás revisar tus respuestas y/o repetir el bloque con nuevas respuestas."
+#~ "</li>\n"
+#~ "                    <li class=\"list-group-item\">Para iniciar un "
+#~ "entrenamiento debe presionar el nombre del entrenamiento deseado en la "
+#~ "siguiente tabla.</li>\n"
+#~ "                </ul>\n"
+#~ "                "
+
+#, fuzzy
+#~| msgid ""
+#~| "\n"
+#~| "                <ul class=\"list-group list-group-flush\">\n"
+#~| "                    <li class=\"list-group-item\">Remember that at the "
+#~| "end of a training block, which is made up of 4 displays, you can review "
+#~| "your answers and/or repeat the block with new answers.</li>\n"
+#~| "                    <li class=\"list-group-item\">To start a workout you "
+#~| "must press the name of the desired workout in the table below.</li>\n"
+#~| "                </ul>\n"
+#~| "                "
+#~ msgid ""
+#~ "\n"
+#~ "                <ul class=\"list-group list-group-flush\">\n"
+#~ "                    <li class=\"list-group-item\">Remember that at the "
+#~ "end of a training block, which is made up of 4 displays, you can review "
+#~ "your answers and/or repeat the block with new answers.</li>\n"
+#~ "                    <li class=\"list-group-item\">To start a course you "
+#~ "must press the name of the desired course in the list below.</li>\n"
+#~ "                </ul>\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                <ul class=\"list-group list-group-flush\">\n"
+#~ "                    <li class=\"list-group-item\">Recuerda que al "
+#~ "finalizar un bloque de entrenamiento, que se compone de 4 pantallas, "
+#~ "podrás revisar tus respuestas y/o repetir el bloque con nuevas respuestas."
+#~ "</li>\n"
+#~ "                    <li class=\"list-group-item\">Para iniciar un "
+#~ "entrenamiento debe presionar el nombre del entrenamiento deseado en la "
+#~ "siguiente tabla.</li>\n"
+#~ "                </ul>\n"
+#~ "                "
+
+#~ msgid "List of Trainings"
+#~ msgstr "Lista de entrenamientos disponibles"
+
+#~ msgid "Attempts allowed"
+#~ msgstr "Intentos permitidos"
 
 #, python-format
 #~ msgid ""

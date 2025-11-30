@@ -1,11 +1,11 @@
 from django import forms
-from .models import DeployAnswer,Choice,Comment
+from .models import TrainingQuestionAnswer,Choice,Comment
 
 #primer tipo de formulario
 class QuestionForm(forms.ModelForm):
 
     class Meta:
-        model = DeployAnswer
+        model = TrainingQuestionAnswer
         fields = ['selectedChoice']
         
     def __init__(self, *args, **kwargs):

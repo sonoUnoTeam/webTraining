@@ -59,6 +59,10 @@
   </div>
   <!-- Botón para omitir el comentario-->
 <div class="mt-4">
-  <a href="{% url 'trainingApp:training_List' %}" class="btn btn-primary">{% trans 'Skip Comment' %}</a>
+  {% if course_id %}
+    <a href="{% url 'trainingApp:course_detail' course_id %}" class="btn btn-primary">{% trans 'Skip Comment' %}</a>
+  {% else %}
+    <a href="{% url 'trainingApp:course_list' %}" class="btn btn-primary">{% trans 'Skip Comment' %}</a>
+  {% endif %}
 </div>
 {% endblock %}

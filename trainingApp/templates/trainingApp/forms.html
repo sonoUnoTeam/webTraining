@@ -35,7 +35,7 @@
 
     <main>
         <fieldset class="border p-3 rounded">
-            <form id="myForm" method="POST" action="{% url 'trainingApp:forms' training_id block_id %}">
+            <form id="myForm" method="POST" action="{% url 'trainingApp:forms' course_id training_id block_id %}">
 
                 {% csrf_token %}
                 <div class="form-deploy-image">
@@ -72,7 +72,7 @@
         <p>If you want to return to the previous display, press the back button</p>
         {% endblocktrans %}
         <div class="mt-4">
-            <a href="{% url 'trainingApp:back_deploy' training_id block_id %}" class="btn btn-primary">{% trans 'Back' %}</a>
+            <a href="{% url 'trainingApp:back_deploy' course_id training_id block_id %}" class="btn btn-primary">{% trans 'Back' %}</a>
         </div>
     </main>
 

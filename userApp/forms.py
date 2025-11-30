@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UserChangeForm
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 from .models import Trainee
 
 class SignupForm(UserCreationForm):
@@ -16,9 +17,9 @@ class SignupForm(UserCreationForm):
         fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'age', 'educationalLevel', 'occupation']
         
 class UserUpdateForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=150, required=True)
-    last_name = forms.CharField(max_length=150, required=True)
-    email = forms.EmailField(required=True)
+    first_name = forms.CharField(max_length=150, required=True, label=_('First Name'))
+    last_name = forms.CharField(max_length=150, required=True, label=_('Last Name'))
+    email = forms.EmailField(required=True, label=_('Email'))
 
     class Meta:
         model = User
@@ -44,8 +45,8 @@ class UserUpdateForm(forms.ModelForm):
         return email
 
 class TraineeUpdateForm(forms.ModelForm):
-    age = forms.IntegerField(required=True)
-    occupation = forms.CharField(max_length=50, required=True)
+    age = forms.IntegerField(required=True, label=_('Age'))
+    occupation = forms.CharField(max_length=50, required=True, label=_('Occupation'))
 
     class Meta:
         model = Trainee
