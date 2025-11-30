@@ -413,7 +413,7 @@ class DeployDetailView(View):
                             trainee_course.save()
                         except TraineeCourse.DoesNotExist:
                             pass
-                
+                    
                     # Update course progress
                     try:
                         trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
@@ -421,17 +421,19 @@ class DeployDetailView(View):
                         trainee_course.save()
                     except TraineeCourse.DoesNotExist:
                         pass
-                
+                    
                     #Se borra de la session los datos temporales
                     del request.session[session_key]
                     del request.session[start_time_session_key]
                     del request.session[trainee_training_session_key]
-                
+                    
                     training = Training.objects.get(pk=training_id) 
                     messages.success(request, _("You have completed: %(training)s") % {"training": training.name_training})
-                    return HttpResponseRedirect(reverse('trainingApp:comment', args=[course_id, training_id]))
-                
-                #Si completo el Block pero aun quedan mas por completar entonces lo redirecciona a la lista de blocks
+                    
+                    if courses_as_exam.exists():
+                        return HttpResponseRedirect(reverse('trainingApp:comment', args=[course_id, training_id]))
+                    else:
+                        return HttpResponseRedirect(reverse('trainingApp:course_detail', args=[course_id]))                #Si completo el Block pero aun quedan mas por completar entonces lo redirecciona a la lista de blocks
                 else : 
                     return HttpResponseRedirect(reverse('trainingApp:block_deploy_list', args=[course_id, training_id]))
                 
