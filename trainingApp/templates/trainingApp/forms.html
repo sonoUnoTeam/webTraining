@@ -32,14 +32,122 @@
             });
         }
     </script>
+    <style>
+        .form-deploy-image {
+            text-align: left;
+            margin-bottom: 0.75rem;
+        }
+        .form-deploy-image img {
+            max-width: 100%;
+            max-height: 350px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-deploy-image .bg-light {
+            border-radius: 8px;
+        }
+        .form-deploy-audio {
+            margin-bottom: 0.75rem;
+        }
+        .form-deploy-audio audio {
+            width: 100%;
+            max-width: 600px;
+        }
+        .form-question {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+        .form-question p {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #212529;
+        }
+        .form-choice {
+            margin-bottom: 0.75rem;
+        }
+        .form-choice legend {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        .form-choice ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .form-choice li {
+            margin-bottom: 0.5rem;
+        }
+        .form-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+        .choice-row {
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 2px solid #e9ecef;
+            background-color: #fff;
+        }
+        .choice-row:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .choice-row.selected {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-color: #007bff;
+        }
+        .choice-row label {
+            cursor: pointer;
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .choice-row input[type="radio"] {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+        }
+        .progress-indicator {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6c757d;
+            padding: 0.5rem 1rem;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+        }
+        fieldset.border {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+    </style>
 
-    <main>
-        <fieldset class="border p-3 rounded">
+    <fieldset class="border p-3 rounded">
             <form id="myForm" method="POST" action="{% url 'trainingApp:forms' course_id training_id block_id %}">
 
                 {% csrf_token %}
                 <div class="form-deploy-image">
-                    <img src="{{ form.instance.deploy_image.url }}" class="img-fluid im" alt="Displayed Image">
+                    {% if form.instance.deploy_image %}
+                        <img src="{{ form.instance.deploy_image.url }}" alt="{{ form.instance.question|default:_('Deploy image') }}" loading="lazy">
+                    {% else %}
+                        <div class="bg-light border d-inline-block" style="width:600px; height:400px; display:flex; align-items:center; justify-content:center;">
+                            <small class="text-muted">{% trans "No image available" %}</small>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="form-deploy-audio">
                     <audio controls>
@@ -53,9 +161,9 @@
                 <div class="form-choice">
                     <fieldset>
                         <legend>{% trans 'Select Answer' %}</legend>
-                        <ul>
+                        <ul id="choices-list">
                             {% for field in form.visible_fields %}
-                                <li>
+                                <li class="choice-row">
                                     {{ field }}
                                 </li>
                             {% endfor %}
@@ -63,17 +171,23 @@
                     </fieldset>
                 </div>
                 
-                <!--  Botón para enviar el formulario -->
-                <button onclick="validateAndSubmitForm()" type="button" class="btn btn-primary">{% trans 'Send and Next' %}</button>
+                <div class="form-actions d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+                    <div class="d-flex gap-2">
+                        <!--  Botón para enviar el formulario -->
+                        <button onclick="validateAndSubmitForm()" type="button" class="btn btn-primary">
+                            {% trans 'Send and Next' %}
+                        </button>
+                        
+                        <!-- Botón para volver al anterior deploy -->
+                        <a href="{% url 'trainingApp:back_deploy' course_id training_id block_id %}" class="btn btn-outline-secondary">
+                            {% trans 'Back' %}
+                        </a>
+                    </div>
+                    <div class="progress-indicator">
+                        {% trans "Question" %} {{ current_deploy_index|add:1 }} / {{ deploys_count }}
+                    </div>
+                </div>
             </form>
-        </fieldset> 
-        <!-- Botón para volver al anterior deploy -->
-        {% blocktrans %}
-        <p>If you want to return to the previous display, press the back button</p>
-        {% endblocktrans %}
-        <div class="mt-4">
-            <a href="{% url 'trainingApp:back_deploy' course_id training_id block_id %}" class="btn btn-primary">{% trans 'Back' %}</a>
-        </div>
-    </main>
-
+        </fieldset>
+ 
 {% endblock %}

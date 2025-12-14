@@ -385,17 +385,17 @@ msgstr "Guía Rápida"
 msgid ""
 "\n"
 "                <p>Trainings unlock sequentially after completing the "
-"previous one. Click the training name to start, review answers after each "
-"block. The final exam unlocks after all trainings and completes the course "
-"when passed.</p>\n"
+"previous one. Click the training name to start, you can view the results "
+"once the training is completed. The final training unlocks after completing "
+"all trainings in the course.</p>\n"
 "                "
 msgstr ""
 "\n"
 "                <p>Los entrenamientos se desbloquean secuencialmente después "
 "de completar el anterior. Haz clic en el nombre del entrenamiento para "
-"comenzar, revisa las respuestas después de cada bloque. El examen final se "
-"desbloquea después de todos los entrenamientos y completa el curso cuando se "
-"aprueba.</p>\n"
+"comenzar, puedes ver el resultado una vez completado el entrenamiento. El entrenamiento final se "
+"desbloquea después de completar todos los entrenamientos del curso. "
+"</p>\n"
 "                "
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:74
@@ -463,8 +463,8 @@ msgstr ""
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:128
 #: .\trainingApp\templates\trainingApp\exam.html:6
-msgid "Final Exam"
-msgstr "Examen Final"
+msgid "Final Training"
+msgstr "Entrenamiento Final"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:140
 msgid "Action"
@@ -486,8 +486,8 @@ msgid "Take Exam"
 msgstr "Tomar Examen"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:173
-msgid "No final exam defined for this course."
-msgstr "No hay examen final definido para este curso."
+msgid "No final training defined for this course."
+msgstr "No hay entrenamiento final definido para este curso."
 
 #: .\trainingApp\templates\trainingApp\course_list.html:37
 msgid "Available Courses"
@@ -497,18 +497,22 @@ msgstr ""
 msgid ""
 "\n"
 "                <p>Select a course to view its trainings. Courses have "
-"sequential trainings and a final exam that unlocks after completion.</p>\n"
+"sequential trainings and a final training that unlocks after completion.</p>\n"
 "                "
 msgstr ""
 "\n"
 "                <p>Selecciona un curso para ver sus entrenamientos. Los "
-"cursos tienen entrenamientos secuenciales y un examen final que se "
+"cursos tienen entrenamientos secuenciales y un entrenamiento final que se "
 "desbloquea después de la finalización.</p>\n"
 "                "
 
 #: .\trainingApp\templates\trainingApp\course_list.html:58
 msgid "View Course"
 msgstr "Ver Curso"
+
+#: .\trainingApp\templates\trainingApp\forms.html:190
+msgid "Question"
+msgstr "Pregunta"
 
 #: .\trainingApp\templates\trainingApp\exam.html:7
 #, fuzzy

@@ -306,13 +306,22 @@ class DeployDetailView(View):
         request.session[session_key] = current_deploy_index
         
         current_deploy = deploys[current_deploy_index]
+        deploys_count = deploys.count()
         
         # Verifica si es la primera vez que el trainee ingresa al entrenamiento
         self.initialize_block(request, course_id, training_id, block_id)
 
         self.form = QuestionForm(instance=current_deploy)
         block = TrainingBlock.objects.get(pk = block_id)
-        return render(request, self.template_name, {'deploy': current_deploy, 'form':self.form, 'block_id':block.id, 'course_id': course_id, 'training_id': training_id, 'current_deploy_index':current_deploy_index})
+        return render(request, self.template_name, {
+            'deploy': current_deploy,
+            'form': self.form,
+            'block_id': block.id,
+            'course_id': course_id,
+            'training_id': training_id,
+            'current_deploy_index': current_deploy_index,
+            'deploys_count': deploys_count,
+        })
     
     def post(self, request, course_id, training_id, block_id):
         course = get_object_or_404(Course, id=course_id)
@@ -452,7 +461,16 @@ class DeployDetailView(View):
             # Si el formulario no es válido, renderizar la plantilla con el formulario nuevamente,
             # resaltando lo que falta para poder enviarlo.
             block = TrainingBlock.objects.get(pk = block_id)
-            return render(request, self.template_name, {'deploy': current_deploy, 'form':form, 'block_id':block.id, 'course_id': course_id, 'training_id': training_id, 'current_deploy_index':current_deploy_index})
+            deploys_count = deploys.count()
+            return render(request, self.template_name, {
+                'deploy': current_deploy,
+                'form': form,
+                'block_id': block.id,
+                'course_id': course_id,
+                'training_id': training_id,
+                'current_deploy_index': current_deploy_index,
+                'deploys_count': deploys_count,
+            })
         
         
     def initialize_block(self, request, course_id, training_id, block_id):

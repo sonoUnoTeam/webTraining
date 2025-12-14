@@ -468,7 +468,7 @@ msgstr ""
 "            "
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:80
-msgid "Final Exam"
+msgid "Final Training"
 msgstr ""
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:81

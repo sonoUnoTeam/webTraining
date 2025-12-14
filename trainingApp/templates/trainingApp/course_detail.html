@@ -52,12 +52,51 @@
         color: #007bff;
         font-weight: bold;
     }
+    /* Title styles */
+    .page-title {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 1.75rem;
+        color: #0b5ed7;
+        margin-bottom: 0.35rem;
+        letter-spacing: -0.1px;
+    }
+    .section-title {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 650;
+        font-size: 1.2rem;
+        color: #1f2a37;
+        margin-bottom: 0.65rem;
+        padding-bottom: 0.25rem;
+        border-bottom: 2px solid rgba(13,110,253,0.08);
+    }
+    /* Hero and description */
+    .course-hero {
+        background: linear-gradient(135deg, #fafdff 0%, #f3f7ff 100%);
+        border: 1px solid #e4e9f3;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+        margin-bottom: 0.75rem;
+    }
+    .course-description {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 1.02rem;
+        line-height: 1.55;
+        color: #3d4551;
+        margin: 0.25rem 0 0;
+    }
+    .card.note-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
 </style>
 
 <div>
-    <h1 class="mb-4">{{ course.name_course }}</h1>
-    <p class="lead mb-4">{{ course.description }}</p>
-
+    <div class="course-hero">
+        <h1 class="page-title mb-2">{{ course.name_course }}</h1>
+        <p class="course-description">{{ course.description }}</p>
+    </div>
     <div class="card my-3 border border-3 note-card">
         <div class="card-header">
             {% trans "Quick Guide" %}
@@ -65,13 +104,13 @@
         <div class="card-body">
             <blockquote class="blockquote mb-0">
                 {% blocktrans %}
-                <p>Trainings unlock sequentially after completing the previous one. Click the training name to start, review answers after each block. The final exam unlocks after all trainings and completes the course when passed.</p>
+                <p>Trainings unlock sequentially after completing the previous one. Click the training name to start, you can view the results once the training is completed. The final training unlocks after completing all trainings in the course.</p>
                 {% endblocktrans %}
             </blockquote>
         </div>
     </div>
 
-    <h2 class="mb-3">{% trans "Course Modules" %}</h2>
+    <h2 class="section-title">{% trans "Course Modules" %}</h2>
     <div class="table-responsive">
         {% if course_trainings %}
             <table class="table table-striped table-bordered border border-2 table-hover">
@@ -125,7 +164,7 @@
         {% endif %}
     </div>
 
-    <h2 class="mb-3">{% trans "Final Exam" %}</h2>
+    <h2 class="section-title">{% trans "Final Training" %}</h2>
     <div class="table-responsive">
         <table class="table table-striped table-bordered border border-2 table-hover">
             <thead>
@@ -170,7 +209,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="8">{% trans "No final exam defined for this course." %}</td>
+                        <td colspan="8">{% trans "No final training defined for this course." %}</td>
                     </tr>
                 {% endif %}
             </tbody>
