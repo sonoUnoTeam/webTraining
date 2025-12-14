@@ -104,9 +104,11 @@ class Choice(models.Model):
     
     
 class TraineeTraining(models.Model):
-    #foreing Key de training
+    # Foreign Key al progreso del trainee en el curso (padre)
+    trainee_course = models.ForeignKey('TraineeCourse', on_delete=models.CASCADE, related_name='trainee_trainings')
+    # Foreign Key de training
     training = models.ForeignKey(Training, on_delete=models.PROTECT)
-    #foreing Key de trainee
+    # Foreign Key de trainee 
     trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE)
     # Foreign Key de course
     course = models.ForeignKey('Course', on_delete=models.CASCADE)

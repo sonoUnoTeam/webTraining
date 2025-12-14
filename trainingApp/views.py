@@ -219,12 +219,15 @@ class TrainingBlockDeployList(ListView):
                 course=course,
                 state="in_progress"
             ).first()
+            # Obtener o crear TraineeCourse
+            trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
             
             if in_progress:
                 trainee_training = in_progress
             else:
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
+                    trainee_course=trainee_course,
                     trainee=trainee,
                     training=training,
                     course=course,
@@ -235,13 +238,9 @@ class TrainingBlockDeployList(ListView):
                 request.session[f'start_time_{course_id}_{training_id}'] = datetime.now().isoformat()
                 
                 # Update course state if starting first training
-                try:
-                    trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
-                    if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
-                        trainee_course.state = TraineeCourse.StateTraineeCourse.In_Progress
-                        trainee_course.save()
-                except TraineeCourse.DoesNotExist:
-                    pass  # Not part of course or no trainee course
+                if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
+                    trainee_course.state = TraineeCourse.StateTraineeCourse.In_Progress
+                    trainee_course.save()
             
             # Almacena el ID del TraineeTraining en la sesión
             request.session[session_key] = trainee_training.id
@@ -267,11 +266,15 @@ class TrainingBlockDeployList(ListView):
 
         # Iterar sobre los bloques en context['block_list']
         for block in context['block_list']:
-            try:
-                # Intentar obtener el TrainingBlockAnswer asociado al TrainingBlock
-                blockAnswer = TrainingBlockAnswer.objects.get(trainee_Training=current_trainee_training, block=block.id)
-                states_blocks_answers[f'{block.id}'] = blockAnswer.state_block
-            except TrainingBlockAnswer.DoesNotExist:
+            block_answer = (
+                TrainingBlockAnswer.objects
+                .filter(trainee_Training=current_trainee_training, block=block.id)
+                .order_by('-id')
+                .first()
+            )
+            if block_answer:
+                states_blocks_answers[f'{block.id}'] = block_answer.state_block
+            else:
                 # Si no se encuentra un TrainingBlockAnswer asociado al TrainingBlock, establecer el estado como "not started"
                 states_blocks_answers[f'{block.id}'] =  _('not started')
 
@@ -459,11 +462,14 @@ class DeployDetailView(View):
             trainee_training_session_key = f'current_trainee_training_id_{course_id}_{training_id}'
             current_trainee_training = self.request.session.get(trainee_training_session_key)
 
-            # Se crea un nuevo objeto TrainingBlockAnswer y se guarda en la base de datos
-            block_answer = TrainingBlockAnswer.objects.create(
-                trainee_Training= get_object_or_404(TraineeTraining, pk=current_trainee_training),
-                block= get_object_or_404(TrainingBlock, pk=block_id),
-                state_block = TrainingBlockAnswer.StateBlockAnswer.in_progress
+            trainee_training = get_object_or_404(TraineeTraining, pk=current_trainee_training)
+            block = get_object_or_404(TrainingBlock, pk=block_id)
+
+            # Reutiliza el registro existente si ya hay un bloque iniciado para este intento.
+            block_answer, _ = TrainingBlockAnswer.objects.get_or_create(
+                trainee_Training=trainee_training,
+                block=block,
+                defaults={'state_block': TrainingBlockAnswer.StateBlockAnswer.in_progress}
             )
 
             # Almacena el ID del BlockAnswer en la sesión
