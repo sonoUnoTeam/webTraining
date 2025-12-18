@@ -266,6 +266,7 @@ class TrainingBlockDeployList(ListView):
 
         # Iterar sobre los bloques en context['block_list']
         for block in context['block_list']:
+            # Buscar el TrainingBlockAnswer más reciente para este bloque
             block_answer = (
                 TrainingBlockAnswer.objects
                 .filter(trainee_Training=current_trainee_training, block=block.id)
@@ -349,21 +350,24 @@ class DeployDetailView(View):
             # Obtener el objeto Choice correspondiente
             selected_choice = Choice.objects.get(id=selected_choice_id)
             
-            deploy_answer, created = TrainingQuestionAnswer.objects.get_or_create(   #Get or create busca un objeto y si no lo encuentra lo crea con los atributos en default
-                block_answer=TrainingBlockAnswer.objects.get(pk=current_block_answer_id),
-                deploy=current_deploy,
-                defaults={'selectedChoice': selected_choice}
-            )
-            # Si la respuesta ya existía, actualiza el campo 'selectedChoice'
-            if not created:
-                # Obtener el ID de la opción seleccionada
-                selected_choice_id = form.cleaned_data['selectedChoice']
-
-                # Obtener el objeto Choice correspondiente
-                selected_choice = Choice.objects.get(id=selected_choice_id)
-                #Sobreescribo la selected_choice
+            # Buscar si existe una respuesta para este deploy y block_answer
+            block_answer_obj = TrainingBlockAnswer.objects.get(pk=current_block_answer_id)
+            deploy_answer = TrainingQuestionAnswer.objects.filter(
+                block_answer=block_answer_obj,
+                deploy=current_deploy
+            ).first()
+            
+            if deploy_answer:
+                # Si ya existe, actualizar la respuesta seleccionada
                 deploy_answer.selectedChoice = selected_choice
                 deploy_answer.save()
+            else:
+                # Si no existe, crear una nueva
+                deploy_answer = TrainingQuestionAnswer.objects.create(
+                    block_answer=block_answer_obj,
+                    deploy=current_deploy,
+                    selectedChoice=selected_choice
+                )
 
             # Avanzar al siguiente deploy
             current_deploy_index += 1
@@ -483,12 +487,20 @@ class DeployDetailView(View):
             trainee_training = get_object_or_404(TraineeTraining, pk=current_trainee_training)
             block = get_object_or_404(TrainingBlock, pk=block_id)
 
-            # Reutiliza el registro existente si ya hay un bloque iniciado para este intento.
-            block_answer, _ = TrainingBlockAnswer.objects.get_or_create(
+            # Buscar si existe un TrainingBlockAnswer en progreso para este trainee_training y block
+            block_answer = TrainingBlockAnswer.objects.filter(
                 trainee_Training=trainee_training,
                 block=block,
-                defaults={'state_block': TrainingBlockAnswer.StateBlockAnswer.in_progress}
-            )
+                state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress
+            ).order_by('-id').first()
+            
+            # Si no existe, crear uno nuevo
+            if not block_answer:
+                block_answer = TrainingBlockAnswer.objects.create(
+                    trainee_Training=trainee_training,
+                    block=block,
+                    state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress
+                )
 
             # Almacena el ID del BlockAnswer en la sesión
             request.session[block_answer_session_key] = block_answer.id
