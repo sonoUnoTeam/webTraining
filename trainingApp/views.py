@@ -491,14 +491,19 @@ class DeployDetailView(View):
                     # Logica para el tiempo empleado
                     start_time_session_key = f'start_time_{course_id}_{training_id}'
                     start_time_str = request.session.get(start_time_session_key)
-                    start_time = datetime.fromisoformat(start_time_str)
+                    
+                    # Si no hay start_time en sesión, usar pub_date del trainee_training
+                    if start_time_str:
+                        start_time = datetime.fromisoformat(start_time_str)
+                        # Si start_time no tiene zona horaria, hacerlo aware
+                        if timezone.is_naive(start_time):
+                            start_time = timezone.make_aware(start_time)
+                    else:
+                        # Usar pub_date del trainee_training como fallback
+                        start_time = trainee_training.pub_date
                     
                     # Asegurarse de usar timezone.now() para evitar problemas de zona horaria
                     end_time = timezone.now()
-                    
-                    # Si start_time no tiene zona horaria, hacerlo aware
-                    if timezone.is_naive(start_time):
-                        start_time = timezone.make_aware(start_time)
                     
                     tiempo_transcurrido = end_time - start_time
 
