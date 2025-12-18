@@ -201,6 +201,8 @@ class TrainingBlockDeployList(ListView):
 
     def initialize_trainee_training(self, request, course_id, training_id):
         session_key = f'current_trainee_training_id_{course_id}_{training_id}'
+        start_time_key = f'start_time_{course_id}_{training_id}'
+        
         # Verifica si es la primera vez que el trainee ingresa al entrenamiento
         if session_key not in request.session:
             usuario = request.user
@@ -224,11 +226,6 @@ class TrainingBlockDeployList(ListView):
             
             if in_progress:
                 trainee_training = in_progress
-                # Si ya existe un training en progreso, asegurarse de que start_time esté en sesión
-                start_time_key = f'start_time_{course_id}_{training_id}'
-                if start_time_key not in request.session:
-                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
-                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
             else:
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
@@ -240,7 +237,7 @@ class TrainingBlockDeployList(ListView):
                     state="in_progress"
                 )
                 # Se guarda el tiempo de inicio del training
-                request.session[f'start_time_{course_id}_{training_id}'] = datetime.now().isoformat()
+                request.session[start_time_key] = datetime.now().isoformat()
                 
                 # Update course state if starting first training
                 if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
@@ -249,6 +246,17 @@ class TrainingBlockDeployList(ListView):
             
             # Almacena el ID del TraineeTraining en la sesión
             request.session[session_key] = trainee_training.id
+        
+        # Asegurarse de que start_time esté en sesión incluso si session_key ya existía
+        if start_time_key not in request.session:
+            trainee_training_id = request.session.get(session_key)
+            if trainee_training_id:
+                try:
+                    trainee_training = TraineeTraining.objects.get(pk=trainee_training_id)
+                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
+                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
+                except TraineeTraining.DoesNotExist:
+                    pass
             
     
     def get_context_data(self, **kwargs):
@@ -315,6 +323,8 @@ class DeployDetailView(View):
     
     def initialize_trainee_training(self, request, course_id, training_id):
         session_key = f'current_trainee_training_id_{course_id}_{training_id}'
+        start_time_key = f'start_time_{course_id}_{training_id}'
+        
         # Verifica si es la primera vez que el trainee ingresa al entrenamiento
         if session_key not in request.session:
             usuario = request.user
@@ -347,11 +357,6 @@ class DeployDetailView(View):
             
             if in_progress:
                 trainee_training = in_progress
-                # Si ya existe un training en progreso, asegurarse de que start_time esté en sesión
-                start_time_key = f'start_time_{course_id}_{training_id}'
-                if start_time_key not in request.session:
-                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
-                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
             else:
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
@@ -363,7 +368,7 @@ class DeployDetailView(View):
                     state="in_progress"
                 )
                 # Se guarda el tiempo de inicio del training
-                request.session[f'start_time_{course_id}_{training_id}'] = datetime.now().isoformat()
+                request.session[start_time_key] = datetime.now().isoformat()
                 
                 # Update course state if starting first training
                 if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
@@ -372,6 +377,17 @@ class DeployDetailView(View):
             
             # Almacena el ID del TraineeTraining en la sesión
             request.session[session_key] = trainee_training.id
+        
+        # Asegurarse de que start_time esté en sesión incluso si session_key ya existía
+        if start_time_key not in request.session:
+            trainee_training_id = request.session.get(session_key)
+            if trainee_training_id:
+                try:
+                    trainee_training = TraineeTraining.objects.get(pk=trainee_training_id)
+                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
+                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
+                except TraineeTraining.DoesNotExist:
+                    pass
 
     def get(self, request, course_id, training_id, block_id):
         deploys = TrainingQuestion.objects.filter(block=block_id)
@@ -476,7 +492,15 @@ class DeployDetailView(View):
                     start_time_session_key = f'start_time_{course_id}_{training_id}'
                     start_time_str = request.session.get(start_time_session_key)
                     start_time = datetime.fromisoformat(start_time_str)
-                    tiempo_transcurrido = datetime.now() - start_time
+                    
+                    # Asegurarse de usar timezone.now() para evitar problemas de zona horaria
+                    end_time = timezone.now()
+                    
+                    # Si start_time no tiene zona horaria, hacerlo aware
+                    if timezone.is_naive(start_time):
+                        start_time = timezone.make_aware(start_time)
+                    
+                    tiempo_transcurrido = end_time - start_time
 
                     # Obtener la duración total en segundo
                     duracion_total = tiempo_transcurrido.total_seconds()
