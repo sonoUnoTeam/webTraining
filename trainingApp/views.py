@@ -224,6 +224,11 @@ class TrainingBlockDeployList(ListView):
             
             if in_progress:
                 trainee_training = in_progress
+                # Si ya existe un training en progreso, asegurarse de que start_time esté en sesión
+                start_time_key = f'start_time_{course_id}_{training_id}'
+                if start_time_key not in request.session:
+                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
+                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
             else:
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
@@ -342,6 +347,11 @@ class DeployDetailView(View):
             
             if in_progress:
                 trainee_training = in_progress
+                # Si ya existe un training en progreso, asegurarse de que start_time esté en sesión
+                start_time_key = f'start_time_{course_id}_{training_id}'
+                if start_time_key not in request.session:
+                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
+                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
             else:
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
