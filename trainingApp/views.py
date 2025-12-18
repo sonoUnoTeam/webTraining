@@ -293,12 +293,77 @@ class TrainingBlockDeployList(ListView):
 class DeployDetailView(View):
     template_name = 'trainingApp/forms.html'
 
-    def get(self, request, course_id, training_id, block_id):
+    def dispatch(self, request, *args, **kwargs):
+        course_id = self.kwargs.get('course_id') or kwargs.get('course_id')
+        training_id = self.kwargs.get('training_id') or kwargs.get('training_id')
+        
+        # Validate course and training exist and are related
         course = get_object_or_404(Course, id=course_id)
         training = get_object_or_404(Training, id=training_id)
         if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
             raise Http404("Training not in course")
         
+        # Initialize trainee_training session if not already set
+        self.initialize_trainee_training(request, course_id, training_id)
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+    def initialize_trainee_training(self, request, course_id, training_id):
+        session_key = f'current_trainee_training_id_{course_id}_{training_id}'
+        # Verifica si es la primera vez que el trainee ingresa al entrenamiento
+        if session_key not in request.session:
+            usuario = request.user
+            try:
+                trainee = Trainee.objects.get(user_id=usuario.id)
+            except Trainee.DoesNotExist:
+                messages.error(request, _("You need to be a trainee to access trainings."))
+                return redirect('home')
+            course = get_object_or_404(Course, id=course_id)
+            training = get_object_or_404(Training, pk=training_id)
+            
+            # Check if there is an in_progress training
+            in_progress = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=training,
+                course=course,
+                state="in_progress"
+            ).first()
+            # Obtener o crear TraineeCourse
+            trainee_course, created = TraineeCourse.objects.get_or_create(
+                trainee=trainee,
+                course=course,
+                defaults={
+                    'state': TraineeCourse.StateTraineeCourse.Not_Started,
+                    'current_training_index': 0,
+                    'exam_passed': False,
+                    'pub_date': timezone.now()
+                }
+            )
+            
+            if in_progress:
+                trainee_training = in_progress
+            else:
+                # Create new
+                trainee_training = TraineeTraining.objects.create(
+                    trainee_course=trainee_course,
+                    trainee=trainee,
+                    training=training,
+                    course=course,
+                    pub_date=timezone.now(),
+                    state="in_progress"
+                )
+                # Se guarda el tiempo de inicio del training
+                request.session[f'start_time_{course_id}_{training_id}'] = datetime.now().isoformat()
+                
+                # Update course state if starting first training
+                if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
+                    trainee_course.state = TraineeCourse.StateTraineeCourse.In_Progress
+                    trainee_course.save()
+            
+            # Almacena el ID del TraineeTraining en la sesión
+            request.session[session_key] = trainee_training.id
+
+    def get(self, request, course_id, training_id, block_id):
         deploys = TrainingQuestion.objects.filter(block=block_id)
         
         session_key = f'current_deploy_index_{course_id}_{training_id}_{block_id}'
@@ -327,9 +392,6 @@ class DeployDetailView(View):
     def post(self, request, course_id, training_id, block_id):
         course = get_object_or_404(Course, id=course_id)
         training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
-            raise Http404("Training not in course")
-        
         deploys = TrainingQuestion.objects.filter(block=block_id)
         
         session_key = f'current_deploy_index_{course_id}_{training_id}_{block_id}'
