@@ -2,52 +2,297 @@
 {% load i18n %}
 {% block content %}
 
-    <div class="container mt-5">
-        <h1 class="display-h3 mb-4">{% trans 'Profile' %}</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-primary bg-gradient d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="h2 fw-bold mb-2">{% trans 'My Profile' %}</h1>
+                <p class="text-muted">{% trans 'Manage your account information and preferences' %}</p>
+            </div>
 
-        <fieldset class="border p-3 rounded">
-            <legend class="h5 mb-3">{% trans 'User Information' %}</legend>
-            <form action="" method="POST" class="mb-4">
-                {% csrf_token %}
-                {{ userform.as_p }}
-                <button type="submit" name="update_user" class="btn btn-primary">
-                    {% trans 'Update' %}
-                </button>
-            </form>
-            {% if userform.errors %}
-                <ul class="text-danger list-unstyled">
-                {% for error in userform.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-                </ul>
+            <!-- Error Messages -->
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>{% trans 'Error!' %}</strong> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             {% endif %}
-        </fieldset>
 
-        <fieldset class="border p-3 rounded mt-4">
-            <legend class="h5 mb-3">{% trans 'Trainee Information' %}</legend>
-            <form action="" method="POST" class="mb-4">
-                {% csrf_token %}
-                {{ traineeform.as_p }}
-                <button type="submit" name="update_trainee" class="btn btn-primary">
-                    {% trans 'Update' %}
-                </button>
-            </form>
-            {% if traineeform.errors %}
-                <ul class="text-danger list-unstyled">
-                {% for error in traineeform.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        </fieldset>
+            <div class="row g-4">
+                <!-- User Information Card -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0 fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-badge-fill me-2" viewBox="0 0 16 16">
+                                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm4.5 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6m5 2.755C12.146 12.825 10.623 12 8 12s-4.146.826-5 1.755V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1z"/>
+                                </svg>
+                                {% trans 'User Information' %}
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                
+                                {% for field in userform %}
+                                    <div class="mb-4">
+                                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                                            {{ field.label }}
+                                        </label>
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <div class="form-text">
+                                                <small>{{ field.help_text }}</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
 
-        <a href="/userApp/changePassword" class="btn btn-secondary mt-3">
-            {% trans 'Change Password' %}
-        </a>
+                                <button type="submit" name="update_user" class="btn btn-primary w-100 py-2 fw-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle me-1" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    {% trans 'Update User Information' %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-        <p class="text-danger mt-3">
-            {{ error }}
-        </p>
+                <!-- Trainee Information Card -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0 fw-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-book-fill me-2" viewBox="0 0 16 16">
+                                    <path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
+                                </svg>
+                                {% trans 'Trainee Information' %}
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                
+                                {% for field in traineeform %}
+                                    <div class="mb-4">
+                                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold d-block">
+                                            {{ field.label }}
+                                        </label>
+                                        {% if field.field.widget.input_type == 'radio' %}
+                                            <div class="radio-group">
+                                                {% for choice_value, choice_label in field.field.choices %}
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" 
+                                                               name="{{ field.name }}" 
+                                                               id="id_{{ field.name }}_{{ forloop.counter0 }}" 
+                                                               value="{{ choice_value }}"
+                                                               {% if field.value == choice_value or field.value|stringformat:"s" == choice_value|stringformat:"s" %}checked{% endif %}>
+                                                        <label class="form-check-label" for="id_{{ field.name }}_{{ forloop.counter0 }}">
+                                                            {{ choice_label }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            {{ field }}
+                                        {% endif %}
+                                        {% if field.help_text %}
+                                            <div class="form-text">
+                                                <small>{{ field.help_text }}</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+
+                                <button type="submit" name="update_trainee" class="btn btn-primary w-100 py-2 fw-semibold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle me-1" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                    </svg>
+                                    {% trans 'Update Trainee Information' %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shield-lock-fill me-2" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.8 11.8 0 0 0 2.517 2.453 7 7 0 0 0 1.048.625c.28.132.581.24.829.24s.548-.108.829-.24a7 7 0 0 0 1.048-.625 11.8 11.8 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m0 5a1.5 1.5 0 0 1 .5 2.915l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99A1.5 1.5 0 0 1 8 5"/>
+                        </svg>
+                        {% trans 'Security Settings' %}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1">{% trans 'Password' %}</h6>
+                            <p class="text-muted mb-0 small">{% trans 'Update your password to keep your account secure' %}</p>
+                        </div>
+                        <a href="/userApp/changePassword" class="btn btn-outline-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key me-1" viewBox="0 0 16 16">
+                                <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/>
+                                <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                            </svg>
+                            {% trans 'Change Password' %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+        padding: 0.625rem 0.75rem;
+        transition: all 0.2s ease;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
     
+    /* Radio buttons styling */
+    .radio-group .form-check {
+        display: flex;
+        align-items: center;
+        min-height: 1.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .radio-group .form-check:hover {
+        background-color: #e9ecef;
+        border-color: #0d6efd;
+    }
+    
+    .radio-group .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0;
+        margin-right: 0.5rem;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    
+    .radio-group .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .radio-group .form-check-label {
+        cursor: pointer;
+        user-select: none;
+        margin-bottom: 0;
+        color: #212529;
+        font-weight: 500;
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .card {
+        background-color: #2b3035;
+        color: #e9ecef;
+    }
+
+    body.dark-mode .card-header {
+        background-color: #1a1d20 !important;
+        color: #ffffff;
+        border-bottom-color: #495057 !important;
+    }
+
+    body.dark-mode .card-header h5 {
+        color: #ffffff;
+    }
+
+    body.dark-mode .form-label {
+        color: #e9ecef;
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+        background-color: #1a1d20;
+        border-color: #495057;
+        color: #e9ecef;
+    }
+
+    body.dark-mode .form-control:focus,
+    body.dark-mode .form-select:focus {
+        background-color: #1a1d20;
+        border-color: #0d6efd;
+        color: #e9ecef;
+    }
+
+    body.dark-mode .radio-group .form-check {
+        background-color: #1a1d20;
+        border-color: #495057;
+    }
+
+    body.dark-mode .radio-group .form-check:hover {
+        background-color: #2b3035;
+        border-color: #0d6efd;
+    }
+
+    body.dark-mode .radio-group .form-check-label {
+        color: #e9ecef;
+    }
+
+    body.dark-mode .form-text,
+    body.dark-mode .text-muted {
+        color: #adb5bd !important;
+    }
+    .btn {
+        transition: all 0.3s ease;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    .btn-primary:hover {
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+    }
+    .btn-outline-primary:hover {
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+</style>
+
 {% endblock %}

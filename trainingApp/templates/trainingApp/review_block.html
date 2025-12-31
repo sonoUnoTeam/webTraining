@@ -2,6 +2,31 @@
 {% load i18n %}
 {% block content %}
 
+<style>
+    /* Dark mode table styles */
+    body.dark-mode .table {
+        color: #f8f9fa;
+    }
+    body.dark-mode .table thead th {
+        color: #f8f9fa;
+        border-color: #495057;
+        background-color: #343a40;
+    }
+    body.dark-mode .table tbody td {
+        color: #dee2e6;
+        border-color: #495057;
+    }
+    body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    body.dark-mode .table-bordered {
+        border-color: #495057;
+    }
+    body.dark-mode .table caption {
+        color: #adb5bd;
+    }
+</style>
+
 {% load tz %}
 <!-- SQLite almacena las fechas y horas en formato UTC, pero no almacena la información de la zona horaria.
     Django asume que las fechas y horas almacenadas en la base de datos son UTC y las convierte automáticamente a la zona horaria configurada en settings.py

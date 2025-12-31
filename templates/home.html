@@ -1,51 +1,398 @@
 {% extends 'base.html' %} 
 
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 
-        <section class="presentation">
-            
-                <div>
-                    <h1 tabindex="6" class="title">sonoTrainings: {% trans "Exploring the Sound of Science" %}</h1>
-                </div>
-                <div>
-                    {% blocktrans %}
-                        <p>
-                            Exploring the cosmos through different senses can be within your reach. That's why this platform for training in the sonification of astronomical data and more was created. In the convergence between astronomy and data sonification, we have created a unique space that goes beyond visual representation, allowing you to discover the universe in a multisensory way.
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section" aria-label="{% trans 'Hero section' %}">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <span class="badge mb-3 px-3 py-2" style="background-color: #6eb5d4; color: white;" role="text">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stars me-2" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.73 1.73 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.73 1.73 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.73 1.73 0 0 0 3.407 2.31zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"/>
+                            </svg>
+                            {% trans "Platform for Scientific Sonification" %}
+                        </span>
+                        <h1 class="display-3 fw-bold mb-3 hero-title">
+                            sonoTrainings
+                        </h1>
+                        <p class="lead text-muted mb-3 fs-4">
+                            {% trans "Exploring the Sound of Science" %}
                         </p>
-                    {% endblocktrans %}
+                        <p class="mb-4 hero-description">
+                            {% trans "Discover the cosmos through different senses. Learn about astronomical data sonification in a multisensory space that goes beyond visual representation." %}
+                        </p>
+                        {% if user.is_authenticated %}
+                            <a href="/trainingApp/" class="btn btn-lg px-4 py-3 shadow-sm" style="background-color: #6eb5d4; color: white; border: none;" aria-label="{% trans 'Start Training - Go to training page' %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-play-circle me-2" viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
+                                </svg>
+                                {% trans "Start Training" %}
+                            </a>
+                        {% endif %}
+                    </div>
                 </div>
-        </section>
-        <section class="description">
-                <div class="subtitle">
-                    <h2 tabindex="7" class="display-6">{% trans "About Us" %}</h2>
+                <div class="col-lg-6 d-none d-lg-block" aria-hidden="true">
+                    <div class="hero-image-container">
+                        <div class="floating-card">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" fill="currentColor" class="bi bi-soundwave" viewBox="0 0 16 16" role="img" aria-label="{% trans 'Soundwave illustration' %}">
+                                <path fill-rule="evenodd" d="M8.5 2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-1 0v-11a.5.5 0 0 1 .5-.5m-2 2a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m-6 1.5A.5.5 0 0 1 5 6v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m8 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m-10 1A.5.5 0 0 1 3 7v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5m12 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-            {% blocktranslate %}
-                <p>
-                    In sonoTrainings, we merge vision and hearing to provide you with multisensory training that not only expands your understanding of the cosmos but also enhances your auditory performance when interacting with scientific data. Inspired by innovative projects like sonoUno, our platform focuses on designing a user-centered interface to make science accessible to everyone.
-                </p>
-            {% endblocktranslate %}
-                <div class="subtitle">
-                    <h2 tabindex="8" class="display-6">{% trans "Highlighted Features:" %}</h2>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section py-5" aria-labelledby="about-heading">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <span class="fw-semibold text-uppercase small mb-2 d-block" style="color: #6eb5d4;" aria-hidden="true">{% trans "About sonoTrainings" %}</span>
+                    <h2 id="about-heading" class="display-5 fw-bold mb-3">{% trans "About Us" %}</h2>
+                    <p class="lead text-muted">
+                        {% trans "In sonoTrainings, we merge vision and hearing to provide you with multisensory training that not only expands your understanding of the cosmos but also enhances your auditory performance when interacting with scientific data." %}
+                    </p>
+                    <p class="text-muted">
+                        {% trans "Inspired by innovative projects like sonoUno, our platform focuses on designing a user-centered interface to make science accessible to everyone." %}
+                    </p>
                 </div>
-            {% blocktranslate %}
-                <ul>
-                    <li>
-                        
-                        Multisensory Training:
-                        <p>Immerse yourself in unique learning experiences that combine vision and hearing to enhance understanding of astronomical and scientific data.</p>
-                    </li>
-                    <li>
-                        Accessibility:
-                        <p>Our platform was designed with the diversity of sensory styles in mind, making science accessible to everyone.</p>
-                    </li>
-                    <li>
-                        Continuous Development:
-                        <p>We are committed to the continuous improvement of our platform, ensuring user-friendly functionality that guarantees a comfortable learning experience.</p>
-                    </li>
-                </ul>
-                <p>Join us and discover the cosmos in an entirely new way on sonoTrainings.</p>
-            {% endblocktranslate %}
-        </section>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="row g-4" role="list" aria-label="{% trans 'Platform features' %}">
+                <div class="col-md-4" role="listitem">
+                    <article class="feature-card card border-0 shadow-sm h-100 hover-lift">
+                        <div class="card-body p-4">
+                            <div class="feature-icon rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background-color: #6eb5d4;" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-ear" viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M8.5 1A4.5 4.5 0 0 0 4 5.5v7.047a2.453 2.453 0 0 0 4.75.861l.512-1.363a5.6 5.6 0 0 1 .816-1.46l2.008-2.581A4.34 4.34 0 0 0 8.66 1zM3 5.5A5.5 5.5 0 0 1 8.5 0h.16a5.34 5.34 0 0 1 4.215 8.618l-2.008 2.581a4.6 4.6 0 0 0-.67 1.197l-.51 1.363A3.453 3.453 0 0 1 3 12.547zM8.5 4A1.5 1.5 0 0 0 7 5.5v2.695q.168-.09.332-.192c.327-.208.577-.44.72-.727a.5.5 0 1 1 .895.448c-.256.513-.673.865-1.079 1.123A9 9 0 0 1 7 9.313V11.5a.5.5 0 0 1-1 0v-6a2.5 2.5 0 0 1 5 0V6a.5.5 0 0 1-1 0v-.5A1.5 1.5 0 0 0 8.5 4"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">{% trans "Multisensory Training" %}</h3>
+                            <p class="text-muted mb-0">
+                                {% trans "Immerse yourself in unique learning experiences that combine vision and hearing to enhance understanding of astronomical and scientific data." %}
+                            </p>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-md-4" role="listitem">
+                    <article class="feature-card card border-0 shadow-sm h-100 hover-lift">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-universal-access" viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M9.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M6 5.5l-4.535-.442A.531.531 0 0 1 1.531 4H14.47a.531.531 0 0 1 .066 1.058L10 5.5V9l.452 6.42a.535.535 0 0 1-1.053.174L8.243 9.97c-.064-.252-.422-.252-.486 0l-1.156 5.624a.535.535 0 0 1-1.053-.174L6 9z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">{% trans "Accessibility" %}</h3>
+                            <p class="text-muted mb-0">
+                                {% trans "Our platform was designed with the diversity of sensory styles in mind, making science accessible to everyone." %}
+                            </p>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-md-4" role="listitem">
+                    <article class="feature-card card border-0 shadow-sm h-100 hover-lift">
+                        <div class="card-body p-4">
+                            <div class="feature-icon bg-info bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="white" class="bi bi-arrow-repeat" viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                                    <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                                </svg>
+                            </div>
+                            <h3 class="h5 fw-bold mb-3">{% trans "Continuous Development" %}</h3>
+                            <p class="text-muted mb-0">
+                                {% trans "We are committed to the continuous improvement of our platform, ensuring user-friendly functionality that guarantees a comfortable learning experience." %}
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners/Collaborators Section -->
+    <section class="partners-section py-5 bg-light" aria-labelledby="partners-heading">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h3 id="partners-heading" class="h5 text-muted fw-semibold text-uppercase mb-4">{% trans "Our Collaborators" %}</h3>
+            </div>
+            <div class="row align-items-center justify-content-center g-4" role="list" aria-label="{% trans 'Collaborating institutions' %}">
+                <div class="col-6 col-md-3 text-center" role="listitem">
+                    <div class="partner-logo-container">
+                        <img src="{% static 'ibio.jpeg' %}" alt="{% trans 'IBIO - Instituto de Bioingeniería, collaborator institution' %}" class="img-fluid partner-logo">
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center" role="listitem">
+                    <div class="partner-logo-container">
+                        <img src="{% static 'logo_conicet.png' %}" alt="{% trans 'CONICET - National Scientific and Technical Research Council, collaborator institution' %}" class="img-fluid partner-logo">
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center" role="listitem">
+                    <div class="partner-logo-container">
+                        <img src="{% static 'logo_um.png' %}" alt="{% trans 'Universidad de Mendoza, collaborator institution' %}" class="img-fluid partner-logo">
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 text-center" role="listitem">
+                    <div class="partner-logo-container">
+                        <img src="{% static 'UTN-logo.png' %}" alt="{% trans 'UTN - National Technological University, collaborator institution' %}" class="img-fluid partner-logo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5" aria-labelledby="cta-heading">
+        <div class="container">
+            <div class="card border-0 shadow-lg cta-card" role="region" aria-label="{% trans 'Call to action' %}">
+                <div class="card-body text-center py-5 px-4">
+                    <h2 id="cta-heading" class="display-6 fw-bold text-white mb-3">
+                        {% trans "Ready to Explore the Cosmos?" %}
+                    </h2>
+                    <p class="lead text-white mb-0">
+                        {% trans "Join us and discover the cosmos in an entirely new way on sonoTrainings." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .home-container {
+        overflow-x: hidden;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 50px 0 40px;
+        position: relative;
+    }
+
+    body.dark-mode .hero-section {
+        background: linear-gradient(135deg, #1a1d20 0%, #2b3035 100%);
+    }
+
+    .hero-title {
+        background: linear-gradient(135deg, #2c3e50 0%, #6eb5d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    body.dark-mode .hero-title {
+        background: linear-gradient(135deg, #88c5db 0%, #6eb5d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        color: #6c757d;
+        line-height: 1.8;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-image-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .floating-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        animation: float 3s ease-in-out infinite;
+    }
+
+    body.dark-mode .floating-card {
+        background: #2b3035;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .floating-card svg {
+        color: #6eb5d4;
+    }
+
+    body.dark-mode .floating-card svg {
+        color: #88c5db;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* About Section */
+    .about-section {
+        background: white;
+    }
+
+    body.dark-mode .about-section {
+        background: #1a1d20;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        transition: all 0.3s ease;
+        border-radius: 12px !important;
+    }
+
+    body.dark-mode .feature-card {
+        background-color: #2b3035 !important;
+        color: #e9ecef;
+    }
+
+    body.dark-mode .feature-card .card-body h3 {
+        color: #ffffff;
+    }
+
+    body.dark-mode .feature-card .text-muted {
+        color: #adb5bd !important;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .feature-icon {
+        transition: all 0.3s ease;
+    }
+
+    body.dark-mode .partners-section {
+        background: #2b3035 !important;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    /* Partners Section */
+    .partners-section {
+     
+
+    body.dark-mode .partner-logo-container {
+        background: white;
+    }   background: #f8f9fa;
+    }
+
+    .partner-logo-container {
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .partner-logo-container:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .partner-logo {
+     
+
+    body.dark-mode .cta-section {
+        background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+    }   max-height: 80px;
+        width: auto;
+        object-fit: contain;
+        filter: grayscale(100%);
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    .partner-logo-container:hover .partner-logo {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 50px 0;
+    }
+
+    .cta-card {
+        background-color: #6eb5d4 !important;
+    }
+
+    body.dark-mode .cta-section .card {
+        background-color: #6eb5d4 !important;
+    }
+
+    body.dark-mode .cta-section {
+        background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #2c3e50 0%, #6eb5d4 100%) !important;
+    }
+
+    /* Buttons */
+    .btn {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 30px 0 20px;
+        }
+        
+        .partner-logo {
+            max-height: 60px;
+        }
+        
+        .display-3 {
+            font-size: 2.5rem;
+        }
+        
+        .display-5 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
 {% endblock %}

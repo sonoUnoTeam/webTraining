@@ -36,6 +36,16 @@ ALLOWED_HOSTS = []
 #Habilita el uso de messages
 MESSAGE_STORAGE= "django.contrib.messages.storage.cookie.CookieStorage"
 
+# Configuración de tags de mensajes para Bootstrap
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
 # Configuración de la duración de la sesión en segundos (30 minutos en este caso)
 SESSION_COOKIE_AGE = 1800
 
@@ -160,7 +170,9 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = {
 
 #Configuracion de archivos estáticos
 STATIC_URL = '/static/'
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    BASE_DIR / 'logos',
+]
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {

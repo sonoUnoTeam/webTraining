@@ -17,13 +17,21 @@
         }
 
         function confirmation() {
+            // Detectar si está en modo oscuro
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            
             Swal.fire({
                 title: "{% trans 'Are you sure?' %}",
                 text: "{% trans 'Your answer will be submitted.' %}",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonText: "{% trans 'Confirm' %}",
-                cancelButtonText: "{% trans 'Cancel' %}"
+                cancelButtonText: "{% trans 'Cancel' %}",
+                background: isDarkMode ? '#2b3035' : '#fff',
+                color: isDarkMode ? '#e9ecef' : '#212529',
+                customClass: {
+                    popup: isDarkMode ? 'swal-dark-mode' : ''
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Si el usuario confirma, enviar el formulario
@@ -133,6 +141,61 @@
         }
         fieldset.border {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode .form-question {
+            background-color: #2b3035;
+            border-left-color: #6eb5d4;
+        }
+        body.dark-mode .form-question p {
+            color: #f8f9fa;
+        }
+        body.dark-mode .form-choice legend {
+            color: #f8f9fa;
+        }
+        body.dark-mode .choice-row {
+            background-color: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+        body.dark-mode .choice-row:hover {
+            background-color: #495057;
+            border-color: #6eb5d4;
+        }
+        body.dark-mode .choice-row.selected {
+            background-color: rgba(110, 181, 212, 0.2);
+            border-color: #6eb5d4;
+        }
+        body.dark-mode .choice-row label {
+            color: #f8f9fa;
+        }
+        body.dark-mode .progress-indicator {
+            background-color: #343a40;
+            border-color: #495057;
+            color: #adb5bd;
+        }
+        body.dark-mode fieldset.border {
+            border-color: #495057 !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        body.dark-mode .bg-light {
+            background-color: #2b3035 !important;
+        }
+        body.dark-mode .text-muted {
+            color: #adb5bd !important;
+        }
+        body.dark-mode .form-actions {
+            border-top-color: #495057;
+        }
+        
+        /* SweetAlert2 dark mode */
+        .swal-dark-mode {
+            border: 1px solid #495057 !important;
+        }
+        body.dark-mode .swal2-icon.swal2-question {
+            border-color: #6eb5d4 !important;
+            color: #6eb5d4 !important;
         }
     </style>
 

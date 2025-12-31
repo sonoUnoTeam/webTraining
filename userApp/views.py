@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm
+from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm,SigninForm,CustomSetPasswordForm
 from django.contrib import messages
 from .models import Trainee
 from django.db import transaction
@@ -62,7 +62,7 @@ def signup(request):
             # Verificar si el email ya fue usado por otro usuario
             email = form.cleaned_data.get('email')
             if email and User.objects.filter(email__iexact=email).exists():
-                messages.error(request, _("The email entered is already registered."))
+                form.add_error('email', _("The email entered is already registered."))
                 return render(request, 'userApp/signup.html', {"form": form})
 
             user = form.save()
@@ -81,7 +81,6 @@ def signup(request):
             return redirect('home')
         
         else:
-            messages.error(request, _("Error creating user"))
             return render(request, 'userApp/signup.html', {"form": form})
 import traceback        
 def activate(request, uidb64, token):
@@ -110,16 +109,18 @@ def signout(request):
 
 def signin(request):
     if request.method == 'GET':
-        return render(request, 'userApp/signin.html', {"form": AuthenticationForm})
+        form = SigninForm()
+        return render(request, 'userApp/signin.html', {"form": form})
     else:
-        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
-        if user is None:
-            messages.error(request, _("Username or Password incorrect"))
-            return render(request, 'userApp/signin.html', {"form": AuthenticationForm})
-        else:
+        form = SigninForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            messages.success(request, _("You are logged in as %(username)s") % {"username": request.POST['username']})
+            messages.success(request, _("You are logged in as %(username)s") % {"username": user.username})
             return redirect('trainingApp:course_list')
+        else:
+            messages.error(request, _("Username or Password incorrect"))
+            return render(request, 'userApp/signin.html', {"form": form})
 
 #Vista para modificar datos del user y trainee
 class ProfileView(LoginRequiredMixin, View):
@@ -197,12 +198,12 @@ class MyPasswordResetDoneView(PasswordResetDoneView):
     template_name= "userApp/password_change_done.html"
 
 class CustomPasswordResetView(PasswordResetView):
-    email_template_name = "registration/password_reset_email.html"
+    email_template_name = "userApp/password_reset_email.txt"  # Template de texto plano
     extra_email_context = None
     form_class = PasswordResetForm
     from_email = None
-    html_email_template_name = None
-    subject_template_name = "registration/password_reset_subject.txt"
+    html_email_template_name = "userApp/password_reset_email.html"  # Template HTML
+    subject_template_name = "userApp/password_reset_subject.txt"
     success_url = reverse_lazy("userApp:password_reset_done")
     template_name = "registration/password_reset_form.html"
     title = _("Password reset")
@@ -248,12 +249,12 @@ class CustomPasswordResetView(PasswordResetView):
 INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
 UserModel = get_user_model()    
 class CustomPasswordResetConfirmView(PasswordContextMixin, FormView):
-    form_class = SetPasswordForm
+    form_class = CustomSetPasswordForm
     post_reset_login = False
     post_reset_login_backend = None
     reset_url_token = "set-password"
     success_url = reverse_lazy("userApp:password_reset_complete")
-    template_name = "registration/password_reset_confirm.html"
+    template_name = "userApp/passwordChange.html"  # Template usado en urls.py
     title = _("Enter new password")
     token_generator = default_token_generator
 

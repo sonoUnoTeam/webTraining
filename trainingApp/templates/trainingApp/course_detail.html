@@ -9,12 +9,21 @@
         text-decoration: none;
         transition: color 0.2s;
     }
+    body.dark-mode .training-link {
+        color: #6eb5d4;
+    }
     .training-link:hover {
         color: #0056b3;
         text-decoration: underline;
     }
+    body.dark-mode .training-link:hover {
+        color: #88c5db;
+    }
     .table-hover tbody tr:hover {
         background-color: #f8f9fa;
+    }
+    body.dark-mode .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.075);
     }
     .table td {
         vertical-align: middle;
@@ -23,13 +32,22 @@
         color: #28a745;
         font-weight: bold;
     }
+    body.dark-mode .status-completed {
+        color: #75b798;
+    }
     .status-available {
         color: #17a2b8;
         font-weight: bold;
     }
+    body.dark-mode .status-available {
+        color: #6eb5d4;
+    }
     .status-locked {
         color: #6c757d;
         font-weight: bold;
+    }
+    body.dark-mode .status-locked {
+        color: #adb5bd;
     }
     .exam-btn {
         background-color: #28a745;
@@ -48,9 +66,17 @@
         background-color: #f8f9fa;
         border-left: 5px solid #007bff;
     }
+    body.dark-mode .note-card {
+        background-color: #212529 !important;
+        border-left: 5px solid #6eb5d4 !important;
+    }
     .note-card .card-header {
         color: #007bff;
         font-weight: bold;
+    }
+    body.dark-mode .note-card .card-header {
+        color: #6eb5d4;
+        background-color: #2b3035;
     }
     /* Title styles */
     .page-title {
@@ -61,6 +87,9 @@
         margin-bottom: 0.35rem;
         letter-spacing: -0.1px;
     }
+    body.dark-mode .page-title {
+        color: #6eb5d4;
+    }
     .section-title {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         font-weight: 650;
@@ -69,6 +98,10 @@
         margin-bottom: 0.65rem;
         padding-bottom: 0.25rem;
         border-bottom: 2px solid rgba(13,110,253,0.08);
+    }
+    body.dark-mode .section-title {
+        color: #f8f9fa;
+        border-bottom: 2px solid rgba(110, 181, 212, 0.2);
     }
     /* Hero and description */
     .course-hero {
@@ -79,6 +112,11 @@
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
         margin-bottom: 0.75rem;
     }
+    body.dark-mode .course-hero {
+        background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+        border: 1px solid #495057;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
     .course-description {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         font-size: 1.02rem;
@@ -86,9 +124,55 @@
         color: #3d4551;
         margin: 0.25rem 0 0;
     }
+    body.dark-mode .course-description {
+        color: #dee2e6;
+    }
     .card.note-card {
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    body.dark-mode .card.note-card {
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    /* Table styles */
+    .table thead tr {
+        font-weight: 600;
+    }
+    body.dark-mode .table {
+        color: #f8f9fa;
+    }
+    body.dark-mode .table thead th {
+        color: #f8f9fa;
+        border-color: #495057;
+    }
+    body.dark-mode .table tbody td {
+        color: #dee2e6;
+        border-color: #495057;
+    }
+    body.dark-mode .table-primary {
+        background-color: #2b4c6f !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-primary th {
+        background-color: #2b4c6f !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-success {
+        background-color: #1e4b33 !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-success th {
+        background-color: #1e4b33 !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    body.dark-mode .table-bordered {
+        border-color: #495057;
+    }
+    body.dark-mode .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.075);
     }
 </style>
 

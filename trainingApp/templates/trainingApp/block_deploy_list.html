@@ -3,6 +3,55 @@
 
 {% block content %}
 
+<style>
+    /* Dark mode table styles */
+    body.dark-mode .table {
+        color: #f8f9fa;
+    }
+    body.dark-mode .table thead th {
+        color: #f8f9fa;
+        border-color: #495057;
+    }
+    body.dark-mode .table tbody td {
+        color: #dee2e6;
+        border-color: #495057;
+    }
+    body.dark-mode .table-primary {
+        background-color: #2b4c6f !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-primary th {
+        background-color: #2b4c6f !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    body.dark-mode .table-bordered {
+        border-color: #495057;
+    }
+    
+    /* Dark mode card styles */
+    body.dark-mode .card {
+        background-color: #2b3035;
+        color: #e9ecef;
+        border-color: #495057;
+    }
+    body.dark-mode .card-header {
+        background-color: #1a1d20;
+        color: #ffffff;
+        border-bottom-color: #495057;
+    }
+    body.dark-mode .card-body {
+        background-color: #2b3035;
+    }
+    body.dark-mode .list-group-item {
+        background-color: #2b3035;
+        color: #e9ecef;
+        border-color: #495057;
+    }
+</style>
+
 <!-- Se carga un filtro para obtener la clave de un diccionario -->
 {% load custom_filters %}
 

@@ -8,9 +8,17 @@
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
+    body.dark-mode .course-card {
+        background-color: #212529;
+        border-color: #495057;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
     .course-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    body.dark-mode .course-card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
     }
     .course-card .card-body {
         padding: 1.5rem;
@@ -19,18 +27,37 @@
         color: #007bff;
         font-weight: bold;
     }
+    body.dark-mode .course-card .card-title {
+        color: #6eb5d4 !important;
+    }
     .course-card .btn {
         background-color: #007bff;
         border-color: #007bff;
         transition: background-color 0.2s;
     }
+    body.dark-mode .course-card .btn {
+        background-color: #6eb5d4;
+        border-color: #6eb5d4;
+    }
     .course-card .btn:hover {
         background-color: #0056b3;
         border-color: #0056b3;
     }
+    body.dark-mode .course-card .btn:hover {
+        background-color: #5a9db9;
+        border-color: #5a9db9;
+    }
     .note-card {
         background-color: #f8f9fa;
         border-left: 5px solid #007bff;
+    }
+    body.dark-mode .note-card {
+        background-color: #212529 !important;
+        border-left: 5px solid #6eb5d4 !important;
+    }
+    body.dark-mode .note-card .card-header {
+        background-color: #2b3035;
+        color: #6eb5d4;
     }
 </style>
 <div>

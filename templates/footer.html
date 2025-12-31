@@ -1,15 +1,72 @@
 {% load i18n %}
+{% load static %}
 
-    <footer class="bd-footer py-2 mt-0 back">
+    <footer class="modern-footer py-5 mt-0" style="background-color: rgb(42, 44, 49);">
         <div class="container">
-            <div class="row my-2">
-                <div class="col-10">
-                    <dt class="textf">{% translate 'Contact:' %}</dt>
-                    <dd class="textf">sonounoteam@gmail.com</dd>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'sonoUno.png' %}" alt="sonoTrainings" width="40" height="40" class="me-2">
+                        <h5 class="text-white mb-0 fw-bold">sonoTrainings</h5>
+                    </div>
+                    <p class="text-white-50 small">
+                        {% trans "Platform for training in the sonification of astronomical data and scientific research." %}
+                    </p>
                 </div>
-                <div class="col-2">
-                    <img src="/static/trainingApp/images/logo2.png" alt="Logos of the University of Mendoza, National Technological University and CONICET." width="60" height="60">
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">{% trans "Quick Links" %}</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/" class="text-white-50 text-decoration-none hover-link">{% trans "Home" %}</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="mb-2"><a href="/trainingApp/" class="text-white-50 text-decoration-none hover-link">{% trans "Trainings" %}</a></li>
+                            <li class="mb-2"><a href="{% url 'userApp:profile' user.username %}" class="text-white-50 text-decoration-none hover-link">{% trans "Profile" %}</a></li>
+                        {% else %}
+                            <li class="mb-2"><a href="/userApp/signin" class="text-white-50 text-decoration-none hover-link">{% trans "Login" %}</a></li>
+                            <li class="mb-2"><a href="/userApp/signup" class="text-white-50 text-decoration-none hover-link">{% trans "Register" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">{% trans "Resources" %}</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="https://www.sonouno.org.ar/" target="_blank" class="text-white-50 text-decoration-none hover-link">sonoUno</a></li>
+                        {% if user.is_superuser %}
+                            <li class="mb-2"><a href="/admin" class="text-white-50 text-decoration-none hover-link">{% trans "Admin" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">{% trans "Contact" %}</h6>
+                    <p class="text-white-50 small mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope me-2" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                        </svg>
+                        sonounoteam@gmail.com
+                    </p>
+                </div>
+            </div>
+            <hr class="border-white-50 my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-white-50 small mb-md-0">
+                        © 2025 sonoTrainings. {% trans "All rights reserved." %}
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="text-white-50 small mb-0">
+                        {% trans "Made with" %} <span class="text-danger">❤</span> {% trans "for science" %}
+                    </p>
                 </div>
             </div>
         </div>
     </footer>
+
+    <style>
+        .hover-link {
+            transition: all 0.3s ease;
+        }
+        .hover-link:hover {
+            color: white !important;
+            padding-left: 5px;
+        }
+    </style>

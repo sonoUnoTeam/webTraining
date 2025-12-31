@@ -235,20 +235,16 @@ msgid "Repetitive"
 msgstr "Repetitivo"
 
 #: .\trainingApp\models.py:232 .\trainingApp\views.py:63
-#, fuzzy
-#| msgid "not started"
 msgid "Not Started"
 msgstr "No iniciado"
 
 #: .\trainingApp\models.py:233
-#, fuzzy
-#| msgid "In progress"
 msgid "In Progress"
 msgstr "En progreso"
 
 #: .\trainingApp\models.py:235
 msgid "Failed"
-msgstr ""
+msgstr "Fallido"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:10
 msgid "List of Blocks"
@@ -478,7 +474,7 @@ msgstr "Aprobado"
 #, fuzzy
 #| msgid "Locked - Complete previous trainings"
 msgid "Locked - Complete all trainings"
-msgstr "Bloqueado - Completa los entrenamientos anteriores"
+msgstr "Bloqueado - Completa todos los entrenamientos"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:165
 #: .\trainingApp\templates\trainingApp\course_detail.html:167
@@ -491,7 +487,7 @@ msgstr "No hay entrenamiento final definido para este curso."
 
 #: .\trainingApp\templates\trainingApp\course_list.html:37
 msgid "Available Courses"
-msgstr ""
+msgstr "Cursos Disponibles"
 
 #: .\trainingApp\templates\trainingApp\course_list.html:44
 msgid ""
@@ -731,7 +727,7 @@ msgstr "Universidad"
 
 #: .\userApp\models.py:12
 msgid "Doctoral Student"
-msgstr "Estudiante de doctoradoz"
+msgstr "Estudiante de doctorado"
 
 #: .\userApp\models.py:13
 msgid "Magister"
@@ -953,6 +949,321 @@ msgstr "Ingrese nueva contraseña"
 msgid "Password reset unsuccessful"
 msgstr "Restablecimiento de contraseña fallido"
 
+# userApp Templates Translations
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Welcome Back"
+msgstr "Bienvenido de nuevo"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Sign in to continue to your account"
+msgstr "Inicia sesión para continuar en tu cuenta"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Error!"
+msgstr "¡Error!"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: .\userApp\templates\userApp\signin.html
+#: .\userApp\templates\userApp\profile.html
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Password"
+msgstr "Contraseña"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Forgot password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Sign In"
+msgstr "Iniciar Sesión"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Don't have an account?"
+msgstr "¿No tienes una cuenta?"
+
+#: .\userApp\templates\userApp\signin.html
+msgid "Sign up here"
+msgstr "Regístrate aquí"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Create Your Account"
+msgstr "Crea tu cuenta"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Join us and start your learning journey"
+msgstr "Únete a nosotros y comienza tu viaje de aprendizaje"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Account Information"
+msgstr "Información de la cuenta"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "6-15 characters, letters, numbers and underscores only"
+msgstr "6-15 caracteres, solo letras, números y guiones bajos"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "At least 8 characters"
+msgstr "Al menos 8 caracteres"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Confirm Password"
+msgstr "Confirmar contraseña"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Re-enter your password to confirm"
+msgstr "Vuelve a ingresar tu contraseña para confirmar"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Personal Information"
+msgstr "Información personal"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "First Name"
+msgstr "Nombre"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Last Name"
+msgstr "Apellido"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Age"
+msgstr "Edad"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Educational Level"
+msgstr "Nivel educativo"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Occupation"
+msgstr "Ocupación"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Create Account"
+msgstr "Crear cuenta"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Already have an account?"
+msgstr "¿Ya tienes una cuenta?"
+
+#: .\userApp\templates\userApp\signup.html
+msgid "Sign in here"
+msgstr "Inicia sesión aquí"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "My Profile"
+msgstr "Mi perfil"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Manage your account information and preferences"
+msgstr "Administra la información y preferencias de tu cuenta"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "User Information"
+msgstr "Información de usuario"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Update User Information"
+msgstr "Actualizar información de usuario"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Trainee Information"
+msgstr "Información del aprendiz"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Update Trainee Information"
+msgstr "Actualizar información del aprendiz"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Security Settings"
+msgstr "Configuración de seguridad"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Update your password to keep your account secure"
+msgstr "Actualiza tu contraseña para mantener tu cuenta segura"
+
+#: .\userApp\templates\userApp\profile.html
+msgid "Change Password"
+msgstr "Cambiar contraseña"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Reset Your Password"
+msgstr "Restablecer tu contraseña"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Enter your email address and we will send you a link to reset your password"
+msgstr "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Email Address"
+msgstr "Dirección de correo electrónico"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "We will send a password reset link to this email"
+msgstr "Enviaremos un enlace de restablecimiento de contraseña a este correo"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Send Reset Link"
+msgstr "Enviar enlace de restablecimiento"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Remember your password?"
+msgstr "¿Recuerdas tu contraseña?"
+
+#: .\userApp\templates\userApp\password_reset.html
+#: .\userApp\templates\userApp\password_reset_complete.html
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "Password Reset Instructions"
+msgstr "Instrucciones de restablecimiento de contraseña"
+
+#: .\userApp\templates\userApp\password_reset.html
+msgid "If the email address exists in our system, you will receive an email with instructions to reset your password. Please check your spam folder if you do not see the email."
+msgstr "Si la dirección de correo electrónico existe en nuestro sistema, recibirás un correo con instrucciones para restablecer tu contraseña. Por favor revisa tu carpeta de spam si no ves el correo."
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Email Sent!"
+msgstr "¡Correo enviado!"
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "We have sent you an email with instructions to reset your password."
+msgstr "Te hemos enviado un correo con instrucciones para restablecer tu contraseña."
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Please check your inbox and follow the link to create a new password."
+msgstr "Por favor revisa tu bandeja de entrada y sigue el enlace para crear una nueva contraseña."
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Did not receive the email?"
+msgstr "¿No recibiste el correo?"
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Check your spam folder or"
+msgstr "Revisa tu carpeta de spam o"
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "try again"
+msgstr "intenta de nuevo"
+
+#: .\userApp\templates\userApp\password_reset_done.html
+msgid "Back to Sign In"
+msgstr "Volver a iniciar sesión"
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Password Successfully Changed!"
+msgstr "¡Contraseña cambiada exitosamente!"
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Your account is now secure with your new password"
+msgstr "Tu cuenta ahora está segura con tu nueva contraseña"
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Your password has been changed successfully."
+msgstr "Tu contraseña ha sido cambiada exitosamente."
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "You can now log in with your new password and continue using your account."
+msgstr "Ahora puedes iniciar sesión con tu nueva contraseña y continuar usando tu cuenta."
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Security tip:"
+msgstr "Consejo de seguridad:"
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Make sure to remember your new password and keep it secure."
+msgstr "Asegúrate de recordar tu nueva contraseña y mantenerla segura."
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+msgid "Sign In Now"
+msgstr "Iniciar sesión ahora"
+
+#: .\userApp\templates\userApp\password_reset_complete.html
+#: .\userApp\templates\userApp\password_change_done.html
+msgid "Go to Home"
+msgstr "Ir al inicio"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Change Your Password"
+msgstr "Cambia tu contraseña"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Enter your current password and choose a new one"
+msgstr "Ingresa tu contraseña actual y elige una nueva"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Current Password"
+msgstr "Contraseña actual"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "New Password"
+msgstr "Nueva contraseña"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Your password must contain at least 8 characters"
+msgstr "Tu contraseña debe contener al menos 8 caracteres"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Confirm New Password"
+msgstr "Confirmar nueva contraseña"
+
+#: .\userApp\templates\userApp\passwordChange.html
+msgid "Re-enter your new password to confirm"
+msgstr "Vuelve a ingresar tu nueva contraseña para confirmar"
+
+#: .\userApp\templates\userApp\password_change_done.html
+msgid "Your password has been updated"
+msgstr "Tu contraseña ha sido actualizada"
+
+#: .\userApp\templates\userApp\password_change_done.html
+msgid "Your account is secure"
+msgstr "Tu cuenta está segura"
+
+#: .\userApp\templates\userApp\password_change_done.html
+msgid "Your new password is active and your account is protected."
+msgstr "Tu nueva contraseña está activa y tu cuenta está protegida."
+
+#: .\userApp\templates\userApp\password_change_done.html
+msgid "Go to My Profile"
+msgstr "Ir a mi perfil"
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Set New Password"
+msgstr "Establecer nueva contraseña"
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Please enter your new password twice so we can verify you typed it correctly."
+msgstr "Por favor ingresa tu nueva contraseña dos veces para verificar que la escribiste correctamente."
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Change My Password"
+msgstr "Cambiar mi contraseña"
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Password Reset Link Invalid"
+msgstr "Enlace de restablecimiento de contraseña inválido"
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "The password reset link was invalid, possibly because it has already been used."
+msgstr "El enlace de restablecimiento de contraseña era inválido, posiblemente porque ya fue usado."
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Please request a new password reset."
+msgstr "Por favor solicita un nuevo restablecimiento de contraseña."
+
+#: .\userApp\templates\registration\password_reset_confirm.html
+msgid "Request New Password Reset"
+msgstr "Solicitar nuevo restablecimiento de contraseña"
+
 #~ msgid "first name"
 #~ msgstr "Nombre"
 
@@ -1057,3 +1368,87 @@ msgstr "Restablecimiento de contraseña fallido"
 
 #~ msgid "English"
 #~ msgstr "Inglés"
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Review Answer"
+msgstr "Revisar Respuesta"
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Correct"
+msgstr "Correcta"
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Your answer"
+msgstr "Tu respuesta"
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Correct answer!"
+msgstr "¡Respuesta correcta!"
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Great job! You selected the right answer."
+msgstr "¡Excelente trabajo! Seleccionaste la respuesta correcta."
+
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "Incorrect answer"
+msgstr "Respuesta incorrecta"
+
+#: .\templates\home.html
+msgid "Platform for Scientific Sonification"
+msgstr "Plataforma de Sonificación Científica"
+
+#: .\templates\home.html
+msgid "Discover the cosmos through different senses. Learn about astronomical data sonification in a multisensory space that goes beyond visual representation."
+msgstr "Descubre el cosmos a través de diferentes sentidos. Aprende sobre sonificación de datos astronómicos en un espacio multisensorial que va más allá de la representación visual."
+
+#: .\templates\home.html
+msgid "Start Training"
+msgstr "Comenzar Entrenamiento"
+
+#: .\templates\home.html
+msgid "About sonoTrainings"
+msgstr "Acerca de sonoTrainings"
+
+#: .\templates\home.html
+msgid "In sonoTrainings, we merge vision and hearing to provide you with multisensory training that not only expands your understanding of the cosmos but also enhances your auditory performance when interacting with scientific data."
+msgstr "En sonoTrainings fusionamos visión y audición para brindarte un entrenamiento multisensorial que no solo amplía tu comprensión del cosmos sino que también mejora tu rendimiento auditivo al interactuar con datos científicos."
+
+#: .\templates\home.html
+msgid "Inspired by innovative projects like sonoUno, our platform focuses on designing a user-centered interface to make science accessible to everyone."
+msgstr "Inspirado en proyectos innovadores como sonoUno, nuestra plataforma se centra en diseñar una interfaz centrada en el usuario para hacer que la ciencia sea accesible para todos."
+
+#: .\templates\home.html
+msgid "Multisensory Training"
+msgstr "Entrenamiento Multisensorial"
+
+#: .\templates\home.html
+msgid "Immerse yourself in unique learning experiences that combine vision and hearing to enhance understanding of astronomical and scientific data."
+msgstr "Sumérgete en experiencias de aprendizaje únicas que combinan visión y audición para mejorar la comprensión de datos astronómicos y científicos."
+
+#: .\templates\home.html
+msgid "Accessibility"
+msgstr "Accesibilidad"
+
+#: .\templates\home.html
+msgid "Our platform was designed with the diversity of sensory styles in mind, making science accessible to everyone."
+msgstr "Nuestra plataforma fue diseñada teniendo en cuenta la diversidad de estilos sensoriales, haciendo que la ciencia sea accesible para todos."
+
+#: .\templates\home.html
+msgid "Continuous Development"
+msgstr "Desarrollo Continuo"
+
+#: .\templates\home.html
+msgid "We are committed to the continuous improvement of our platform, ensuring user-friendly functionality that guarantees a comfortable learning experience."
+msgstr "Estamos comprometidos con la mejora continua de nuestra plataforma, asegurando una funcionalidad amigable que garantiza una experiencia de aprendizaje cómoda."
+
+#: .\templates\home.html
+msgid "Our Collaborators"
+msgstr "Nuestros Colaboradores"
+
+#: .\templates\home.html
+msgid "Ready to Explore the Cosmos?"
+msgstr "¿Listo para Explorar el Cosmos?"
+
+#: .\templates\home.html
+msgid "Join us and discover the cosmos in an entirely new way on sonoTrainings."
+msgstr "Únete a nosotros y descubre el cosmos de una manera completamente nueva en sonoTrainings."

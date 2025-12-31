@@ -14,7 +14,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="{% static 'trainingApp/style/style.css' %}">    <!-- Se utiliza un archivo estatico con la sintaxis  -->
+    <link rel="stylesheet" href="{% static 'userApp/style/userapp-styles.css' %}">    <!-- Estilos mejorados de userApp -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'sonoUno.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'sonoUno.png' %}">
+    
     <title>sonoTrainings</title>
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh;">
@@ -34,6 +40,40 @@
 
     <!-- Se incluye el footer -->
     {% include 'footer.html' %}
+    
+    <!-- Script para el toggle de tema -->
+    <script>
+        // Cargar preferencia de tema guardada
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            if (sunIcon && moonIcon) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+
+        // Toggle de tema
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const body = document.body;
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    </script>
     
 </body>
 </html>
