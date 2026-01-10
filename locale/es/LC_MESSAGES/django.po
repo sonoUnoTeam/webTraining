@@ -443,11 +443,6 @@ msgid "Locked - Complete previous trainings"
 msgstr "Bloqueado - Completa los entrenamientos anteriores"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:122
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                <p class=\"lead\">Sorry, no trainings are available.</p>\n"
-#| "            "
 msgid ""
 "\n"
 "                <p class=\"lead\">No trainings in this course.</p>\n"
@@ -471,8 +466,6 @@ msgid "Passed"
 msgstr "Aprobado"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:160
-#, fuzzy
-#| msgid "Locked - Complete previous trainings"
 msgid "Locked - Complete all trainings"
 msgstr "Bloqueado - Completa todos los entrenamientos"
 
@@ -511,20 +504,16 @@ msgid "Question"
 msgstr "Pregunta"
 
 #: .\trainingApp\templates\trainingApp\exam.html:7
-#, fuzzy
-#| msgid "You have completed: %(training)s"
 msgid "You have completed all trainings. Now, take the final exam."
-msgstr "¡Excelente! Has completado: %(training)s"
+msgstr "Has completado todos los entrenamientos. Ahora, realiza el examen final."
 
 #: .\trainingApp\templates\trainingApp\exam.html:10
 msgid "Click the button below to pass the exam."
-msgstr ""
+msgstr "Haz clic en el botón de abajo para realizar el examen."
 
 #: .\trainingApp\templates\trainingApp\exam.html:11
-#, fuzzy
-#| msgid "Take Exam"
 msgid "Pass Exam"
-msgstr "Tomar Examen"
+msgstr "Realizar Examen"
 
 #: .\trainingApp\templates\trainingApp\forms.html:21
 msgid "Are you sure?"
@@ -664,7 +653,7 @@ msgstr "Necesitas ser un aprendiz para acceder a los entrenamientos."
 #: .\trainingApp\views.py:580 .\trainingApp\views.py:609 .\userApp\views.py:141
 #: .\userApp\views.py:162
 msgid "You need to be a trainee to access this page."
-msgstr ""
+msgstr "Necesitas ser un aprendiz para acceder a esta página."
 
 #: .\trainingApp\views.py:224
 msgid "not started"
@@ -681,11 +670,11 @@ msgstr "Error"
 
 #: .\trainingApp\views.py:592
 msgid "You must complete all trainings before taking the exam."
-msgstr ""
+msgstr "Debes completar todos los entrenamientos antes de realizar el examen."
 
 #: .\trainingApp\views.py:617
 msgid "Congratulations! You have passed the exam and completed the course."
-msgstr ""
+msgstr "¡Felicitaciones! Has aprobado el examen y completado el curso."
 
 #: .\userApp\forms.py:20 .\userApp\templates\userApp\signup.html:26
 msgid "First Name"
@@ -742,22 +731,16 @@ msgid "Educational Level"
 msgstr "Nivel Educativo"
 
 #: .\userApp\templates\userApp\passwordChange.html:6
-#, fuzzy
-#| msgid "Repeat password"
 msgid "Reset Your Password"
-msgstr "Repita la contraseña"
+msgstr "Restablecer tu contraseña"
 
 #: .\userApp\templates\userApp\passwordChange.html:10
-#, fuzzy
-#| msgid "Enter new password"
 msgid "Enter New Password"
 msgstr "Ingrese nueva contraseña"
 
 #: .\userApp\templates\userApp\passwordChange.html:16
-#, fuzzy
-#| msgid "Repeat password"
 msgid "Reset Password"
-msgstr "Repita la contraseña"
+msgstr "Restablecer contraseña"
 
 #: .\userApp\templates\userApp\password_change_done.html:7
 #: .\userApp\templates\userApp\password_reset_complete.html:7
@@ -765,26 +748,22 @@ msgid "Password Successfully Changed"
 msgstr "contraseña actualizada con éxito"
 
 #: .\userApp\templates\userApp\password_reset.html:5
-#, fuzzy
-#| msgid "Repeat password"
 msgid "Reset your password"
-msgstr "Repita la contraseña"
+msgstr "Restablecer tu contraseña"
 
 #: .\userApp\templates\userApp\password_reset.html:9
 msgid "Send Reset Link"
-msgstr ""
+msgstr "Enviar enlace de restablecimiento"
 
 #: .\userApp\templates\userApp\password_reset_done.html:4
-#, fuzzy
-#| msgid "Password reset"
 msgid "Password reset sent"
-msgstr "Restablecimiento de contraseña"
+msgstr "Restablecimiento de contraseña enviado"
 
 #: .\userApp\templates\userApp\password_reset_done.html:5
 msgid ""
 "We have sent you an email with instructions to reset your password. Please "
 "check your inbox."
-msgstr ""
+msgstr "Te hemos enviado un correo con instrucciones para restablecer tu contraseña. Por favor revisa tu bandeja de entrada."
 
 #: .\userApp\templates\userApp\profile.html:9
 msgid "User Information"
@@ -810,7 +789,7 @@ msgstr "Iniciar sesión"
 
 #: .\userApp\templates\userApp\signin.html:29
 msgid "Forgot your password?"
-msgstr ""
+msgstr "¿Olvidaste tu contraseña?"
 
 #: .\userApp\templates\userApp\signup.html:6
 #: .\userApp\templates\userApp\signup.html:79
@@ -830,13 +809,6 @@ msgid "Username"
 msgstr "Nombre de usuario"
 
 #: .\userApp\templates\userApp\signup.html:21
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                        <small id=\"username-description\" aria-hidden="
-#| "\"true\">Your username must be between 6 and 15 characters and can only "
-#| "contain letters, numbers, and underscores.</small>\n"
-#| "                    "
 msgid ""
 "\n"
 "                            <small id=\"username-description\" aria-hidden="
@@ -845,16 +817,14 @@ msgid ""
 "                        "
 msgstr ""
 "\n"
-"                        <small id=\"username-description\" aria-hidden=\"true"
+"                            <small id=\"username-description\" aria-hidden=\"true"
 "\">Su nombre de usuario debe tener entre 6 y 15 caracteres y solo puede "
 "contener letras, números y guiones bajos.</small>\n"
-"                    "
+"                        "
 
 #: .\userApp\templates\userApp\signup.html:41
-#, fuzzy
-#| msgid "Change Password"
 msgid "Password"
-msgstr "Cambiar contraseña"
+msgstr "Contraseña"
 
 #: .\userApp\templates\userApp\signup.html:46
 msgid ""
@@ -893,34 +863,29 @@ msgid "The email entered is already registered."
 msgstr "El correo electrónico ingresado ya está registrado."
 
 #: .\userApp\views.py:80
-#, fuzzy
-#| msgid "Your account is create successfully"
 msgid "User created successfully"
-msgstr "Su cuenta se creó correctamente"
+msgstr "Usuario creado exitosamente"
 
 #: .\userApp\views.py:84
 msgid "Error creating user"
-msgstr ""
+msgstr "Error al crear usuario"
 
 #: .\userApp\views.py:99
-#, fuzzy
-#| msgid "Your account is create successfully"
 msgid "Your account has been activated successfully."
-msgstr "Su cuenta se creó correctamente"
+msgstr "Tu cuenta ha sido activada exitosamente."
 
 #: .\userApp\views.py:102
 msgid "Error activating account"
-msgstr ""
+msgstr "Error al activar la cuenta"
 
 #: .\userApp\views.py:117
 msgid "Username or Password incorrect"
 msgstr "Usuario o contraseña incorrectos"
 
 #: .\userApp\views.py:121
-#, fuzzy, python-format
-#| msgid "Your are logged in as {request.POST['username']}"
+#, python-format
 msgid "You are logged in as %(username)s"
-msgstr "Has iniciado sesión como {request.POST['username']}"
+msgstr "Has iniciado sesión como %(username)s"
 
 #: .\userApp\views.py:171 .\userApp\views.py:181
 msgid "Your profile has been updated"
@@ -1393,6 +1358,262 @@ msgstr "¡Excelente trabajo! Seleccionaste la respuesta correcta."
 msgid "Incorrect answer"
 msgstr "Respuesta incorrecta"
 
+#: .\trainingApp\templates\trainingApp\review_deploy.html
+msgid "The correct answer is: "
+msgstr "La respuesta correcta es: "
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Final Exam Results"
+msgstr "Resultados del Examen Final"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Training Results"
+msgstr "Resultados del Entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Final Exam Attempts - Course:"
+msgstr "Intentos del Examen Final - Curso:"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Attempts Completed:"
+msgstr "Intentos Completados:"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Exam Attempt"
+msgstr "Intento de Examen"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Attempt"
+msgstr "Intento"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Exam Score"
+msgstr "Puntuación del Examen"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Score"
+msgstr "Puntuación"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Result"
+msgstr "Resultado"
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "You haven't taken the final exam for this course yet."
+msgstr "Aún no has realizado el examen final de este curso."
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "You haven't completed any attempts for this training yet."
+msgstr "Aún no has completado ningún intento de este entrenamiento."
+
+#: .\trainingApp\templates\trainingApp\review_list_tt.html
+msgid "Back to Course"
+msgstr "Volver al Curso"
+
+#: .\trainingApp\templates\trainingApp\forms.html
+msgid "No image available"
+msgstr "No hay imagen disponible"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "Sorry, no blocks are available for this training."
+msgstr "Lo sentimos, no hay bloques disponibles para este entrenamiento."
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Trainings"
+msgstr "Entrenamientos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "#"
+msgstr "#"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Training Name"
+msgstr "Nombre del Entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Duration"
+msgstr "Duración"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Attempts"
+msgstr "Intentos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Score & Results"
+msgstr "Puntuación y Resultados"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Actions"
+msgstr "Acciones"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "View Results"
+msgstr "Ver Resultados"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Passing Score"
+msgstr "Puntuación de Aprobación"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Maximum attempts reached"
+msgstr "Intentos máximos alcanzados"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Best"
+msgstr "Mejor"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Last"
+msgstr "Último"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Skipped"
+msgstr "Saltado"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Attempts Exhausted"
+msgstr "Intentos Agotados"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Locked - moved to next training"
+msgstr "Bloqueado - avanzó al siguiente entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Start"
+msgstr "Comenzar"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Optional"
+msgstr "Opcional"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Optional retry to improve your score"
+msgstr "Reintento opcional para mejorar tu puntuación"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Retry"
+msgstr "Reintentar"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "remaining"
+msgstr "restantes"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Advancing to next will lock this"
+msgstr "Avanzar al siguiente bloqueará esto"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Average Score from Best Attempts"
+msgstr "Puntuación Promedio de Mejores Intentos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Required for Final Exam"
+msgstr "Requerido para el Examen Final"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Requirement Met"
+msgstr "Requisito Cumplido"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Below Required Average"
+msgstr "Por Debajo del Promedio Requerido"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Final Exam Requirements"
+msgstr "Requisitos del Examen Final"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Complete all trainings in the course"
+msgstr "Completa todos los entrenamientos del curso"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Achieve an average score of at least"
+msgstr "Alcanza una puntuación promedio de al menos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "from your best training attempts"
+msgstr "de tus mejores intentos de entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Exam Name"
+msgstr "Nombre del Examen"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Correct"
+msgstr "Correctas"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Incorrect"
+msgstr "Incorrectas"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Complete all trainings first"
+msgstr "Completa primero todos los entrenamientos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Exam Passed!"
+msgstr "¡Examen Aprobado!"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Take Final Exam"
+msgstr "Tomar Examen Final"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Average score"
+msgstr "Puntuación promedio"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Required"
+msgstr "Requerido"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Insufficient Average Score"
+msgstr "Puntuación Promedio Insuficiente"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Current average"
+msgstr "Promedio actual"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Complete All Trainings First"
+msgstr "Completa Primero Todos los Entrenamientos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Complete previous training"
+msgstr "Completa el entrenamiento anterior"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Warning!"
+msgstr "¡Advertencia!"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Starting"
+msgstr "Comenzando"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "The previous training will be locked and you will not be able to retry it."
+msgstr "El entrenamiento anterior será bloqueado y no podrás reintentarlo."
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "You will keep your current score."
+msgstr "Mantendrás tu puntuación actual."
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Continue Anyway"
+msgstr "Continuar de Todos Modos"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "Starting Final Exam"
+msgstr "Comenzando Examen Final"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "All previous trainings with remaining attempts will be locked and you will not be able to retry them."
+msgstr "Todos los entrenamientos anteriores con intentos restantes serán bloqueados y no podrás reintentarlos."
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "You will keep your current scores."
+msgstr "Mantendrás tus puntuaciones actuales."
+
 #: .\templates\home.html
 msgid "Platform for Scientific Sonification"
 msgstr "Plataforma de Sonificación Científica"
@@ -1452,3 +1673,67 @@ msgstr "¿Listo para Explorar el Cosmos?"
 #: .\templates\home.html
 msgid "Join us and discover the cosmos in an entirely new way on sonoTrainings."
 msgstr "Únete a nosotros y descubre el cosmos de una manera completamente nueva en sonoTrainings."
+
+#: .\templates\footer.html
+msgid "Platform for training in the sonification of astronomical data and scientific research."
+msgstr "Plataforma de capacitación en sonificación de datos astronómicos e investigación científica."
+
+#: .\templates\footer.html
+msgid "Quick Links"
+msgstr "Enlaces Rápidos"
+
+#: .\templates\footer.html
+msgid "Resources"
+msgstr "Recursos"
+
+#: .\templates\footer.html
+msgid "Contact"
+msgstr "Contacto"
+
+#: .\templates\footer.html
+msgid "All rights reserved."
+msgstr "Todos los derechos reservados."
+
+#: .\templates\footer.html
+msgid "Made by"
+msgstr "Hecho por"
+
+#: .\templates\footer.html
+msgid "SonoUno Web"
+msgstr "SonoUno Web"
+
+#: .\templates\footer.html
+msgid "SonoUno App"
+msgstr "SonoUno App"
+
+#: .\templates\home.html
+msgid "Astronomical data sonification software"
+msgstr "Software de sonorización de datos astronómicos"
+
+#: .\templates\home.html
+msgid "Explore scientific data visually and through sonification"
+msgstr "Explora datos científicos visualmente y mediante sonorización"
+
+#: .\templates\home.html
+msgid "Visit SonoUno App"
+msgstr "Visitar SonoUno App"
+
+#: .\templates\home.html
+msgid "Music and data visualization"
+msgstr "Música y visualización de datos"
+
+#: .\templates\home.html
+msgid "Web Application"
+msgstr "Aplicación Web"
+
+#: .\templates\home.html
+msgid "Interactive data visualization"
+msgstr "Visualización interactiva de datos"
+
+#: .\templates\home.html
+msgid "Real-time audio sonification"
+msgstr "Sonorización de audio en tiempo real"
+
+#: .\templates\home.html
+msgid "Accessible for all users"
+msgstr "Accesible para todos los usuarios"

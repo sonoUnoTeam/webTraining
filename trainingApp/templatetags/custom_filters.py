@@ -16,3 +16,11 @@ def get_state(dictionary, key):
 @register.filter
 def get_state_trans(dictionary, key):
     return _(dictionary[f'{key}'])
+
+@register.filter
+def subtract(value, arg):
+    """Resta arg de value"""
+    try:
+        return int(value) - int(arg)
+    except (ValueError, TypeError):
+        return 0

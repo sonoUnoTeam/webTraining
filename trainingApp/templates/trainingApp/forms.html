@@ -203,21 +203,21 @@
             <form id="myForm" method="POST" action="{% url 'trainingApp:forms' course_id training_id block_id %}">
 
                 {% csrf_token %}
+                {% if form.instance.deploy_image and form.instance.deploy_image.name %}
                 <div class="form-deploy-image">
-                    {% if form.instance.deploy_image %}
-                        <img src="{{ form.instance.deploy_image.url }}" alt="{{ form.instance.question|default:_('Deploy image') }}" loading="lazy">
-                    {% else %}
-                        <div class="bg-light border d-inline-block" style="width:600px; height:400px; display:flex; align-items:center; justify-content:center;">
-                            <small class="text-muted">{% trans "No image available" %}</small>
-                        </div>
-                    {% endif %}
+                    <img src="{{ form.instance.deploy_image.url }}" alt="{{ form.instance.question|default:_('Deploy image') }}" loading="lazy">
                 </div>
+                {% endif %}
+                
+                {% if form.instance.deploy_sound and form.instance.deploy_sound.name %}
                 <div class="form-deploy-audio">
                     <audio controls>
                         <source  src="{{ form.instance.deploy_sound.url }}" type="audio/mpeg">
                         {% blocktrans %} Your browser does not support audio playback. {% endblocktrans %}
                     </audio>
                 </div>
+                {% endif %}
+                
                 <div class="form-question">
                     <p class="h5">{{ form.instance.question}}</p>
                 </div>

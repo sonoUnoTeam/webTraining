@@ -2,6 +2,58 @@
 {% load i18n %}
 
 {% block content %}
+<style>
+    /* Dark mode styles */
+    body.dark-mode .card {
+        background-color: #212529;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .card-header {
+        background-color: #343a40;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .card-body {
+        background-color: #212529;
+        color: #f8f9fa;
+    }
+    body.dark-mode .list-group-item {
+        background-color: #212529;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .form-group label {
+        color: #f8f9fa;
+    }
+    body.dark-mode .form-control {
+        background-color: #343a40;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .form-control:focus {
+        background-color: #343a40;
+        border-color: #6eb5d4;
+        color: #f8f9fa;
+    }
+    body.dark-mode .btn-primary {
+        background-color: #6eb5d4;
+        border-color: #6eb5d4;
+    }
+    body.dark-mode .btn-primary:hover {
+        background-color: #5a9db9;
+        border-color: #5a9db9;
+    }
+    body.dark-mode .text-danger {
+        color: #f87171 !important;
+    }
+    body.dark-mode .star-rating label {
+        color: #fbbf24;
+    }
+    body.dark-mode .star-rating input[type="radio"]:checked + label {
+        color: #fbbf24;
+    }
+</style>
 <div class="card my-3 border border-3">
   <div class="card-header">
       {% trans "Note" %}

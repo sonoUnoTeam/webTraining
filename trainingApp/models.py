@@ -42,6 +42,8 @@ class Training(models.Model):
     )
     #Atributo que gestiona la cantidad de veces que se puede realizar el training
     attempts_allowed = models.IntegerField(default=1)
+    # Porcentaje mínimo requerido para aprobar este training (por defecto 70%)
+    passing_score = models.DecimalField(max_digits=5, decimal_places=2, default=70.00)
     groups = models.ManyToManyField(TraineeGroup)
     
     def was_published_recently(self):
@@ -104,6 +106,12 @@ class Choice(models.Model):
     
     
 class TraineeTraining(models.Model):
+    class StateTraineeTraining(models.TextChoices):
+        NOT_STARTED = 'not_started', _('Not Started')
+        IN_PROGRESS = 'in_progress', _('In Progress')
+        PASSED = 'passed', _('Passed')
+        FAILED = 'failed', _('Failed')
+    
     # Foreign Key al progreso del trainee en el curso (padre)
     trainee_course = models.ForeignKey('TraineeCourse', on_delete=models.CASCADE, related_name='trainee_trainings')
     # Foreign Key de training
@@ -113,8 +121,21 @@ class TraineeTraining(models.Model):
     # Foreign Key de course
     course = models.ForeignKey('Course', on_delete=models.CASCADE)
     pub_date = models.DateTimeField("upload date")
-    state = models.CharField(max_length=100,default="in_progress")
+    state = models.CharField(
+        max_length=20,
+        choices=StateTraineeTraining.choices,
+        default=StateTraineeTraining.IN_PROGRESS
+    )
     time_spent = models.DurationField(null=True, blank=True)
+    # Indica si este intento corresponde al examen final del curso
+    is_final_exam_attempt = models.BooleanField(default=False)
+    # Puntuación obtenida en este intento (porcentaje)
+    score_percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=0)
+    # Mejor puntuación obtenida (se actualiza si el nuevo intento es mejor)
+    best_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, default=0)
+    # Cantidad de respuestas correctas e incorrectas
+    correct_answers = models.PositiveIntegerField(default=0)
+    incorrect_answers = models.PositiveIntegerField(default=0)
     
     class Meta:
         pass
@@ -122,6 +143,106 @@ class TraineeTraining(models.Model):
     def __str__(self):
         return f"T.T_Id: {self.id}, Name Training: {self.training.name_training}, Name Trainee: {self.trainee.user.first_name}, Course: {self.course.name_course}"
     
+    def calculate_score(self):
+        """
+        Calcula el porcentaje de respuestas correctas del training y devuelve
+        un diccionario con el porcentaje, respuestas correctas e incorrectas.
+        """
+        # Obtener todos los block answers de este trainee training
+        block_answers = TrainingBlockAnswer.objects.filter(trainee_Training=self)
+        
+        total_questions = 0
+        correct_answers = 0
+        
+        for block_answer in block_answers:
+            # Obtener las respuestas de cada block
+            question_answers = TrainingQuestionAnswer.objects.filter(block_answer=block_answer)
+            
+            for question_answer in question_answers:
+                total_questions += 1
+                # Verificar si la respuesta seleccionada es correcta
+                if question_answer.selectedChoice.correctChoice:
+                    correct_answers += 1
+        
+        incorrect_answers = total_questions - correct_answers
+        
+        # Calcular porcentaje
+        if total_questions > 0:
+            percentage = (correct_answers / total_questions) * 100
+            percentage = round(percentage, 2)
+        else:
+            percentage = 0
+        
+        return {
+            'percentage': percentage,
+            'correct_answers': correct_answers,
+            'incorrect_answers': incorrect_answers,
+            'total_questions': total_questions
+        }
+    
+    def update_score_and_state(self):
+        """
+        Actualiza el score del intento actual y determina si aprobó o no.
+        También actualiza el best_score si este intento es mejor.
+        """
+        score_data = self.calculate_score()
+        
+        self.score_percentage = score_data['percentage']
+        self.correct_answers = score_data['correct_answers']
+        self.incorrect_answers = score_data['incorrect_answers']
+        
+        # Marcar como intento de examen final si corresponde
+        if self.course.final_exam == self.training:
+            self.is_final_exam_attempt = True
+        
+        # Determinar si aprobó o no
+        # Si es examen final, usar el passing_score del curso; si no, usar el del training
+        passing_score = self.course.final_exam_passing_score if self.is_final_exam_attempt else self.training.passing_score
+        
+        if self.score_percentage >= passing_score:
+            self.state = self.StateTraineeTraining.PASSED
+        else:
+            self.state = self.StateTraineeTraining.FAILED
+        
+        # Actualizar best_score
+        if self.best_score is None or self.score_percentage > self.best_score:
+            self.best_score = self.score_percentage
+        
+        self.save()
+        
+        # Actualizar best_score en otros intentos del mismo training
+        other_attempts = TraineeTraining.objects.filter(
+            trainee=self.trainee,
+            training=self.training,
+            course=self.course
+        ).exclude(id=self.id)
+        
+        for attempt in other_attempts:
+            if attempt.best_score is None or self.best_score > attempt.best_score:
+                attempt.best_score = self.best_score
+                # También actualizar las respuestas correctas/incorrectas del mejor score
+                attempt.correct_answers = self.correct_answers
+                attempt.incorrect_answers = self.incorrect_answers
+                attempt.save()
+    
+    @property
+    def formatted_time_spent(self):
+        """
+        Returns the time_spent formatted as HH:MM:SS or MM:SS depending on duration.
+        """
+        if self.time_spent:
+            total_seconds = int(self.time_spent.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+            
+            if hours > 0:
+                return f"{hours}:{minutes:02d}:{seconds:02d}"
+            else:
+                return f"{minutes}:{seconds:02d}"
+        return "0:00"
+
+
 class TrainingBlockAnswer(models.Model):
     class StateBlockAnswer(models.TextChoices):
         in_progress = 'In progress', _('In progress')
@@ -215,7 +336,7 @@ class CourseTraining(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Course: {self.course.name_course}, Training: {self.training.name_training}, Order: {self.order}"
+        return f"Order: {self.order}"
 
 
 # Modelo para Course
@@ -236,6 +357,10 @@ class Course(models.Model):
     groups = models.ManyToManyField(TraineeGroup)  # Grupos que pueden acceder al curso
     trainings = models.ManyToManyField(Training, through=CourseTraining, related_name='courses')
     final_exam = models.ForeignKey(Training, on_delete=models.SET_NULL, null=True, blank=True, related_name='courses_as_final_exam')
+    # Promedio mínimo requerido de los mejores scores de trainings para habilitar el examen final (por defecto 70%)
+    required_average_score = models.DecimalField(max_digits=5, decimal_places=2, default=70.00, help_text="Minimum average score from best training attempts required to unlock the final exam")
+    # Porcentaje mínimo requerido para aprobar el examen final (por defecto 70%)
+    final_exam_passing_score = models.DecimalField(max_digits=5, decimal_places=2, default=70.00, help_text="Minimum score required to pass the final exam")
 
     def __str__(self):
         return self.name_course

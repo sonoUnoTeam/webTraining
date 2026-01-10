@@ -152,6 +152,34 @@
         </div>
     </section>
 
+    <!-- SonoUno App Section -->
+    <section class="sonouno-app-section py-5" aria-labelledby="sonouno-heading">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <div class="sonouno-icon-circle mb-3 mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="white" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
+                            <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.896 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
+                            <path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
+                            <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
+                        </svg>
+                    </div>
+                    <h2 id="sonouno-heading" class="h3 fw-bold mb-2">SonoUno</h2>
+                    <p class="text-muted mb-4">
+                        {% trans "Astronomical data sonification software" %} - {% trans "Explore scientific data visually and through sonification" %}
+                    </p>
+                    <a href="https://sonounoapp.um.edu.ar/" target="_blank" rel="noopener noreferrer" class="btn btn-lg px-4 py-2 sonouno-btn" aria-label="{% trans 'Visit SonoUno App' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-box-arrow-up-right me-2" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                            <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                        </svg>
+                        {% trans "Visit SonoUno App" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section py-5" aria-labelledby="cta-heading">
         <div class="container">
@@ -339,6 +367,59 @@
     .partner-logo-container:hover .partner-logo {
         filter: grayscale(0%);
         opacity: 1;
+    }
+
+    /* SonoUno App Section */
+    .sonouno-app-section {
+        background: white;
+        padding: 60px 0;
+    }
+
+    body.dark-mode .sonouno-app-section {
+        background: #1a1d20;
+    }
+
+    body.dark-mode .sonouno-app-section h2 {
+        color: white;
+    }
+
+    body.dark-mode .sonouno-app-section .text-muted {
+        color: #adb5bd !important;
+    }
+
+    .sonouno-icon-circle {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #6eb5d4 0%, #88c5db 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 16px rgba(110, 181, 212, 0.3);
+    }
+
+    .sonouno-btn {
+        background-color: #6eb5d4;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .sonouno-btn:hover {
+        background-color: #5a9fb8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(110, 181, 212, 0.4);
+        color: white;
+    }
+
+    body.dark-mode .sonouno-btn {
+        color: white !important;
+    }
+
+    body.dark-mode .sonouno-btn:hover {
+        color: white !important;
     }
 
     /* CTA Section */

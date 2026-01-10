@@ -94,7 +94,9 @@ class CourseDetailView(ListView):
 
     def get_queryset(self):
         course_id = self.kwargs['course_id']
-        return CourseTraining.objects.filter(course_id=course_id).order_by('order')
+        # Orden por el campo order de CourseTraining (secuencial absoluto)
+        course_trainings = CourseTraining.objects.filter(course_id=course_id).select_related('training').order_by('order')
+        return course_trainings
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -107,24 +109,204 @@ class CourseDetailView(ListView):
         trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
         context['trainee_course'] = trainee_course
 
-        for ct in context['course_trainings']:
-            if ct.order == 1:
+        # Habilitar entrenamientos secuencialmente basado en el orden del queryset (por order)
+        for idx, ct in enumerate(context['course_trainings']):
+            if idx == 0:
+                # El primer entrenamiento siempre está habilitado
                 ct.enabled = True
             else:
-                previous_order = ct.order - 1
-                previous_ct = CourseTraining.objects.get(course=course, order=previous_order)
-                ct.enabled = TraineeTraining.objects.filter(trainee=trainee, training=previous_ct.training, course=course, state="Completed").exists()
-            ct.completed = TraineeTraining.objects.filter(trainee=trainee, training=ct.training, course=course, state="Completed").exists()
+                # Verificar si el anterior tiene al menos un intento completado (passed o failed)
+                # Esto permite avanzar aunque se haya desaprobado
+                previous_ct = context['course_trainings'][idx - 1]
+                ct.enabled = TraineeTraining.objects.filter(
+                    trainee=trainee,
+                    training=previous_ct.training,
+                    course=course
+                ).exclude(
+                    state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+                ).exists()
+            
+            # Verificar si hay algún intento aprobado
+            ct.completed = TraineeTraining.objects.filter(
+                trainee=trainee, 
+                training=ct.training, 
+                course=course, 
+                state=TraineeTraining.StateTraineeTraining.PASSED
+            ).exists()
+            
+            # Obtener el mejor intento para mostrar estadísticas
+            best_attempt = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=ct.training,
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).order_by('-score_percentage').first()
+            
+            ct.best_score = best_attempt.score_percentage if best_attempt else None
+            ct.best_attempt = best_attempt
+            
+            # Obtener el último intento (más reciente) para mostrar estadísticas
+            last_attempt = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=ct.training,
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).order_by('-pub_date').first()
+            
+            ct.last_score = last_attempt.score_percentage if last_attempt else None
+            ct.last_attempt = last_attempt
+            
+            # Contar intentos completados (passed o failed)
+            ct.completed_attempts = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=ct.training,
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).count()
+            
+            # Verificar si puede realizar más intentos
+            # No puede si ya avanzó al siguiente training en el orden de visualización
+            ct.is_locked_by_next = False
+            ct.previous_has_retries = False
+            
+            # Verificar si el examen final ha sido iniciado
+            has_final_exam_attempt = False
+            if course.final_exam:
+                has_final_exam_attempt = TraineeTraining.objects.filter(
+                    trainee=trainee,
+                    training=course.final_exam,
+                    course=course
+                ).exists()
+            
+            if idx < len(context['course_trainings']) - 1:
+                next_ct = context['course_trainings'][idx + 1]
+                has_next_attempts = TraineeTraining.objects.filter(
+                    trainee=trainee,
+                    training=next_ct.training,
+                    course=course
+                ).exists()  # Cualquier intento (incluido in_progress) bloquea el anterior
+                
+                ct.is_locked_by_next = has_next_attempts or has_final_exam_attempt
+                ct.can_retry = not has_next_attempts and not has_final_exam_attempt and ct.completed_attempts < ct.training.attempts_allowed
+                
+                # Verificar si el training anterior (idx - 1) tiene retries disponibles
+                if idx > 0:
+                    prev_ct = context['course_trainings'][idx - 1]
+                    prev_completed = TraineeTraining.objects.filter(
+                        trainee=trainee,
+                        training=prev_ct.training,
+                        course=course
+                    ).exclude(
+                        state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+                    ).count()
+                    ct.previous_has_retries = prev_completed < prev_ct.training.attempts_allowed and prev_completed > 0
+            else:
+                # Para el último training, también verificar si el examen final ha sido iniciado
+                ct.can_retry = ct.completed_attempts < ct.training.attempts_allowed and not has_final_exam_attempt
+                ct.is_locked_by_next = has_final_exam_attempt
+                
+                # Para el último training, verificar si el anterior tiene retries
+                if idx > 0:
+                    prev_ct = context['course_trainings'][idx - 1]
+                    prev_completed = TraineeTraining.objects.filter(
+                        trainee=trainee,
+                        training=prev_ct.training,
+                        course=course
+                    ).exclude(
+                        state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+                    ).count()
+                    ct.previous_has_retries = prev_completed < prev_ct.training.attempts_allowed and prev_completed > 0
+            
+            # Asignar índice de posición para mostrar en el template
+            ct.position = idx + 1
 
+        # Contar intentos completados por training
         num_trainee_trainings = {}
+        training_attempts_info = {}
         for ct in context['course_trainings']:
-            num_trainee_trainings[ct.training.id] = TraineeTraining.objects.filter(trainee=trainee, training=ct.training, course=course, state="Completed").count()
+            completed_count = TraineeTraining.objects.filter(
+                trainee=trainee, 
+                training=ct.training, 
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).count()
+            num_trainee_trainings[ct.training.id] = completed_count
+            
+            # Información adicional para cada training
+            training_attempts_info[ct.training.id] = {
+                'completed': completed_count,
+                'best_score': ct.best_score,
+                'can_retry': ct.can_retry,
+                'is_passed': ct.completed
+            }
         
         if course.final_exam:
-            num_trainee_trainings[course.final_exam.id] = TraineeTraining.objects.filter(trainee=trainee, training=course.final_exam, course=course, state="Completed").count()
+            exam_completed = TraineeTraining.objects.filter(
+                trainee=trainee, 
+                training=course.final_exam, 
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).count()
+            num_trainee_trainings[course.final_exam.id] = exam_completed
+            
+            # Obtener el mejor intento del examen final
+            final_exam_attempt = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=course.final_exam,
+                course=course,
+                is_final_exam_attempt=True
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).order_by('-score_percentage').first()
+            
+            context['final_exam_attempt'] = final_exam_attempt
+            
         context['num_trainee_trainings'] = num_trainee_trainings
+        context['training_attempts_info'] = training_attempts_info
 
-        context['all_completed'] = all(ct.completed for ct in context['course_trainings'])
+        # Calcular el promedio de los mejores scores de todos los trainings
+        best_scores = []
+        for ct in context['course_trainings']:
+            if ct.best_score is not None:
+                best_scores.append(float(ct.best_score))
+        
+        average_score = sum(best_scores) / len(best_scores) if best_scores else 0
+        context['average_score'] = round(average_score, 2)
+        
+        # El examen final se desbloquea cuando:
+        # 1. Todos los trainings tienen al menos un intento completado (passed o failed)
+        # 2. El promedio de los mejores scores cumple con el required_average_score del curso
+        all_trainings_attempted = all(
+            TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=ct.training,
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).exists()
+            for ct in context['course_trainings']
+        )
+        
+        meets_average_requirement = average_score >= float(course.required_average_score)
+        
+        context['all_completed'] = all_trainings_attempted
+        context['meets_average_requirement'] = meets_average_requirement
+        context['can_take_final_exam'] = all_trainings_attempted and meets_average_requirement
+
+        # Verificar si hay trainings con intentos restantes (para la advertencia del examen final)
+        has_trainings_with_retries = any(
+            ct.completed_attempts < ct.training.attempts_allowed and ct.completed_attempts > 0
+            for ct in context['course_trainings']
+        )
+        context['has_trainings_with_retries'] = has_trainings_with_retries
+
+        # No agrupar por dificultad - mostrar todos en orden secuencial
+        # Los trainings ya vienen ordenados por el campo 'order' de CourseTraining
 
         return context
 
@@ -158,27 +340,60 @@ class TrainingBlockDeployList(ListView):
             raise Http404("Training not in course")
 
         trainee = Trainee.objects.get(user_id=request.user.id)
+        
+        # Contar intentos completados (passed o failed)
         completed_attempts = TraineeTraining.objects.filter(
             trainee=trainee,
             training=training,
-            course=course,
-            state="Completed"
+            course=course
+        ).exclude(
+            state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
         ).count()
+        
+        # Verificar si hay un intento en progreso
         in_progress_attempts = TraineeTraining.objects.filter(
             trainee=trainee,
             training=training,
             course=course,
-            state="in_progress"
+            state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
         ).count()
         
-        if completed_attempts >= training.attempts_allowed:
+        # Verificar si ya avanzó al siguiente training (bloquear intentos)
+        # Usar el orden secuencial por el campo 'order'
+        course_trainings = CourseTraining.objects.filter(course=course).select_related('training').order_by('order')
+        
+        current_position = None
+        for idx, ct in enumerate(course_trainings):
+            if ct.training.id == training_id:
+                current_position = idx
+                break
+        
+        # Si hay un training siguiente en el orden secuencial y tiene intentos, bloquear este
+        # Pero no aplicar para el examen final
+        if course.final_exam_id != training_id and current_position is not None and current_position < len(course_trainings) - 1:
+            next_training = course_trainings[current_position + 1]
+            has_next_attempts = TraineeTraining.objects.filter(
+                trainee=trainee,
+                training=next_training.training,
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+            ).exists()
+            
+            if has_next_attempts:
+                messages.error(request, _("You cannot retry this training because you have already started the next one."))
+                return redirect('trainingApp:course_detail', course_id=course_id)
+        
+        # Verificar límite de intentos
+        if completed_attempts >= training.attempts_allowed and in_progress_attempts == 0:
             messages.error(request, _("You have reached the maximum number of attempts for this training."))
             return redirect('trainingApp:course_detail', course_id=course_id)
+        
         if in_progress_attempts > 0:
-            # Allow continuing the in_progress one
+            # Permitir continuar el intento en progreso
             pass
         elif completed_attempts < training.attempts_allowed:
-            # Allow starting new
+            # Permitir iniciar nuevo intento
             pass
         else:
             messages.error(request, _("Cannot start this training."))
@@ -208,13 +423,18 @@ class TrainingBlockDeployList(ListView):
                 trainee=trainee,
                 training=training,
                 course=course,
-                state="in_progress"
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).first()
             trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
             
             if in_progress:
                 trainee_training = in_progress
             else:
+                # Si es el examen final, bloquear todos los entrenamientos con intentos restantes
+                # Esto se logra simplemente iniciando el examen, ya que la lógica de bloqueo
+                # en course_detail verifica si existe algún intento del siguiente training
+                # (incluido in_progress)
+                
                 # Create new
                 trainee_training = TraineeTraining.objects.create(
                     trainee_course=trainee_course,
@@ -222,10 +442,11 @@ class TrainingBlockDeployList(ListView):
                     training=training,
                     course=course,
                     pub_date=timezone.now(),
-                    state="in_progress"
+                    state=TraineeTraining.StateTraineeTraining.IN_PROGRESS,
+                    is_final_exam_attempt=(course.final_exam_id == training_id)
                 )
                 # Se guarda el tiempo de inicio del training
-                request.session[start_time_key] = datetime.now().isoformat()
+                request.session[start_time_key] = timezone.now().isoformat()
                 
                 # Update course state if starting first training
                 if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
@@ -316,7 +537,7 @@ class DeployDetailView(View):
                 trainee=trainee,
                 training=training,
                 course=course,
-                state="in_progress"
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).first()
             trainee_course, created = TraineeCourse.objects.get_or_create(
                 trainee=trainee,
@@ -339,10 +560,10 @@ class DeployDetailView(View):
                     training=training,
                     course=course,
                     pub_date=timezone.now(),
-                    state="in_progress"
+                    state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
                 )
                 # Se guarda el tiempo de inicio del training
-                request.session[start_time_key] = datetime.now().isoformat()
+                request.session[start_time_key] = timezone.now().isoformat()
                 
                 # Update course state if starting first training
                 if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
@@ -445,9 +666,7 @@ class DeployDetailView(View):
                 
                 if all_completed and correct_number_of_answers:               
                     trainee_training = TraineeTraining.objects.get(pk=current_trainee_training_id)
-                    trainee_training.state = "Completed"
-                    trainee_training.save()
-                
+                    
                     # Lógica para calcular el tiempo empleado
                     start_time_session_key = f'start_time_{course_id}_{training_id}'
                     start_time_str = request.session.get(start_time_session_key)
@@ -467,34 +686,58 @@ class DeployDetailView(View):
 
                     trainee_training.time_spent = duracion_timedelta
                     trainee_training.save()
+                    
+                    # Calcular puntuación y actualizar estado (passed/failed)
+                    trainee_training.update_score_and_state()
                 
                     trainee = Trainee.objects.get(user=self.request.user)
                 
-                    courses_as_exam = Course.objects.filter(final_exam=training)
-                    for course_exam in courses_as_exam:
+                    # Si aprobó el training, actualizar progreso del curso
+                    if trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
+                        courses_as_exam = Course.objects.filter(final_exam=training)
+                        for course_exam in courses_as_exam:
+                            try:
+                                trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course_exam)
+                                trainee_course.exam_passed = True
+                                trainee_course.state = TraineeCourse.StateTraineeCourse.Completed
+                                trainee_course.save()
+                            except TraineeCourse.DoesNotExist:
+                                pass
+                        
                         try:
-                            trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course_exam)
-                            trainee_course.exam_passed = True
-                            trainee_course.state = TraineeCourse.StateTraineeCourse.Completed
+                            trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
+                            trainee_course.current_training_index += 1
                             trainee_course.save()
                         except TraineeCourse.DoesNotExist:
                             pass
-                    
-                    try:
-                        trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
-                        trainee_course.current_training_index += 1
-                        trainee_course.save()
-                    except TraineeCourse.DoesNotExist:
-                        pass
                     
                     del request.session[session_key]
                     del request.session[start_time_session_key]
                     del request.session[trainee_training_session_key]
                     
-                    training = Training.objects.get(pk=training_id) 
-                    messages.success(request, _("You have completed: %(training)s") % {"training": training.name_training})
+                    training = Training.objects.get(pk=training_id)
                     
-                    if courses_as_exam.exists():
+                    # Mensaje personalizado según si aprobó o no
+                    if trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
+                        messages.success(
+                            request, 
+                            _("Congratulations! You passed '%(training)s' with %(score)s%%") % {
+                                "training": training.name_training,
+                                "score": trainee_training.score_percentage
+                            }
+                        )
+                    else:
+                        messages.warning(
+                            request,
+                            _("You completed '%(training)s' with %(score)s%%. You need %(passing)s%% to pass. You can retry if attempts are available.") % {
+                                "training": training.name_training,
+                                "score": trainee_training.score_percentage,
+                                "passing": training.passing_score
+                            }
+                        )
+                    
+                    courses_as_exam = Course.objects.filter(final_exam=training)
+                    if courses_as_exam.exists() and trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
                         return HttpResponseRedirect(reverse('trainingApp:comment', args=[course_id, training_id]))
                     else:
                         return HttpResponseRedirect(reverse('trainingApp:course_detail', args=[course_id]))
@@ -581,12 +824,23 @@ class ReviewListTT(ListView):
             messages.error(self.request, _("You need to be a trainee to access this page."))
             return TraineeTraining.objects.none()
         
+        # Determinar si este training es el examen final del curso
+        is_final_exam = course.final_exam_id == training_id
+        
         queryset = TraineeTraining.objects.filter(
             training_id=training_id,
             course_id=course_id,
-            trainee_id=trainee.id,
-            state = "Completed"
+            trainee_id=trainee.id
+        ).exclude(
+            state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
         )
+        
+        # Filtrar por tipo de intento
+        if is_final_exam:
+            queryset = queryset.filter(is_final_exam_attempt=True)
+        else:
+            queryset = queryset.filter(is_final_exam_attempt=False)
+        
         for i, trainee_training in enumerate(queryset, start=1):
             trainee_training.item_number = i
             
@@ -598,8 +852,17 @@ class ReviewListTT(ListView):
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs['course_id']
         training_id = self.kwargs['training_id']
+        course = get_object_or_404(Course, id=course_id)
+        training = get_object_or_404(Training, id=training_id)
+        
         context['course_id'] = course_id
         context['training_id'] = training_id
+        context['course'] = course
+        context['training'] = training
+        
+        # Determinar si este training es el examen final del curso
+        context['is_final_exam'] = course.final_exam_id == training_id
+        
         return context
 
 

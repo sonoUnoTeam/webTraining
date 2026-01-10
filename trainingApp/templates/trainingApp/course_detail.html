@@ -19,11 +19,51 @@
     body.dark-mode .training-link:hover {
         color: #88c5db;
     }
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
     .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
+        transform: translateX(2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     body.dark-mode .table-hover tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.075);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .table tbody tr.row-passed:hover {
+        background: linear-gradient(90deg, rgba(40, 167, 69, 0.12) 0%, rgba(40, 167, 69, 0.05) 100%) !important;
+    }
+    .table tbody tr.row-locked-progress:hover {
+        background: linear-gradient(90deg, rgba(111, 66, 193, 0.12) 0%, rgba(111, 66, 193, 0.05) 100%) !important;
+    }
+    .table tbody tr.row-locked-attempts:hover {
+        background: linear-gradient(90deg, rgba(253, 126, 20, 0.12) 0%, rgba(253, 126, 20, 0.05) 100%) !important;
+    }
+    .table tbody tr.row-failed:hover {
+        background: linear-gradient(90deg, rgba(220, 53, 69, 0.12) 0%, rgba(220, 53, 69, 0.05) 100%) !important;
+    }
+    .table tbody tr.row-available:hover {
+        background: linear-gradient(90deg, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0.05) 100%) !important;
+    }
+    .table tbody tr.row-locked:hover {
+        background: linear-gradient(90deg, rgba(108, 117, 125, 0.10) 0%, rgba(108, 117, 125, 0.04) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-passed:hover {
+        background: linear-gradient(90deg, rgba(40, 167, 69, 0.20) 0%, rgba(40, 167, 69, 0.08) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-locked-progress:hover {
+        background: linear-gradient(90deg, rgba(111, 66, 193, 0.20) 0%, rgba(111, 66, 193, 0.08) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-locked-attempts:hover {
+        background: linear-gradient(90deg, rgba(253, 126, 20, 0.20) 0%, rgba(253, 126, 20, 0.08) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-failed:hover {
+        background: linear-gradient(90deg, rgba(220, 53, 69, 0.20) 0%, rgba(220, 53, 69, 0.08) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-available:hover {
+        background: linear-gradient(90deg, rgba(13, 110, 253, 0.20) 0%, rgba(13, 110, 253, 0.08) 100%) !important;
+    }
+    body.dark-mode .table tbody tr.row-locked:hover {
+        background: linear-gradient(90deg, rgba(108, 117, 125, 0.16) 0%, rgba(108, 117, 125, 0.06) 100%) !important;
     }
     .table td {
         vertical-align: middle;
@@ -63,69 +103,85 @@
         border-color: #6c757d;
     }
     .note-card {
-        background-color: #f8f9fa;
-        border-left: 5px solid #007bff;
+        background-color: #f7f9fc;
+        border-left: 4px solid #0d6efd;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
     body.dark-mode .note-card {
         background-color: #212529 !important;
-        border-left: 5px solid #6eb5d4 !important;
+        border-left: 4px solid #6eb5d4 !important;
     }
     .note-card .card-header {
-        color: #007bff;
-        font-weight: bold;
+        color: #0d6efd;
+        font-weight: 600;
+        background-color: rgba(13, 110, 253, 0.06);
+        font-size: 1.05rem;
     }
     body.dark-mode .note-card .card-header {
         color: #6eb5d4;
-        background-color: #2b3035;
+        background-color: rgba(110, 181, 212, 0.15);
+    }
+    .note-card .card-body p {
+        line-height: 1.7;
+        color: #2d3748;
+    }
+    body.dark-mode .note-card .card-body p {
+        color: #cbd5e0;
     }
     /* Title styles */
     .page-title {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        font-weight: 700;
-        font-size: 1.75rem;
+        font-weight: 600;
+        font-size: 2rem;
         color: #0b5ed7;
-        margin-bottom: 0.35rem;
-        letter-spacing: -0.1px;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
     }
     body.dark-mode .page-title {
         color: #6eb5d4;
     }
     .section-title {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        font-weight: 650;
-        font-size: 1.2rem;
+        font-weight: 600;
+        font-size: 1.35rem;
         color: #1f2a37;
-        margin-bottom: 0.65rem;
-        padding-bottom: 0.25rem;
-        border-bottom: 2px solid rgba(13,110,253,0.08);
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(13,110,253,0.15);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     body.dark-mode .section-title {
         color: #f8f9fa;
-        border-bottom: 2px solid rgba(110, 181, 212, 0.2);
+        border-bottom: 2px solid rgba(110, 181, 212, 0.25);
     }
     /* Hero and description */
     .course-hero {
-        background: linear-gradient(135deg, #fafdff 0%, #f3f7ff 100%);
-        border: 1px solid #e4e9f3;
-        border-radius: 10px;
-        padding: 1rem;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
-        margin-bottom: 0.75rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+        border: 1px solid #d1d9e6;
+        border-radius: 12px;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
+        margin-bottom: 2rem;
     }
     body.dark-mode .course-hero {
-        background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+        background: linear-gradient(135deg, #2a2f35 0%, #1f2428 100%);
         border: 1px solid #495057;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
     }
     .course-description {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        font-size: 1.02rem;
-        line-height: 1.55;
-        color: #3d4551;
-        margin: 0.25rem 0 0;
+        font-size: 1.05rem;
+        line-height: 1.65;
+        color: #2d3748;
+        margin: 0.5rem 0 0;
+        font-weight: 400;
     }
     body.dark-mode .course-description {
-        color: #dee2e6;
+        color: #cbd5e0;
     }
     .card.note-card {
         border-radius: 10px;
@@ -135,11 +191,32 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     /* Table styles */
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
     .table thead tr {
-        font-weight: 600;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        background-color: #f8f9fa;
+    }
+    .table thead th {
+        color: #2d3748;
+        border-bottom: 2px solid #dee2e6;
+        padding: 1rem 0.75rem;
+    }
+    .table tbody td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        color: #2d3748;
+        border-color: #e9ecef;
     }
     body.dark-mode .table {
         color: #f8f9fa;
+        background-color: transparent;
     }
     body.dark-mode .table thead th {
         color: #f8f9fa;
@@ -165,140 +242,818 @@
         background-color: #1e4b33 !important;
         color: #f8f9fa !important;
     }
-    body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
     body.dark-mode .table-bordered {
         border-color: #495057;
     }
-    body.dark-mode .table-hover tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.075);
+    body.dark-mode .table-warning {
+        background-color: #6f5a1e !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-light {
+        background-color: #343a40 !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-light th {
+        background-color: #343a40 !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-danger {
+        background-color: #6f2c2c !important;
+        color: #f8f9fa !important;
+    }
+    body.dark-mode .table-danger th {
+        background-color: #6f2c2c !important;
+        color: #f8f9fa !important;
+    }
+    .section-title i {
+        margin-right: 0.5rem;
+    }
+    /* Badge styles for status */
+    .badge-passed {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+    }
+    body.dark-mode .badge-passed {
+        background: linear-gradient(135deg, #2d5f3b 0%, #1e4b33 100%);
+        border: 1px solid #4caf50;
+        box-shadow: none;
+    }
+    .badge-failed {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    }
+    body.dark-mode .badge-failed {
+        background: linear-gradient(135deg, #5f2d2d 0%, #4a1f1f 100%);
+        border: 1px solid #f44336;
+        box-shadow: none;
+    }
+    .badge-available {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(23, 162, 184, 0.2);
+    }
+    body.dark-mode .badge-available {
+        background: linear-gradient(135deg, #2d4f5f 0%, #1e3744 100%);
+        border: 1px solid #17a2b8;
+        box-shadow: none;
+    }
+    .badge-locked {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
+    }
+    body.dark-mode .badge-locked {
+        background: linear-gradient(135deg, #3d4449 0%, #2d3338 100%);
+        border: 1px solid #6c757d;
+        box-shadow: none;
+    }
+    .badge-locked-progress {
+        background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(111, 66, 193, 0.2);
+    }
+    body.dark-mode .badge-locked-progress {
+        background: linear-gradient(135deg, #4a2d6b 0%, #3a2155 100%);
+        border: 1px solid #6f42c1;
+        box-shadow: none;
+    }
+    .badge-locked-attempts {
+        background: linear-gradient(135deg, #fd7e14 0%, #dc6502 100%);
+        color: white;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(253, 126, 20, 0.2);
+    }
+    body.dark-mode .badge-locked-attempts {
+        background: linear-gradient(135deg, #8b4513 0%, #6d3510 100%);
+        border: 1px solid #fd7e14;
+        box-shadow: none;
+    }
+    .badge-in-progress {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+        color: #000;
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+    }
+    body.dark-mode .badge-in-progress {
+        background: linear-gradient(135deg, #5f4b2d 0%, #4a3a22 100%);
+        color: #ffc107;
+        border: 1px solid #ffc107;
+        box-shadow: none;
+    }
+    /* Row background colors based on training status - only on hover */
+    .table tbody tr.row-passed {
+        border-left: 4px solid rgba(40, 167, 69, 0.6);
+    }
+    .table tbody tr.row-locked-progress {
+        border-left: 4px solid rgba(111, 66, 193, 0.6);
+    }
+    .table tbody tr.row-locked-attempts {
+        border-left: 4px solid rgba(253, 126, 20, 0.6);
+    }
+    .table tbody tr.row-failed {
+        border-left: 4px solid rgba(220, 53, 69, 0.6);
+    }
+    .table tbody tr.row-available {
+        border-left: 4px solid rgba(13, 110, 253, 0.6);
+    }
+    .table tbody tr.row-locked {
+        border-left: 4px solid rgba(108, 117, 125, 0.5);
+    }
+    body.dark-mode .table tbody tr.row-passed {
+        border-left: 4px solid rgba(40, 167, 69, 0.8);
+    }
+    body.dark-mode .table tbody tr.row-locked-progress {
+        border-left: 4px solid rgba(111, 66, 193, 0.8);
+    }
+    body.dark-mode .table tbody tr.row-locked-attempts {
+        border-left: 4px solid rgba(253, 126, 20, 0.8);
+    }
+    body.dark-mode .table tbody tr.row-failed {
+        border-left: 4px solid rgba(220, 53, 69, 0.8);
+    }
+    body.dark-mode .table tbody tr.row-available {
+        border-left: 4px solid rgba(13, 110, 253, 0.8);
+    }
+    body.dark-mode .table tbody tr.row-locked {
+        border-left: 4px solid rgba(108, 117, 125, 0.7);
+    }
+    /* Action buttons */
+    .btn-start-training {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(13,110,253,0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+    .btn-start-training:hover {
+        background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(13,110,253,0.4);
+        color: white;
+        text-decoration: none;
+    }
+    body.dark-mode .btn-start-training {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        box-shadow: 0 2px 4px rgba(13,110,253,0.3);
+    }
+    body.dark-mode .btn-start-training:hover {
+        background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+        box-shadow: 0 4px 8px rgba(13,110,253,0.4);
+    }
+    .btn-retry-training {
+        background: linear-gradient(135deg, #fd7e14 0%, #dc6502 100%);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(253,126,20,0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: 0.3px;
+    }
+    .btn-retry-training:hover {
+        background: linear-gradient(135deg, #dc6502 0%, #c35400 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(253,126,20,0.4);
+        color: white;
+        text-decoration: none;
+    }
+    body.dark-mode .btn-retry-training {
+        background: linear-gradient(135deg, #d66011 0%, #b55309 100%);
+        box-shadow: 0 2px 8px rgba(214,96,17,0.3);
+    }
+    body.dark-mode .btn-retry-training:hover {
+        background: linear-gradient(135deg, #b55309 0%, #944307 100%);
+        box-shadow: 0 4px 12px rgba(214,96,17,0.4);
+    }
+    .btn-review {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        letter-spacing: 0.3px;
+        box-shadow: 0 2px 4px rgba(108,117,125,0.2);
+    }
+    .btn-review:hover {
+        background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(108,117,125,0.3);
+    }
+    body.dark-mode .btn-review {
+        background-color: #495057;
+        border: 1px solid #6c757d;
+    }
+    body.dark-mode .btn-review:hover {
+        background-color: #3d4449;
+        border: 1px solid #868e96;
+    }
+    /* Score display - Compact with icons */
+    .score-compact {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+    }
+    .score-line {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .score-line .label {
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #495057;
+        min-width: 35px;
+    }
+    body.dark-mode .score-line .label {
+        color: #adb5bd;
+    }
+    .score-line .value {
+        font-weight: 600;
+    }
+    .score-line .value.passed {
+        color: #28a745;
+    }
+    .score-line .value.failed {
+        color: #dc3545;
+    }
+    body.dark-mode .score-line .value.passed {
+        color: #75b798;
+    }
+    body.dark-mode .score-line .value.failed {
+        color: #ea868f;
+    }
+    .score-line .icon-check {
+        color: #28a745;
+        font-weight: bold;
+    }
+    body.dark-mode .score-line .icon-check {
+        color: #75b798;
+    }
+    .text-muted {
+        color: #6c757d !important;
+    }
+    body.dark-mode .text-muted {
+        color: #adb5bd !important;
+    }
+    .score-display {
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        display: inline-block;
+    }
+    .score-info {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    .best-score, .last-score {
+        margin-bottom: 0.2rem;
+    }
+    .best-score strong, .last-score strong {
+        font-weight: 600;
+        color: #495057;
+    }
+    body.dark-mode .best-score strong, 
+    body.dark-mode .last-score strong {
+        color: #adb5bd;
+    }
+    .best-answers, .last-answers {
+        margin-bottom: 0.3rem;
+        line-height: 1.3;
+    }
+    .best-answers strong, .last-answers strong {
+        font-weight: 600;
+        color: #495057;
+        display: block;
+        margin-bottom: 0.2rem;
+    }
+    body.dark-mode .best-answers strong, 
+    body.dark-mode .last-answers strong {
+        color: #adb5bd;
+    }
+    .score-passed {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 2px solid rgba(40, 167, 69, 0.3);
+    }
+    .score-failed {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 2px solid rgba(220, 53, 69, 0.3);
+    }
+    body.dark-mode .score-passed {
+        background-color: rgba(40, 167, 69, 0.2);
+        color: #75b798;
+    }
+    body.dark-mode .score-failed {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #e57373;
+    }
+    /* Attempt info */
+    .attempt-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    body.dark-mode .attempt-info {
+        color: #adb5bd;
+    }
+    .training-name-cell {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    body.dark-mode .training-name-cell {
+        color: #f8f9fa;
+    }
+    .info-tooltip {
+        display: inline-block;
+        margin-left: 0.3rem;
+        color: #6c757d;
+        cursor: help;
+    }
+    body.dark-mode .info-tooltip {
+        color: #adb5bd;
+    }
+    /* Badge bg-light fix for dark mode */
+    body.dark-mode .badge.bg-light {
+        background-color: #495057 !important;
+        color: #f8f9fa !important;
+        border: 1px solid #6c757d;
+    }
+    body.dark-mode .badge.bg-danger {
+        background-color: #5f2d2d !important;
+        border: 1px solid #dc3545;
+    }
+    /* Table cell text colors */
+    body.dark-mode .table td strong {
+        color: #f8f9fa;
+    }
+    body.dark-mode .text-muted {
+        color: #adb5bd !important;
+    }
+    /* SweetAlert2 dark mode */
+    .swal-dark-mode {
+        border: 1px solid #495057 !important;
+    }
+    body.dark-mode .swal2-icon.swal2-warning {
+        border-color: #ffc107 !important;
+        color: #ffc107 !important;
+    }
+    /* Answers info styling */
+    .answers-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 0.85rem;
+    }
+    .correct-answers {
+        color: #28a745;
+        font-weight: 600;
+    }
+    body.dark-mode .correct-answers {
+        color: #75b798;
+    }
+    .incorrect-answers {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    body.dark-mode .incorrect-answers {
+        color: #ea868f;
+    }
+    /* Average score display */
+    .average-score-display {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    body.dark-mode .average-score-display {
+        background: linear-gradient(135deg, #2a2f35 0%, #1f2428 100%);
+        border-color: #495057;
     }
 </style>
+
+<script>
+    function confirmStartTraining(trainingUrl, previousHasRetries, trainingName, isFinalExam = false) {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        
+        if (previousHasRetries) {
+            let message = "";
+            if (isFinalExam) {
+                message = "{% trans 'Starting Final Exam' %}: <strong>" + trainingName + "</strong><br><br>" +
+                          "{% trans 'All previous trainings with remaining attempts will be locked and you will not be able to retry them.' %}<br>" +
+                          "{% trans 'You will keep your current scores.' %}";
+            } else {
+                message = "{% trans 'Starting' %} <strong>" + trainingName + "</strong><br><br>" +
+                          "{% trans 'The previous training will be locked and you will not be able to retry it.' %}<br>" +
+                          "{% trans 'You will keep your current score.' %}";
+            }
+            
+            Swal.fire({
+                title: "{% trans 'Warning!' %}",
+                html: message,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "{% trans 'Continue Anyway' %}",
+                cancelButtonText: "{% trans 'Cancel' %}",
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                background: isDarkMode ? '#2b3035' : '#fff',
+                color: isDarkMode ? '#e9ecef' : '#212529',
+                customClass: {
+                    popup: isDarkMode ? 'swal-dark-mode' : ''
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = trainingUrl;
+                }
+            });
+        } else {
+            // Si no tiene retries anteriores, ir directamente
+            window.location.href = trainingUrl;
+        }
+    }
+</script>
 
 <div>
     <div class="course-hero">
         <h1 class="page-title mb-2">{{ course.name_course }}</h1>
         <p class="course-description">{{ course.description }}</p>
     </div>
-    <div class="card my-3 border border-3 note-card">
-        <div class="card-header">
+    <div class="card my-4 border border-2 note-card">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle-fill"></i>
             {% trans "Quick Guide" %}
         </div>
         <div class="card-body">
             <blockquote class="blockquote mb-0">
                 {% blocktrans %}
-                <p>Trainings unlock sequentially after completing the previous one. Click the training name to start, you can view the results once the training is completed. The final training unlocks after completing all trainings in the course.</p>
+                <p class="mb-0">Trainings are ordered sequentially as configured by the course administrator. You can advance to the next training even if you failed, but doing so will lock the previous training and you'll keep your current score.</p>
                 {% endblocktrans %}
+                <p class="mb-0 mt-2"><strong>{% trans "Final Exam Requirements" %}:</strong></p>
+                <ul class="mb-0 ps-3">
+                    <li>{% trans "Complete all trainings in the course" %}</li>
+                    <li>{% trans "Achieve an average score of at least" %} <strong>{{ course.required_average_score }}%</strong> {% trans "from your best training attempts" %}</li>
+                </ul>
             </blockquote>
         </div>
     </div>
 
-    <h2 class="section-title">{% trans "Course Modules" %}</h2>
-    <div class="table-responsive">
-        {% if course_trainings %}
-            <table class="table table-striped table-bordered border border-2 table-hover">
+    <h2 class="section-title">
+        <i class="bi bi-journal-text"></i>
+        {% trans "Trainings" %}
+    </h2>
+    
+    {% if course_trainings %}
+        <!-- Unified Trainings Section -->
+        <div class="mb-4">
+            <div class="table-responsive">
+                <table class="table table-bordered border border-2 table-hover">
+                    <thead>
+                        <tr class="table-primary">
+                            <th style="width: 5%;">{% trans "#" %}</th>
+                            <th style="width: 22%;">{% trans "Training Name" %}</th>
+                            <th style="width: 9%;">{% trans "Difficulty" %}</th>
+                            <th style="width: 8%;">{% trans "Duration" %}</th>
+                            <th style="width: 10%;">{% trans "Attempts" %}</th>
+                            <th colspan="2" style="width: 16%;">{% trans "Score & Results" %}</th>
+                            <th style="width: 12%;">{% trans "Status" %}</th>
+                            <th style="width: 22%;">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ct in course_trainings %}
+                            <tr class="{% if ct.completed %}row-passed{% elif ct.is_locked_by_next %}row-locked-progress{% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}row-locked-attempts{% elif ct.completed_attempts|default:0 > 0 and not ct.completed %}row-failed{% elif ct.enabled %}row-available{% else %}row-locked{% endif %}">
+                                <td><strong>{{ ct.position }}</strong></td>
+                                <td class="training-name-cell">
+                                    <strong>{{ ct.training.name_training }}</strong>
+                                    <br><small class="text-muted">{% trans "Passing Score" %}: {{ ct.training.passing_score }}%</small>
+                                </td>
+                                <td>
+                                    {% if ct.training.difficulty == 'Easy' %}
+                                        <span class="badge bg-success">{% trans "Easy" %}</span>
+                                    {% elif ct.training.difficulty == 'Intermediate' %}
+                                        <span class="badge bg-warning text-dark">{% trans "Intermediate" %}</span>
+                                    {% elif ct.training.difficulty == 'Advanced' %}
+                                        <span class="badge bg-danger">{% trans "Advanced" %}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ ct.training.get_difficulty_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ ct.training.total_estimated_duration }} min</span>
+                                </td>
+                                <td>
+                                    <div class="attempt-info">
+                                        <i class="bi bi-bar-chart-fill"></i>
+                                        <span>{{ ct.completed_attempts|default:0 }}/{{ ct.training.attempts_allowed }}</span>
+                                        {% if ct.completed_attempts|default:0 >= ct.training.attempts_allowed and not ct.completed %}
+                                            <i class="bi bi-exclamation-triangle-fill text-warning ms-1" title="{% trans 'Maximum attempts reached' %}"></i>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td colspan="2">
+                                    {% if ct.best_score is not None or ct.last_score is not None %}
+                                        <div class="score-compact">
+                                            {% if ct.best_score is not None and ct.best_attempt %}
+                                                <div class="score-line">
+                                                    <span class="label">{% trans "Best" %}:</span>
+                                                    <span class="value {% if ct.completed %}passed{% else %}failed{% endif %}">{{ ct.best_score }}%</span>
+                                                    <span class="text-muted">({{ ct.best_attempt.correct_answers }}/{{ ct.best_attempt.correct_answers|add:ct.best_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
+                                                </div>
+                                            {% endif %}
+                                            {% if ct.last_score is not None and ct.last_attempt and ct.best_attempt.id != ct.last_attempt.id %}
+                                                <div class="score-line">
+                                                    <span class="label">{% trans "Last" %}:</span>
+                                                    <span class="value {% if ct.last_attempt.state.value == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.last_score }}%</span>
+                                                    <span class="text-muted">({{ ct.last_attempt.correct_answers }}/{{ ct.last_attempt.correct_answers|add:ct.last_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ct.completed %}
+                                        <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
+                                    {% elif ct.is_locked_by_next %}
+                                        <span class="badge-locked-progress" title="{% trans 'Locked because you advanced to the next training without reaching the passing score' %}"><i class="bi bi-lock-fill"></i> {% trans "Locked" %} ({% trans "Skipped" %})</span>
+                                    {% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}
+                                        <span class="badge-locked-attempts" title="{% trans 'Locked because all attempts have been used' %}"><i class="bi bi-ban"></i> {% trans "Attempts Exhausted" %}</span>
+                                    {% elif ct.completed_attempts|default:0 > 0 and not ct.completed %}
+                                        <span class="badge-failed"><i class="bi bi-x-circle-fill"></i> {% trans "Failed" %}</span>
+                                    {% elif ct.enabled %}
+                                        <span class="badge-available"><i class="bi bi-play-circle-fill"></i> {% trans "Available" %}</span>
+                                    {% else %}
+                                        <span class="badge-locked"><i class="bi bi-lock-fill"></i> {% trans "Locked" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if ct.is_locked_by_next %}
+                                        <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="btn-review">
+                                            <i class="bi bi-file-text"></i> {% trans "View Results" %}
+                                        </a>
+                                        <br><small class="text-warning"><i class="bi bi-lock-fill"></i> {% trans "Locked - moved to next training" %}</small>
+                                    {% elif ct.completed_attempts|default:0 > 0 and ct.best_attempt.state == 'passed' and ct.completed_attempts|default:0 < ct.training.attempts_allowed %}
+                                        <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-start-training">
+                                            <i class="bi bi-play-fill"></i> {% trans "Start" %} ({% trans "Optional" %})
+                                        </a>
+                                        <br>
+                                        <small class="text-info">
+                                            <i class="bi bi-lightbulb-fill"></i> <em>{% trans "Optional retry to improve your score" %}</em>
+                                        </small>
+                                    {% elif ct.completed_attempts|default:0 > 0 and ct.best_attempt.state == 'failed' and ct.completed_attempts|default:0 < ct.training.attempts_allowed %}
+                                        <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-retry-training">
+                                            <i class="bi bi-arrow-clockwise"></i> {% trans "Retry" %} ({{ ct.training.attempts_allowed|subtract:ct.completed_attempts }} {% trans "remaining" %})
+                                        </a>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> <em>{% trans "Advancing to next will lock this" %}</em>
+                                        </small>
+                                    {% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}
+                                        <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="btn-review">
+                                            <i class="bi bi-file-text"></i> {% trans "View Results" %}
+                                        </a>
+                                        <br><small class="text-warning">{% trans "Maximum attempts reached" %}</small>
+                                    {% elif ct.enabled and ct.can_retry %}
+                                        <a href="javascript:void(0);" onclick="confirmStartTraining('{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}', {{ ct.previous_has_retries|yesno:'true,false' }}, '{{ ct.training.name_training|escapejs }}')" class="btn-start-training">
+                                            <i class="bi bi-play-fill"></i> {% trans "Start" %}
+                                        </a>
+                                    {% else %}
+                                        <small class="text-muted">{% trans "Complete previous training" %}</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Average Score Display -->
+                {% if course_trainings %}
+                <div class="average-score-display" style="border-left: 4px solid {% if meets_average_requirement %}#28a745{% else %}#ffc107{% endif %};">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><i class="bi bi-graph-up"></i> {% trans "Average Score from Best Attempts" %}:</strong>
+                            <span class="ms-2" style="font-size: 1.3rem; font-weight: 600; color: {% if meets_average_requirement %}#28a745{% else %}#ffc107{% endif %};">
+                                {{ average_score }}%
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted d-block">{% trans "Required for Final Exam" %}: {{ course.required_average_score }}%</small>
+                            {% if meets_average_requirement %}
+                                <span class="badge bg-success mt-1">
+                                    <i class="bi bi-check-circle-fill"></i> {% trans "Requirement Met" %}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark mt-1">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> {% trans "Below Required Average" %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        {% blocktrans %}
+            <p class="lead">No trainings in this course.</p>
+        {% endblocktrans %}
+    {% endif %}
+
+    {% if course.final_exam %}
+        <h2 class="section-title">
+            <i class="bi bi-award-fill"></i>
+            {% trans "Final Exam" %}
+        </h2>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered border border-2 table-hover">
                 <thead>
-                    <tr class="table-primary">
-                        <th>{% trans "Order" %}</th>
-                        <th>{% trans "Name" %}</th>
-                        <th>{% trans "Difficulty" %}</th>
-                        <th>{% trans "Duration (minutes)" %}</th>
-                        <th>{% trans "Allowed Attempts" %}</th>
-                        <th>{% trans "Attempts Made" %}</th>
-                        <th>{% trans "Reviews" %}</th>
-                        <th>{% trans "Status" %}</th>
+                    <tr class="table-light">
+                        <th style="width: 15%;">{% trans "Exam Name" %}</th>
+                        <th style="width: 8%;">{% trans "Difficulty" %}</th>
+                        <th style="width: 8%;">{% trans "Duration" %}</th>
+                        <th style="width: 8%;">{% trans "Attempts" %}</th>
+                        <th style="width: 8%;">{% trans "Score" %}</th>
+                        <th style="width: 8%;">{% trans "Correct" %}</th>
+                        <th style="width: 8%;">{% trans "Incorrect" %}</th>
+                        <th style="width: 10%;">{% trans "Status" %}</th>
+                        <th style="width: 25%;">{% trans "Actions" %}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for ct in course_trainings %}
-                        <tr>
-                            <td>{{ ct.order }}</td>
-                            <td>
-                                {% if ct.enabled %}
-                                    <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="training-link">{{ ct.training.name_training }}</a>
-                                {% else %}
-                                    {{ ct.training.name_training }}
-                                {% endif %}
-                            </td>
-                            <td>{{ ct.training.get_difficulty_display }}</td>
-                            <td>{{ ct.training.total_estimated_duration }}</td>
-                            <td>{{ ct.training.attempts_allowed }}</td>
-                            <td>{{ num_trainee_trainings|get_value:ct.training.id }}</td>
-                            <td>
-                                <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="text-primary">{% trans "review" %}</a>
-                            </td>
-                            <td>
-                                {% if ct.completed %}
-                                    <span class="status-completed">{% trans "Completed" %}</span>
-                                {% elif ct.enabled %}
-                                    <span class="status-available">{% trans "Available" %}</span>
-                                {% else %}
-                                    <span class="status-locked">{% trans "Locked - Complete previous trainings" %}</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                    <tr class="{% if final_exam_attempt and final_exam_attempt.state == 'passed' %}row-passed{% elif all_completed %}row-available{% else %}row-locked{% endif %}">
+                        <td class="training-name-cell">
+                            <strong>{{ course.final_exam.name_training }}</strong>
+                            <br><small class="text-muted">{% trans "Passing Score" %}: {{ course.final_exam_passing_score }}%</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ course.final_exam.get_difficulty_display }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">{{ course.final_exam.total_estimated_duration }} min</span>
+                        </td>
+                        <td>
+                            <div class="attempt-info">
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>{{ num_trainee_trainings|get_value:course.final_exam.id }}/{{ course.final_exam.attempts_allowed }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if final_exam_attempt %}
+                                <strong style="font-size: 1.1em; 
+                                {% if final_exam_attempt.state == 'passed' %}color: #28a745;{% else %}color: #dc3545;{% endif %}">
+                                    {{ final_exam_attempt.score_percentage }}%
+                                </strong>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if final_exam_attempt %}
+                                <span class="text-success">{{ final_exam_attempt.correct_answers }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if final_exam_attempt %}
+                                <span class="text-danger">{{ final_exam_attempt.incorrect_answers }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if final_exam_attempt and final_exam_attempt.state == 'passed' %}
+                                <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
+                            {% elif all_completed %}
+                                <span class="badge-available"><i class="bi bi-play-circle-fill"></i> {% trans "Available" %}</span>
+                            {% else %}
+                                <span class="badge-locked"><i class="bi bi-lock-fill"></i> {% trans "Locked" %}</span>
+                                <br><small class="text-muted">{% trans "Complete all trainings first" %}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if final_exam_attempt and final_exam_attempt.state == 'passed' %}
+                                <a href="{% url 'trainingApp:review_list_tt' course.id course.final_exam.id %}" class="btn-review">
+                                    <i class="bi bi-file-text"></i> {% trans "View Results" %}
+                                </a>
+                                <span class="ms-2" style="color: #28a745; font-weight: 600;"><i class="bi bi-trophy-fill"></i> {% trans "Exam Passed!" %}</span>
+                            {% elif can_take_final_exam %}
+                                <a href="javascript:void(0);" onclick="confirmStartTraining('{% url 'trainingApp:block_deploy_list' course.id course.final_exam.id %}', {{ has_trainings_with_retries|yesno:'true,false' }}, '{{ course.final_exam.name_training|escapejs }}', true)" class="btn-start-training">
+                                    <i class="bi bi-pencil-square"></i> {% trans "Take Final Exam" %}
+                                </a>
+                            {% elif all_completed and not meets_average_requirement %}
+                                <button class="btn-start-training" disabled style="opacity: 0.5; cursor: not-allowed;" 
+                                    title="{% trans 'Average score' %}: {{ average_score }}% ({% trans 'Required' %}: {{ course.required_average_score }}%)">
+                                    <i class="bi bi-lock-fill"></i> {% trans "Insufficient Average Score" %}
+                                </button>
+                                <small class="d-block mt-1 text-muted">{% trans "Current average" %}: {{ average_score }}% | {% trans "Required" %}: {{ course.required_average_score }}%</small>
+                            {% else %}
+                                <button class="btn-start-training" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                    <i class="bi bi-lock-fill"></i> {% trans "Complete All Trainings First" %}
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-        {% else %}
-            {% blocktrans %}
-                <p class="lead">No trainings in this course.</p>
-            {% endblocktrans %}
-        {% endif %}
-    </div>
-
-    <h2 class="section-title">{% trans "Final Training" %}</h2>
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered border border-2 table-hover">
-            <thead>
-                <tr class="table-success">
-                    <th>{% trans "Name" %}</th>
-                    <th>{% trans "Difficulty" %}</th>
-                    <th>{% trans "Duration (minutes)" %}</th>
-                    <th>{% trans "Allowed Attempts" %}</th>
-                    <th>{% trans "Attempts Made" %}</th>
-                    <th>{% trans "Reviews" %}</th>
-                    <th>{% trans "Status" %}</th>
-                    <th>{% trans "Action" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if course.final_exam %}
-                    <tr>
-                        <td>{{ course.final_exam.name_training }}</td>
-                        <td>{{ course.final_exam.get_difficulty_display }}</td>
-                        <td>{{ course.final_exam.total_estimated_duration }}</td>
-                        <td>{{ course.final_exam.attempts_allowed }}</td>
-                        <td>{{ num_trainee_trainings|get_value:course.final_exam.id }}</td>
-                        <td>
-                            <a href="{% url 'trainingApp:review_list_tt' course.id course.final_exam.id %}" class="text-primary">{% trans "review" %}</a>
-                        </td>
-                        <td>
-                            {% if trainee_course.exam_passed %}
-                                <span class="status-completed">{% trans "Passed" %}</span>
-                            {% elif all_completed %}
-                                <span class="status-available">{% trans "Available" %}</span>
-                            {% else %}
-                                <span class="status-locked">{% trans "Locked - Complete all trainings" %}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if all_completed %}
-                                <a href="{% url 'trainingApp:block_deploy_list' course.id course.final_exam.id %}" class="btn exam-btn">{% trans "Take Exam" %}</a>
-                            {% else %}
-                                <span class="btn exam-btn disabled">{% trans "Take Exam" %}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8">{% trans "No final training defined for this course." %}</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
+        </div>
+    {% endif %}
 </div>
 
 {% endblock %}

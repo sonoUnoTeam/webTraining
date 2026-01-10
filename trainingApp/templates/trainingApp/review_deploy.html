@@ -206,10 +206,12 @@
             {% endif %}
         </div>
         <div class="form-deploy-audio">
-            <audio controls>
-                <source src="{{ deploy.deploy_sound.url }}" type="audio/mpeg">
-                {% blocktrans %} Your browser does not support audio playback. {% endblocktrans %}
-            </audio>
+            {% if deploy.deploy_sound %}
+                <audio controls>
+                    <source src="{{ deploy.deploy_sound.url }}" type="audio/mpeg">
+                    {% blocktrans %} Your browser does not support audio playback. {% endblocktrans %}
+                </audio>
+            {% endif %}
         </div>
         <div class="form-question">
             <p class="h5">{{ deploy.question }}</p>
