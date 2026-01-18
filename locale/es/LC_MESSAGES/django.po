@@ -330,22 +330,8 @@ msgid "Next"
 msgstr "Siguiente"
 
 #: .\trainingApp\templates\trainingApp\comment_form.html:11
-msgid ""
-"\n"
-"          <ul class=\"list-group list-group-flush\">\n"
-"              <li class=\"list-group-item\">If you have already answered "
-"this survey or do not wish to take it at this time, you can go to the bottom "
-"of the page and press the skip button</li>\n"
-"          </ul>\n"
-"          "
-msgstr ""
-"\n"
-"          <ul class=\"list-group list-group-flush\">\n"
-"              <li class=\"list-group-item\">Si ya respondió esta encuesta o "
-"no desea realizarla en este momento, puede ir al final de la página y "
-"presionar el botón omitir.</li>\n"
-"          </ul>\n"
-"          "
+msgid "If you have already answered this survey or do not wish to take it at this time, you can press the Skip Survey button"
+msgstr "Si ya ha respondido esta encuesta o no desea completarla en este momento, puede presionar el botón Omitir encuesta"
 
 #: .\trainingApp\templates\trainingApp\comment_form.html:21
 msgid "Comment"
@@ -1737,3 +1723,111 @@ msgstr "Sonorización de audio en tiempo real"
 #: .\templates\home.html
 msgid "Accessible for all users"
 msgstr "Accesible para todos los usuarios"
+
+#: .\trainingApp\templates\trainingApp\course_list.html
+msgid "Estimated duration"
+msgstr "Duración estimada"
+
+#: .\trainingApp\templates\trainingApp\course_list.html
+msgid "Done"
+msgstr "Completado"
+
+#: .\trainingApp\templates\trainingApp\course_list.html
+msgid "Complete"
+msgstr "Completado"
+
+#: .\trainingApp\templates\trainingApp\course_list.html
+msgid "Last activity"
+msgstr "Última actividad"
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid ""
+"\n"
+"                <p class=\"mb-0\">Trainings are ordered sequentially. You can "
+"advance to the next training even if you failed, but doing so will lock the "
+"previous training and you'll keep your best score.</p>\n"
+"                "
+msgstr ""
+"\n"
+"                <p class=\"mb-0\">Los entrenamientos están ordenados "
+"secuencialmente. Puedes avanzar al siguiente entrenamiento incluso si "
+"fallaste, pero hacerlo bloqueará el entrenamiento anterior y mantendrás "
+"tu mejor calificación.</p>\n"
+"                "
+
+#: .\trainingApp\templates\trainingApp\course_detail.html
+msgid "For the calculation, only the highest score you get in each training will be taken. You can make several attempts to improve your grade before advancing."
+msgstr "Para el cálculo, solo se tomará la puntuación más alta que obtengas en cada entrenamiento. Puedes hacer varios intentos para mejorar tu calificación antes de avanzar."
+
+# Translations for comment_form new strings
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Course Feedback Survey"
+msgstr "Encuesta de opinión del curso"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Help us improve by sharing your experience"
+msgstr "Ayúdanos a mejorar compartiendo tu experiencia"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "The course was:"
+msgstr "El curso fue:"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Very interesting"
+msgstr "Muy interesante"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Interesting"
+msgstr "Interesante"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Repetitive"
+msgstr "Repetitivo"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Training with sound and graphics was:"
+msgstr "La forma de entrenar con sonido y gráficas fue:"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Novel"
+msgstr "Novedoso"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Indifferent"
+msgstr "Indiferente"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Unnecessary"
+msgstr "Innecesario"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Explanations during training are:"
+msgstr "Las explicaciones durante el entrenamiento son:"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Very useful and easy to understand"
+msgstr "Muy útiles y fáciles de entender"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Useful but confusing"
+msgstr "Útiles pero confusas"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Useful but excessive"
+msgstr "Útiles pero excesivas"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Very repetitive"
+msgstr "Muy repetitivo"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Rate your overall experience"
+msgstr "Califique su experiencia general"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Submit Feedback"
+msgstr "Enviar opinión"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Skip Survey"
+msgstr "Omitir encuesta"

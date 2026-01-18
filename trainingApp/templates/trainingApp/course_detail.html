@@ -131,15 +131,21 @@
     }
     /* Title styles */
     .page-title {
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        font-weight: 600;
-        font-size: 2rem;
-        color: #0b5ed7;
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #6eb5d4;
+        letter-spacing: -0.02em;
         margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
+        text-align: center;
+        text-decoration: none;
+        border: none;
     }
     body.dark-mode .page-title {
-        color: #6eb5d4;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     .section-title {
         font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -773,21 +779,43 @@
         <p class="course-description">{{ course.description }}</p>
     </div>
     <div class="card my-4 border border-2 note-card">
-        <div class="card-header d-flex align-items-center gap-2">
+        <div class="card-header d-flex align-items-center justify-content-center gap-2">
             <i class="bi bi-info-circle-fill"></i>
             {% trans "Quick Guide" %}
         </div>
         <div class="card-body">
-            <blockquote class="blockquote mb-0">
-                {% blocktrans %}
-                <p class="mb-0">Trainings are ordered sequentially as configured by the course administrator. You can advance to the next training even if you failed, but doing so will lock the previous training and you'll keep your current score.</p>
+            <div class="d-flex mb-3">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-info-circle text-primary fs-5"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    {% blocktrans %}
+                <p class="mb-0">Trainings are ordered sequentially. You can advance to the next training even if you failed, but doing so will lock the previous training and you'll keep your best score.</p>
                 {% endblocktrans %}
-                <p class="mb-0 mt-2"><strong>{% trans "Final Exam Requirements" %}:</strong></p>
-                <ul class="mb-0 ps-3">
-                    <li>{% trans "Complete all trainings in the course" %}</li>
-                    <li>{% trans "Achieve an average score of at least" %} <strong>{{ course.required_average_score }}%</strong> {% trans "from your best training attempts" %}</li>
-                </ul>
-            </blockquote>
+                </div>
+            </div>
+
+            <hr class="text-secondary opacity-25">
+
+            <h6 class="text-primary mb-3 fw-bold d-flex align-items-center">
+                <i class="bi bi-award me-2"></i>
+                {% trans "Final Exam Requirements" %}
+            </h6>
+            
+            <ul class="list-unstyled mb-0 d-grid gap-2">
+                <li class="d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>{% trans "Complete all trainings in the course" %}</span>
+                </li>
+                <li class="d-flex align-items-start">
+                    <i class="bi bi-graph-up text-primary me-2 mt-1"></i>
+                    <span>{% trans "Achieve an average score of at least" %} <strong>{{ course.required_average_score }}%</strong></span>
+                </li>
+                <li class="d-flex align-items-start mt-1">
+                    <i class="bi bi-lightbulb-fill text-warning me-2 mt-1"></i>
+                    <small class="text-muted">{% trans "For the calculation, only the highest score you get in each training will be taken. You can make several attempts to improve your grade before advancing." %}</small>
+                </li>
+            </ul>
         </div>
     </div>
 

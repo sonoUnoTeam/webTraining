@@ -278,41 +278,54 @@ class TrainingQuestionAnswer(models.Model):
     
     
 class Comment(models.Model):
-    #Enumeracion para el tipo de entrenamiento
-    class MostLiked(models.TextChoices):
-        WELL_EXPLAINED = 'Well explained', _('Well explained')
-        INTERESTING = 'Interesting', _('Interesting')
-        EASY_TO_UNDERSTAND = 'Easy to understand', _('Easy to understand')
+    # Enumeraciones para la nueva encuesta de opinión
+    class CourseRating(models.TextChoices):
+        VERY_INTERESTING = 'very_interesting', _('Very interesting')
+        INTERESTING = 'interesting', _('Interesting')
+        REPETITIVE = 'repetitive', _('Repetitive')
 
-    class LeastLiked(models.TextChoices):
-        TOO_DIFFICULT = 'Too difficult', _('Too difficult')
-        NOT_INTERESTING = 'Not interesting', _('Not interesting')
-        POORLY_EXPLAINED = 'Poorly explained', _('Poorly explained')
-        CONFUSING = 'Confusing', _('Confusing')
-        REPETITIVE = 'Repetitive', _('Repetitive')
+    class TrainingMethod(models.TextChoices):
+        NOVEL = 'novel', _('Novel')
+        INDIFFERENT = 'indifferent', _('Indifferent')
+        UNNECESSARY = 'unnecessary', _('Unnecessary')
 
-    #foreing Key de training
+    class Explanations(models.TextChoices):
+        VERY_USEFUL = 'very_useful', _('Very useful and easy to understand')
+        USEFUL_CONFUSING = 'useful_confusing', _('Useful but confusing')
+        USEFUL_EXCESSIVE = 'useful_excessive', _('Useful but excessive')
+        REPETITIVE = 'repetitive', _('Very repetitive')
+
+    # Foreign Key de training
     training = models.ForeignKey(Training, on_delete=models.CASCADE)
-    #foreing Key de trainee
+    # Foreign Key de trainee
     trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE)
-    more_liked =  models.CharField(
-        max_length=20,
-        choices=MostLiked.choices,
+    
+    course_rating = models.CharField(
+        max_length=30,
+        choices=CourseRating.choices,
         blank=False,
         null=False,
+        default=CourseRating.INTERESTING,
     )
-    least_liked = models.CharField(
-        max_length=20,
-        choices=LeastLiked.choices,
+    training_method = models.CharField(
+        max_length=30,
+        choices=TrainingMethod.choices,
         blank=False,
         null=False,
+        default=TrainingMethod.NOVEL,
     )
-    comment_aditional = models.CharField(max_length=500)
+    explanations = models.CharField(
+        max_length=30,
+        choices=Explanations.choices,
+        blank=False,
+        null=False,
+        default=Explanations.VERY_USEFUL,
+    )
     stars = models.IntegerField(
         choices=[(i, i) for i in range(1, 6)],
         blank=False,
         null=False,
-        )
+    )
     pub_date = models.DateTimeField("upload date")
     
     def __str__(self):

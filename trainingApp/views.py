@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, Http404
 from django.views import View
 from django.views.generic import ListView
+from django.db import models
 from .forms import QuestionForm,CommentForm
 from .models import Training, TrainingQuestion, TrainingQuestionAnswer, TraineeTraining, TrainingBlock, Choice, Comment,TrainingBlockAnswer, Course, CourseTraining, TraineeCourse
 from userApp.models import Trainee
@@ -51,6 +52,54 @@ class CourseList(ListView):
                     'exam_passed': trainee_course.exam_passed
                 }
                 course.status = trainee_course.get_state_display()
+                
+                # Calcular estadísticas del curso
+                total_trainings = CourseTraining.objects.filter(course=course).count()
+                course.total_trainings = total_trainings
+                
+                # Calcular duración total del curso
+                total_duration = CourseTraining.objects.filter(
+                    course=course
+                ).aggregate(
+                    total=models.Sum('training__estimatedDuration')
+                )['total'] or 0
+                course.total_duration = total_duration
+                
+                if total_trainings > 0:
+                    completed_trainings = TraineeTraining.objects.filter(
+                        trainee=trainee,
+                        training__coursetraining__course=course
+                    ).exclude(
+                        state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
+                    ).values('training').distinct().count()
+                    course.completed_count = completed_trainings
+                    course.progress_percentage = round((completed_trainings / total_trainings) * 100)
+                else:
+                    course.completed_count = 0
+                    course.progress_percentage = 0
+                
+                # Última actividad
+                last_training = TraineeTraining.objects.filter(
+                    trainee=trainee,
+                    training__coursetraining__course=course
+                ).order_by('-pub_date').first()
+                if last_training:
+                    course.last_activity = last_training.pub_date
+                else:
+                    course.last_activity = None
+                
+                # Fecha de inicio
+                course.started_date = trainee_course.created_at if hasattr(trainee_course, 'created_at') else None
+                
+                # Dificultad (puedes ajustar esto según tu modelo)
+                if hasattr(course, 'difficulty'):
+                    difficulty_map = {'easy': 'easy', 'medium': 'medium', 'hard': 'hard'}
+                    course.difficulty_level = difficulty_map.get(course.difficulty.lower(), 'medium')
+                    course.difficulty_display = course.get_difficulty_display() if hasattr(course, 'get_difficulty_display') else course.difficulty
+                else:
+                    course.difficulty_level = 'medium'
+                    course.difficulty_display = _('Medium')
+                    
             except TraineeCourse.DoesNotExist:
                 context['course_progress'][course.id] = {
                     'state': 'Not Started',
@@ -58,6 +107,21 @@ class CourseList(ListView):
                     'exam_passed': False
                 }
                 course.status = _("Not Started")
+                course.progress_percentage = 0
+                course.total_trainings = CourseTraining.objects.filter(course=course).count()
+                course.completed_count = 0
+                course.last_activity = None
+                course.started_date = None
+                course.difficulty_level = 'medium'
+                course.difficulty_display = _('Medium')
+                
+                # Calcular duración total para cursos no iniciados
+                total_duration = CourseTraining.objects.filter(
+                    course=course
+                ).aggregate(
+                    total=models.Sum('training__estimatedDuration')
+                )['total'] or 0
+                course.total_duration = total_duration
         
         return context
 
@@ -126,12 +190,13 @@ class CourseDetailView(ListView):
                     state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
                 ).exists()
             
-            # Verificar si hay algún intento aprobado
+            # Verificar si hay algún intento completado (passed o failed)
             ct.completed = TraineeTraining.objects.filter(
                 trainee=trainee, 
                 training=ct.training, 
-                course=course, 
-                state=TraineeTraining.StateTraineeTraining.PASSED
+                course=course
+            ).exclude(
+                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).exists()
             
             # Obtener el mejor intento para mostrar estadísticas
@@ -598,7 +663,22 @@ class DeployDetailView(View):
         # Verifica si es la primera vez que el trainee ingresa al entrenamiento
         self.initialize_block(request, course_id, training_id, block_id)
 
-        self.form = QuestionForm(instance=current_deploy)
+        # Verificar si ya existe una respuesta guardada para este deploy
+        block_answer_session_key = f'current_block_answer_id_{course_id}_{training_id}_{block_id}'
+        current_block_answer_id = request.session.get(block_answer_session_key)
+        
+        initial_data = {}
+        if current_block_answer_id:
+            block_answer_obj = TrainingBlockAnswer.objects.get(pk=current_block_answer_id)
+            deploy_answer = TrainingQuestionAnswer.objects.filter(
+                block_answer=block_answer_obj,
+                deploy=current_deploy
+            ).first()
+            
+            if deploy_answer and deploy_answer.selectedChoice:
+                initial_data['selectedChoice'] = deploy_answer.selectedChoice.id
+
+        self.form = QuestionForm(instance=current_deploy, initial=initial_data)
         block = TrainingBlock.objects.get(pk = block_id)
         return render(request, self.template_name, {
             'deploy': current_deploy,
@@ -960,10 +1040,10 @@ class CommentView(LoginRequiredMixin, View):
                 trainee=trainee,
                 training=training,
                 pub_date=timezone.now(),
-                more_liked = commentform.cleaned_data['more_liked'],
-                least_liked = commentform.cleaned_data['least_liked'],
-                stars = commentform.cleaned_data['stars'],
-                comment_aditional= commentform.cleaned_data['comment_aditional'],
+                course_rating=commentform.cleaned_data['course_rating'],
+                training_method=commentform.cleaned_data['training_method'],
+                explanations=commentform.cleaned_data['explanations'],
+                stars=commentform.cleaned_data['stars'],
             )
             return HttpResponseRedirect(reverse('trainingApp:course_detail', args=[course_id]))
 

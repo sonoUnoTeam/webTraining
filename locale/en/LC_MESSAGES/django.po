@@ -198,6 +198,26 @@ msgstr "Inactive"
 msgid "In progress"
 msgstr "in_progress"
 
+# Translations for course_list template
+#: .\trainingApp\templates\trainingApp\course_list.html:58
+msgid "Estimated duration"
+msgstr "Estimated duration"
+
+#. stat label for completed trainings
+#: .\trainingApp\templates\trainingApp\course_list.html:58
+msgid "Done"
+msgstr "Done"
+
+#. progress text
+#: .\trainingApp\templates\trainingApp\course_list.html:82
+msgid "Complete"
+msgstr "Complete"
+
+#. last activity label
+#: .\trainingApp\templates\trainingApp\course_list.html:98
+msgid "Last activity"
+msgstr "Last activity"
+
 #: .\trainingApp\models.py:119 .\trainingApp\models.py:234
 msgid "Completed"
 msgstr "Completed"
