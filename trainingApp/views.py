@@ -163,24 +163,46 @@ class CourseDetailView(ListView):
         return course_trainings
 
     def get_context_data(self, **kwargs):
+        """
+        Prepara el contexto para la vista de detalle del curso.
+        
+        Este método construye un contexto completo con información sobre:
+        - El curso y sus trainings
+        - El progreso del trainee en cada training
+        - Los intentos realizados y puntajes obtenidos
+        - La disponibilidad de cada training según el progreso secuencial
+        - El estado del examen final y sus requisitos
+        """
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs['course_id']
         course = Course.objects.get(id=course_id)
+        # Variable: course - Información básica del curso (nombre, descripción, etc.)
         context['course'] = course
 
         user = self.request.user
         trainee = Trainee.objects.get(user_id=user.id)
         trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
+        # Variable: trainee_course - Relación trainee-curso (estado general, índice actual)
         context['trainee_course'] = trainee_course
 
-        # Habilitar entrenamientos secuencialmente basado en el orden del queryset (por order)
+        # ============================================
+        # PROCESAMIENTO DE TRAININGS SECUENCIALES
+        # ============================================
+        # Para cada training del curso, se calcula:
+        # - Si está habilitado (enabled): depende de si completó el anterior
+        # - Mejor intento (best_attempt/best_score): para mostrar el mejor resultado
+        # - Último intento (last_attempt/last_score): para comparar con el mejor
+        # - Intentos completados (completed_attempts): para validar límites
+        # - Si está bloqueado (is_locked_by_next): si avanzó al siguiente sin agotar intentos
+        # - Si puede reintentar (can_retry): si tiene intentos disponibles y no avanzó
+        
         for idx, ct in enumerate(context['course_trainings']):
             if idx == 0:
-                # El primer entrenamiento siempre está habilitado
+                # Atributo: ct.enabled - El primer training siempre está disponible
                 ct.enabled = True
             else:
-                # Verificar si el anterior tiene al menos un intento completado (passed o failed)
-                # Esto permite avanzar aunque se haya desaprobado
+                # Atributo: ct.enabled - Los siguientes se habilitan si el anterior tiene al menos un intento
+                # Esto permite avanzar incluso si se desaprobó el training anterior
                 previous_ct = context['course_trainings'][idx - 1]
                 ct.enabled = TraineeTraining.objects.filter(
                     trainee=trainee,
@@ -190,7 +212,8 @@ class CourseDetailView(ListView):
                     state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
                 ).exists()
             
-            # Verificar si hay algún intento completado (passed o failed)
+            # Atributo: ct.completed - Indica si tiene al menos un intento completado (usado en lógica)
+            # NOTA: Este atributo NO debe usarse para determinar si aprobó, usar best_attempt.state
             ct.completed = TraineeTraining.objects.filter(
                 trainee=trainee, 
                 training=ct.training, 
@@ -199,7 +222,8 @@ class CourseDetailView(ListView):
                 state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).exists()
             
-            # Obtener el mejor intento para mostrar estadísticas
+            # Atributo: ct.best_attempt - El intento con mayor puntaje (para mostrar mejor resultado)
+            # Atributo: ct.best_score - Porcentaje del mejor intento
             best_attempt = TraineeTraining.objects.filter(
                 trainee=trainee,
                 training=ct.training,
@@ -211,7 +235,8 @@ class CourseDetailView(ListView):
             ct.best_score = best_attempt.score_percentage if best_attempt else None
             ct.best_attempt = best_attempt
             
-            # Obtener el último intento (más reciente) para mostrar estadísticas
+            # Atributo: ct.last_attempt - El intento más reciente (para comparar evolución)
+            # Atributo: ct.last_score - Porcentaje del último intento
             last_attempt = TraineeTraining.objects.filter(
                 trainee=trainee,
                 training=ct.training,
@@ -223,7 +248,7 @@ class CourseDetailView(ListView):
             ct.last_score = last_attempt.score_percentage if last_attempt else None
             ct.last_attempt = last_attempt
             
-            # Contar intentos completados (passed o failed)
+            # Atributo: ct.completed_attempts - Número de intentos finalizados (para validar límites)
             ct.completed_attempts = TraineeTraining.objects.filter(
                 trainee=trainee,
                 training=ct.training,
@@ -232,12 +257,16 @@ class CourseDetailView(ListView):
                 state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).count()
             
-            # Verificar si puede realizar más intentos
-            # No puede si ya avanzó al siguiente training en el orden de visualización
+            # ============================================
+            # VALIDACIÓN DE BLOQUEOS Y REINTENTOS
+            # ============================================
+            # Atributo: ct.is_locked_by_next - True si avanzó al siguiente y no puede reintentar este
+            # Atributo: ct.previous_has_retries - True si el anterior tiene reintentos disponibles
+            # Atributo: ct.can_retry - True si puede hacer más intentos (no bloqueado y bajo el límite)
             ct.is_locked_by_next = False
             ct.previous_has_retries = False
             
-            # Verificar si el examen final ha sido iniciado
+            # Verificar si el examen final ha sido iniciado (bloquea todos los trainings)
             has_final_exam_attempt = False
             if course.final_exam:
                 has_final_exam_attempt = TraineeTraining.objects.filter(
@@ -248,16 +277,18 @@ class CourseDetailView(ListView):
             
             if idx < len(context['course_trainings']) - 1:
                 next_ct = context['course_trainings'][idx + 1]
+                # Verificar si ya hay intentos del siguiente training (bloquea el actual)
                 has_next_attempts = TraineeTraining.objects.filter(
                     trainee=trainee,
                     training=next_ct.training,
                     course=course
                 ).exists()  # Cualquier intento (incluido in_progress) bloquea el anterior
                 
+                # Bloquear si avanzó al siguiente O si inició el examen final
                 ct.is_locked_by_next = has_next_attempts or has_final_exam_attempt
                 ct.can_retry = not has_next_attempts and not has_final_exam_attempt and ct.completed_attempts < ct.training.attempts_allowed
                 
-                # Verificar si el training anterior (idx - 1) tiene retries disponibles
+                # Verificar si el training anterior tiene reintentos disponibles (para advertencia)
                 if idx > 0:
                     prev_ct = context['course_trainings'][idx - 1]
                     prev_completed = TraineeTraining.objects.filter(
@@ -269,11 +300,11 @@ class CourseDetailView(ListView):
                     ).count()
                     ct.previous_has_retries = prev_completed < prev_ct.training.attempts_allowed and prev_completed > 0
             else:
-                # Para el último training, también verificar si el examen final ha sido iniciado
+                # Para el último training, el examen final lo bloquea si fue iniciado
                 ct.can_retry = ct.completed_attempts < ct.training.attempts_allowed and not has_final_exam_attempt
                 ct.is_locked_by_next = has_final_exam_attempt
                 
-                # Para el último training, verificar si el anterior tiene retries
+                # Verificar si el training anterior tiene reintentos disponibles
                 if idx > 0:
                     prev_ct = context['course_trainings'][idx - 1]
                     prev_completed = TraineeTraining.objects.filter(
@@ -285,10 +316,14 @@ class CourseDetailView(ListView):
                     ).count()
                     ct.previous_has_retries = prev_completed < prev_ct.training.attempts_allowed and prev_completed > 0
             
-            # Asignar índice de posición para mostrar en el template
+            # Atributo: ct.position - Número de posición del training en la secuencia (1, 2, 3...)
             ct.position = idx + 1
 
-        # Contar intentos completados por training
+        # ============================================
+        # DICCIONARIOS DE INFORMACIÓN DE INTENTOS
+        # ============================================
+        # Variable: num_trainee_trainings - Dict {training_id: cantidad_de_intentos}
+        # Variable: training_attempts_info - Dict con info detallada de cada training
         num_trainee_trainings = {}
         training_attempts_info = {}
         for ct in context['course_trainings']:
@@ -299,9 +334,10 @@ class CourseDetailView(ListView):
             ).exclude(
                 state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
             ).count()
+            # Guardar cuenta de intentos por ID de training
             num_trainee_trainings[ct.training.id] = completed_count
             
-            # Información adicional para cada training
+            # Guardar información completa para uso posterior
             training_attempts_info[ct.training.id] = {
                 'completed': completed_count,
                 'best_score': ct.best_score,
@@ -309,7 +345,11 @@ class CourseDetailView(ListView):
                 'is_passed': ct.completed
             }
         
+        # ============================================
+        # INFORMACIÓN DEL EXAMEN FINAL
+        # ============================================
         if course.final_exam:
+            # Contar intentos del examen final
             exam_completed = TraineeTraining.objects.filter(
                 trainee=trainee, 
                 training=course.final_exam, 
@@ -319,7 +359,7 @@ class CourseDetailView(ListView):
             ).count()
             num_trainee_trainings[course.final_exam.id] = exam_completed
             
-            # Obtener el mejor intento del examen final
+            # Variable: final_exam_attempt - Mejor intento del examen final (None si no lo ha intentado)
             final_exam_attempt = TraineeTraining.objects.filter(
                 trainee=trainee,
                 training=course.final_exam,
@@ -334,7 +374,11 @@ class CourseDetailView(ListView):
         context['num_trainee_trainings'] = num_trainee_trainings
         context['training_attempts_info'] = training_attempts_info
 
-        # Calcular el promedio de los mejores scores de todos los trainings
+        # ============================================
+        # CÁLCULO DE PROMEDIO Y REQUISITOS
+        # ============================================
+        # Variable: average_score - Promedio de los mejores puntajes de cada training
+        # Usado para determinar si puede tomar el examen final
         best_scores = []
         for ct in context['course_trainings']:
             if ct.best_score is not None:
@@ -343,9 +387,9 @@ class CourseDetailView(ListView):
         average_score = sum(best_scores) / len(best_scores) if best_scores else 0
         context['average_score'] = round(average_score, 2)
         
-        # El examen final se desbloquea cuando:
-        # 1. Todos los trainings tienen al menos un intento completado (passed o failed)
-        # 2. El promedio de los mejores scores cumple con el required_average_score del curso
+        # Variable: all_completed - True si todos los trainings tienen al menos un intento
+        # Variable: meets_average_requirement - True si el promedio cumple el mínimo requerido
+        # Variable: can_take_final_exam - True si cumple ambos requisitos anteriores
         all_trainings_attempted = all(
             TraineeTraining.objects.filter(
                 trainee=trainee,
@@ -363,16 +407,41 @@ class CourseDetailView(ListView):
         context['meets_average_requirement'] = meets_average_requirement
         context['can_take_final_exam'] = all_trainings_attempted and meets_average_requirement
 
-        # Verificar si hay trainings con intentos restantes (para la advertencia del examen final)
+        # Variable: has_trainings_with_retries - True si hay trainings con intentos sin agotar
+        # Usado para mostrar advertencia al iniciar examen final (bloqueará esos reintentos)
         has_trainings_with_retries = any(
             ct.completed_attempts < ct.training.attempts_allowed and ct.completed_attempts > 0
             for ct in context['course_trainings']
         )
         context['has_trainings_with_retries'] = has_trainings_with_retries
-
-        # No agrupar por dificultad - mostrar todos en orden secuencial
-        # Los trainings ya vienen ordenados por el campo 'order' de CourseTraining
-
+        
+        # ============================================
+        # RESUMEN DE VARIABLES DE CONTEXTO
+        # ============================================
+        # course: Objeto Course con info del curso
+        # trainee_course: Relación TraineeCourse (estado general)
+        # course_trainings: QuerySet con CourseTraining, cada uno tiene atributos extra:
+        #   - enabled: bool - Si puede iniciarse
+        #   - completed: bool - Si tiene intentos finalizados
+        #   - best_attempt: TraineeTraining - Mejor intento
+        #   - best_score: float - Puntaje del mejor intento
+        #   - last_attempt: TraineeTraining - Último intento
+        #   - last_score: float - Puntaje del último intento
+        #   - completed_attempts: int - Número de intentos realizados
+        #   - is_locked_by_next: bool - Si está bloqueado por avanzar
+        #   - can_retry: bool - Si puede reintentar
+        #   - previous_has_retries: bool - Si el anterior tiene reintentos
+        #   - position: int - Posición en secuencia
+        # num_trainee_trainings: dict - {training_id: num_intentos}
+        # training_attempts_info: dict - Info detallada por training
+        # final_exam_attempt: TraineeTraining o None - Mejor intento del examen
+        # average_score: float - Promedio de mejores puntajes
+        # all_completed: bool - Todos los trainings intentados
+        # meets_average_requirement: bool - Promedio suficiente
+        # can_take_final_exam: bool - Puede tomar examen final
+        # has_trainings_with_retries: bool - Hay reintentos disponibles
+        # ============================================
+        
         return context
 
 

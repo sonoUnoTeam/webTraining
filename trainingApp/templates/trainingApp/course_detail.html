@@ -731,7 +731,11 @@
     }
 </style>
 
+<!-- ============================================ -->
+<!-- JAVASCRIPT: Confirmación antes de iniciar -->
+<!-- ============================================ -->
 <script>
+    // Función para confirmar antes de iniciar un training (con advertencia si hay retries pendientes)
     function confirmStartTraining(trainingUrl, previousHasRetries, trainingName, isFinalExam = false) {
         const isDarkMode = document.body.classList.contains('dark-mode');
         
@@ -773,11 +777,18 @@
     }
 </script>
 
+<!-- ============================================ -->
+<!-- SECCIÓN: Hero del Curso -->
+<!-- ============================================ -->
 <div>
+    <!-- Título y descripción principal del curso -->
     <div class="course-hero">
         <h1 class="page-title mb-2">{{ course.name_course }}</h1>
         <p class="course-description">{{ course.description }}</p>
     </div>
+    <!-- ============================================ -->
+    <!-- TARJETA: Guía rápida e instrucciones -->
+    <!-- ============================================ -->
     <div class="card my-4 border border-2 note-card">
         <div class="card-header d-flex align-items-center justify-content-center gap-2">
             <i class="bi bi-info-circle-fill"></i>
@@ -797,6 +808,7 @@
 
             <hr class="text-secondary opacity-25">
 
+            <!-- Requisitos para el examen final -->
             <h6 class="text-primary mb-3 fw-bold d-flex align-items-center">
                 <i class="bi bi-award me-2"></i>
                 {% trans "Final Exam Requirements" %}
@@ -819,36 +831,43 @@
         </div>
     </div>
 
+    <!-- ============================================ -->
+    <!-- SECCIÓN: Listado de Trainings -->
+    <!-- ============================================ -->
     <h2 class="section-title">
         <i class="bi bi-journal-text"></i>
         {% trans "Trainings" %}
     </h2>
     
     {% if course_trainings %}
-        <!-- Unified Trainings Section -->
         <div class="mb-4">
             <div class="table-responsive">
+                <!-- Tabla unificada de trainings -->
                 <table class="table table-bordered border border-2 table-hover">
                     <thead>
                         <tr class="table-primary">
-                            <th style="width: 5%;">{% trans "#" %}</th>
-                            <th style="width: 22%;">{% trans "Training Name" %}</th>
-                            <th style="width: 9%;">{% trans "Difficulty" %}</th>
-                            <th style="width: 8%;">{% trans "Duration" %}</th>
-                            <th style="width: 10%;">{% trans "Attempts" %}</th>
-                            <th colspan="2" style="width: 16%;">{% trans "Score & Results" %}</th>
-                            <th style="width: 12%;">{% trans "Status" %}</th>
-                            <th style="width: 22%;">{% trans "Actions" %}</th>
+                            <th style="width: 5%;">{% trans "#" %}</th>  <!-- Posición -->
+                            <th style="width: 22%;">{% trans "Training Name" %}</th>  <!-- Nombre y passing score -->
+                            <th style="width: 9%;">{% trans "Difficulty" %}</th>  <!-- Dificultad (Easy/Intermediate/Advanced) -->
+                            <th style="width: 8%;">{% trans "Duration" %}</th>  <!-- Duración estimada -->
+                            <th style="width: 10%;">{% trans "Attempts" %}</th>  <!-- Intentos completados/permitidos -->
+                            <th colspan="2" style="width: 16%;">{% trans "Score & Results" %}</th>  <!-- Mejor y último puntaje -->
+                            <th style="width: 12%;">{% trans "Status" %}</th>  <!-- Estado del training -->
+                            <th style="width: 22%;">{% trans "Actions" %}</th>  <!-- Botones de acción -->
                         </tr>
                     </thead>
                     <tbody>
                         {% for ct in course_trainings %}
-                            <tr class="{% if ct.completed %}row-passed{% elif ct.is_locked_by_next %}row-locked-progress{% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}row-locked-attempts{% elif ct.completed_attempts|default:0 > 0 and not ct.completed %}row-failed{% elif ct.enabled %}row-available{% else %}row-locked{% endif %}">
+                            <!-- Clase de fila según estado: row-passed, row-locked-progress, row-locked-attempts, row-failed, row-available, row-locked -->
+                            <tr class="{% if ct.best_attempt and ct.best_attempt.state.value == 'passed' %}row-passed{% elif ct.is_locked_by_next %}row-locked-progress{% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}row-locked-attempts{% elif ct.completed_attempts|default:0 > 0 %}row-failed{% elif ct.enabled %}row-available{% else %}row-locked{% endif %}">
+                                <!-- Posición del training en el curso -->
                                 <td><strong>{{ ct.position }}</strong></td>
+                                <!-- Nombre del training y puntaje mínimo requerido -->
                                 <td class="training-name-cell">
                                     <strong>{{ ct.training.name_training }}</strong>
                                     <br><small class="text-muted">{% trans "Passing Score" %}: {{ ct.training.passing_score }}%</small>
                                 </td>
+                                <!-- Badge de dificultad con colores específicos -->
                                 <td>
                                     {% if ct.training.difficulty == 'Easy' %}
                                         <span class="badge bg-success">{% trans "Easy" %}</span>
@@ -860,9 +879,11 @@
                                         <span class="badge bg-secondary">{{ ct.training.get_difficulty_display }}</span>
                                     {% endif %}
                                 </td>
+                                <!-- Duración estimada del training -->
                                 <td>
                                     <span class="badge bg-light text-dark">{{ ct.training.total_estimated_duration }} min</span>
                                 </td>
+                                <!-- Intentos completados vs permitidos -->
                                 <td>
                                     <div class="attempt-info">
                                         <i class="bi bi-bar-chart-fill"></i>
@@ -872,6 +893,7 @@
                                         {% endif %}
                                     </div>
                                 </td>
+                                <!-- Mejor puntaje y último puntaje (si son diferentes) -->
                                 <td colspan="2">
                                     {% if ct.best_score is not None or ct.last_score is not None %}
                                         <div class="score-compact">
@@ -882,6 +904,7 @@
                                                     <span class="text-muted">({{ ct.best_attempt.correct_answers }}/{{ ct.best_attempt.correct_answers|add:ct.best_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
                                                 </div>
                                             {% endif %}
+                                            <!-- Último intento (solo si es diferente del mejor) -->
                                             {% if ct.last_score is not None and ct.last_attempt and ct.best_attempt.id != ct.last_attempt.id %}
                                                 <div class="score-line">
                                                     <span class="label">{% trans "Last" %}:</span>
@@ -894,6 +917,7 @@
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                 </td>
+                                <!-- Estado del training: Passed, Failed, Available, Locked (varios tipos) -->
                                 <td>
                                     {% if ct.best_attempt and ct.best_attempt.state.value == 'passed' %}
                                         <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
@@ -909,13 +933,17 @@
                                         <span class="badge-locked"><i class="bi bi-lock-fill"></i> {% trans "Locked" %}</span>
                                     {% endif %}
                                 </td>
+                                <!-- Botones de acción según el estado del training -->
                                 <td>
+                                    {# Caso 1: Training bloqueado porque el usuario avanzó al siguiente #}
                                     {% if ct.is_locked_by_next %}
                                         <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="btn-review">
                                             <i class="bi bi-file-text"></i> {% trans "View Results" %}
                                         </a>
                                         <br><small class="text-warning"><i class="bi bi-lock-fill"></i> {% trans "Locked - moved to next training" %}</small>
-                                    {% elif ct.completed_attempts|default:0 > 0 and ct.best_attempt.state == 'passed' and ct.completed_attempts|default:0 < ct.training.attempts_allowed %}
+                                    
+                                    {# Caso 2: Training aprobado pero con intentos restantes (reintentar opcional) #}
+                                    {% elif ct.best_attempt.state == 'passed' and ct.completed_attempts < ct.training.attempts_allowed %}
                                         <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-start-training">
                                             <i class="bi bi-play-fill"></i> {% trans "Start" %} ({% trans "Optional" %})
                                         </a>
@@ -923,7 +951,9 @@
                                         <small class="text-info">
                                             <i class="bi bi-lightbulb-fill"></i> <em>{% trans "Optional retry to improve your score" %}</em>
                                         </small>
-                                    {% elif ct.completed_attempts|default:0 > 0 and ct.best_attempt.state == 'failed' and ct.completed_attempts|default:0 < ct.training.attempts_allowed %}
+                                    
+                                    {# Caso 3: Training fallido con intentos restantes (reintentar obligatorio para avanzar) #}
+                                    {% elif ct.best_attempt.state == 'failed' and ct.completed_attempts < ct.training.attempts_allowed %}
                                         <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-retry-training">
                                             <i class="bi bi-arrow-clockwise"></i> {% trans "Retry" %} ({{ ct.training.attempts_allowed|subtract:ct.completed_attempts }} {% trans "remaining" %})
                                         </a>
@@ -931,15 +961,21 @@
                                         <small class="text-muted">
                                             <i class="bi bi-exclamation-triangle-fill"></i> <em>{% trans "Advancing to next will lock this" %}</em>
                                         </small>
-                                    {% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}
+                                    
+                                    {# Caso 4: Todos los intentos agotados (solo ver resultados) #}
+                                    {% elif ct.completed_attempts >= ct.training.attempts_allowed %}
                                         <a href="{% url 'trainingApp:review_list_tt' course.id ct.training.id %}" class="btn-review">
                                             <i class="bi bi-file-text"></i> {% trans "View Results" %}
                                         </a>
                                         <br><small class="text-warning">{% trans "Maximum attempts reached" %}</small>
+                                    
+                                    {# Caso 5: Training disponible para iniciar (primer intento o nuevo) #}
                                     {% elif ct.enabled and ct.can_retry %}
                                         <a href="javascript:void(0);" onclick="confirmStartTraining('{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}', {{ ct.previous_has_retries|yesno:'true,false' }}, '{{ ct.training.name_training|escapejs }}')" class="btn-start-training">
                                             <i class="bi bi-play-fill"></i> {% trans "Start" %}
                                         </a>
+                                    
+                                    {# Caso 6: Training bloqueado (no disponible aún) #}
                                     {% else %}
                                         <small class="text-muted">{% trans "Complete previous training" %}</small>
                                     {% endif %}
@@ -949,7 +985,9 @@
                     </tbody>
                 </table>
                 
-                <!-- Average Score Display -->
+                <!-- ============================================ -->
+                <!-- DISPLAY: Promedio de puntajes -->
+                <!-- ============================================ -->
                 {% if course_trainings %}
                 <div class="average-score-display" style="border-left: 4px solid {% if meets_average_requirement %}#28a745{% else %}#ffc107{% endif %};">
                     <div class="d-flex justify-content-between align-items-center">
@@ -982,6 +1020,9 @@
         {% endblocktrans %}
     {% endif %}
 
+    <!-- ============================================ -->
+    <!-- SECCIÓN: Examen Final -->
+    <!-- ============================================ -->
     {% if course.final_exam %}
         <h2 class="section-title">
             <i class="bi bi-award-fill"></i>
@@ -1004,7 +1045,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="{% if final_exam_attempt and final_exam_attempt.state == 'passed' %}row-passed{% elif all_completed %}row-available{% else %}row-locked{% endif %}">
+                    <!-- Fila del examen final: solo una fila con toda la información -->
+                    <tr class="{% if final_exam_attempt.state == 'passed' %}row-passed{% elif all_completed %}row-available{% else %}row-locked{% endif %}">
                         <td class="training-name-cell">
                             <strong>{{ course.final_exam.name_training }}</strong>
                             <br><small class="text-muted">{% trans "Passing Score" %}: {{ course.final_exam_passing_score }}%</small>
@@ -1045,6 +1087,7 @@
                                 -
                             {% endif %}
                         </td>
+                        <!-- Estado del examen: Passed, Available o Locked -->
                         <td>
                             {% if final_exam_attempt and final_exam_attempt.state == 'passed' %}
                                 <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
@@ -1055,22 +1098,30 @@
                                 <br><small class="text-muted">{% trans "Complete all trainings first" %}</small>
                             {% endif %}
                         </td>
+                        <!-- Acciones disponibles para el examen final -->
                         <td>
+                            {# Examen aprobado: mostrar resultados #}
                             {% if final_exam_attempt and final_exam_attempt.state == 'passed' %}
                                 <a href="{% url 'trainingApp:review_list_tt' course.id course.final_exam.id %}" class="btn-review">
                                     <i class="bi bi-file-text"></i> {% trans "View Results" %}
                                 </a>
                                 <span class="ms-2" style="color: #28a745; font-weight: 600;"><i class="bi bi-trophy-fill"></i> {% trans "Exam Passed!" %}</span>
+                            
+                            {# Examen disponible: todos los trainings completados y promedio suficiente #}
                             {% elif can_take_final_exam %}
                                 <a href="javascript:void(0);" onclick="confirmStartTraining('{% url 'trainingApp:block_deploy_list' course.id course.final_exam.id %}', {{ has_trainings_with_retries|yesno:'true,false' }}, '{{ course.final_exam.name_training|escapejs }}', true)" class="btn-start-training">
                                     <i class="bi bi-pencil-square"></i> {% trans "Take Final Exam" %}
                                 </a>
+                            
+                            {# Trainings completados pero promedio insuficiente #}
                             {% elif all_completed and not meets_average_requirement %}
                                 <button class="btn-start-training" disabled style="opacity: 0.5; cursor: not-allowed;" 
                                     title="{% trans 'Average score' %}: {{ average_score }}% ({% trans 'Required' %}: {{ course.required_average_score }}%)">
                                     <i class="bi bi-lock-fill"></i> {% trans "Insufficient Average Score" %}
                                 </button>
                                 <small class="d-block mt-1 text-muted">{% trans "Current average" %}: {{ average_score }}% | {% trans "Required" %}: {{ course.required_average_score }}%</small>
+                            
+                            {# Aún faltan trainings por completar #}
                             {% else %}
                                 <button class="btn-start-training" disabled style="opacity: 0.5; cursor: not-allowed;">
                                     <i class="bi bi-lock-fill"></i> {% trans "Complete All Trainings First" %}
