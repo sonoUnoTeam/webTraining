@@ -878,7 +878,7 @@
                                             {% if ct.best_score is not None and ct.best_attempt %}
                                                 <div class="score-line">
                                                     <span class="label">{% trans "Best" %}:</span>
-                                                    <span class="value {% if ct.completed %}passed{% else %}failed{% endif %}">{{ ct.best_score }}%</span>
+                                                    <span class="value {% if ct.best_attempt.state.value == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.best_score }}%</span>
                                                     <span class="text-muted">({{ ct.best_attempt.correct_answers }}/{{ ct.best_attempt.correct_answers|add:ct.best_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
                                                 </div>
                                             {% endif %}
@@ -895,13 +895,13 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if ct.completed %}
+                                    {% if ct.best_attempt and ct.best_attempt.state.value == 'passed' %}
                                         <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
                                     {% elif ct.is_locked_by_next %}
                                         <span class="badge-locked-progress" title="{% trans 'Locked because you advanced to the next training without reaching the passing score' %}"><i class="bi bi-lock-fill"></i> {% trans "Locked" %} ({% trans "Skipped" %})</span>
                                     {% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}
                                         <span class="badge-locked-attempts" title="{% trans 'Locked because all attempts have been used' %}"><i class="bi bi-ban"></i> {% trans "Attempts Exhausted" %}</span>
-                                    {% elif ct.completed_attempts|default:0 > 0 and not ct.completed %}
+                                    {% elif ct.completed_attempts|default:0 > 0 %}
                                         <span class="badge-failed"><i class="bi bi-x-circle-fill"></i> {% trans "Failed" %}</span>
                                     {% elif ct.enabled %}
                                         <span class="badge-available"><i class="bi bi-play-circle-fill"></i> {% trans "Available" %}</span>
