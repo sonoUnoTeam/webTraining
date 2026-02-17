@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 
-    <header>
+    <header class="main-header">
         <nav class="navbar navbar-expand-lg py-3 navbar-dark" style="background-color: rgb(42, 44, 49);">
             <div class="container">
                 <a href="/" class="navbar-brand d-flex align-items-center">
@@ -23,6 +23,9 @@
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
                                 <a href="/" class="nav-link">{% trans 'Home' %}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'trainingApp:tutorial' %}" class="nav-link">{% trans 'Tutorial' %}</a>
                             </li>
                             {% if user.is_authenticated %}
                             <li class="nav-item">
@@ -93,6 +96,21 @@
     </header>
 
     <style>
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .main-header.scrolled {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        body.dark-mode .main-header.scrolled {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        
         .language-switcher {
             padding: 0.25rem;
             border-radius: 0.5rem;
@@ -132,6 +150,16 @@
     </style>
 
     <script>
+        // Agregar sombra a la navbar al hacer scroll
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.main-header');
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
         // Cambio de idioma automático al hacer clic
         document.querySelectorAll('.language-btn').forEach(btn => {
             btn.addEventListener('click', function() {

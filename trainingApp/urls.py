@@ -17,6 +17,7 @@ urlpatterns = [
     path('reviewList/<int:course_id>/<int:training_id>/', login_required(views.ReviewListTT.as_view()), name="review_list_tt"),
     path('reviewBlock/<int:trainee_training_id>/', login_required(views.ReviewBlock.as_view()), name="review_block"),
     path('review/<int:block_answer_id>/', login_required(views.ReviewDeploy.as_view()), name="review_deploy"),
-    path('comment/<int:course_id>/<int:training_id>/', login_required(views.CommentView.as_view()), name="comment")
+    path('comment/<int:course_id>/<int:training_id>/', login_required(views.CommentView.as_view()), name="comment"),
+    path('tutorial/', views.tutorial, name="tutorial"),
     
 ]

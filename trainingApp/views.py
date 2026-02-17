@@ -1120,3 +1120,8 @@ class CommentView(LoginRequiredMixin, View):
             messages.error(request, _("error"))
             return HttpResponseRedirect(reverse('trainingApp:course_detail', args=[course_id]))
 
+
+def tutorial(request):
+    """Vista para la página de tutorial que explica cómo usar la aplicación"""
+    return render(request, 'trainingApp/tutorial.html')
+
