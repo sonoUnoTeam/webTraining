@@ -23,11 +23,6 @@ db.sqlite3
 db.sqlite3-journal
 staticfiles/
 
-# Django migrations (except __init__.py)
-**/migrations/*.py
-**/migrations/*.pyc
-!**/migrations/__init__.py
-
 # Virtual environments
 env/
 venv/
