@@ -51,3 +51,46 @@ form{
 .textf {
     color:aliceblue; 
 }
+/* === Dark Mode Styles === */
+body.dark-mode .course-card {
+    background-color: #212529;
+    border-color: #495057;
+    color: #f8f9fa;
+}
+
+body.dark-mode .course-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .course-card .card-title {
+    color: #6eb5d4 !important;
+}
+
+body.dark-mode .floating-card {
+    background-color: #2b3035;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .floating-card svg {
+    color: #88c5db;
+}
+
+body.dark-mode .about-section {
+    background-color: #1a1d20;
+}
+
+body.dark-mode .partners-section {
+    background-color: #2b3035 !important;
+}
+
+body.dark-mode .cta-section {
+    background: linear-gradient(135deg, #2b3035 0%, #1a1d20 100%);
+}
+
+body.dark-mode .partner-logo-container {
+    background-color: #fff;
+}
+
+body.dark-mode .im {
+    border-color: #6eb5d4;
+}

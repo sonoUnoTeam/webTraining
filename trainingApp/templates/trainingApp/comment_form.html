@@ -2,63 +2,361 @@
 {% load i18n %}
 
 {% block content %}
-<div class="card my-3 border border-3">
-  <div class="card-header">
-      {% trans "Note" %}
+<style>
+    /* Modern container styles */
+    .survey-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .survey-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    
+    .survey-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #2c3e50 0%, #6eb5d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+    
+    .survey-subtitle {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    /* Form choice styles */
+    .form-section {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .form-section:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    
+    .choice-row {
+        cursor: pointer;
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        background-color: #fff;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+    }
+    .choice-row:hover {
+        border-color: #6eb5d4;
+        background-color: #f8f9fa;
+        transform: translateX(4px);
+    }
+    .choice-row.selected {
+        background-color: rgba(110, 181, 212, 0.1);
+        border-color: #6eb5d4;
+    }
+    .choice-row label {
+        cursor: pointer;
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .choice-row input[type="radio"] {
+        margin-right: 0.75rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        cursor: pointer;
+        accent-color: #6eb5d4;
+    }
+    .form-section > label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    /* Star rating styles */
+    .star-rating-section {
+        background: linear-gradient(135deg, #6eb5d4 0%, #4a9fb8 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(110, 181, 212, 0.3);
+        text-align: center;
+    }
+    
+    .star-rating-section label {
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 1.5rem;
+    }
+    
+    .star-rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        direction: rtl;
+    }
+    
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+    
+    .star-rating label {
+        cursor: pointer;
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, 0.3);
+        transition: all 0.2s ease;
+        margin: 0;
+        padding: 0.25rem;
+    }
+    
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #ffd700;
+        transform: scale(1.2);
+    }
+    
+    .star-rating input[type="radio"]:checked ~ label {
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    /* Button styles */
+    .btn-submit {
+        background: linear-gradient(135deg, #6eb5d4 0%, #4a9fb8 100%);
+        border: none;
+        color: white;
+        padding: 0.85rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(110, 181, 212, 0.3);
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(110, 181, 212, 0.4);
+        color: white;
+    }
+    
+    .btn-skip {
+        background: transparent;
+        border: 2px solid #6eb5d4;
+        color: #6eb5d4;
+        padding: 0.85rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-skip:hover {
+        background: #6eb5d4;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Info card styles */
+    .info-card {
+        background: linear-gradient(135deg, #6eb5d4 0%, #4a9fb8 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(110, 181, 212, 0.3);
+    }
+    
+    .info-card .card-header {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .info-card .card-body {
+        background: transparent;
+    }
+    
+    .info-card .list-group-item {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .survey-header h1 {
+        background: linear-gradient(135deg, #88c5db 0%, #6eb5d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    body.dark-mode .survey-subtitle {
+        color: #adb5bd;
+    }
+    
+    body.dark-mode .form-section {
+        background-color: #2b3035;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.dark-mode .form-section > label {
+        color: #f8f9fa;
+    }
+    
+    body.dark-mode .choice-row {
+        background-color: #343a40;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .choice-row:hover {
+        background-color: #495057;
+        border-color: #6eb5d4;
+    }
+    body.dark-mode .choice-row.selected {
+        background-color: rgba(110, 181, 212, 0.2);
+        border-color: #6eb5d4;
+    }
+    body.dark-mode .choice-row label {
+        color: #f8f9fa;
+    }
+    body.dark-mode .choice-row input[type="radio"] {
+        accent-color: #6eb5d4;
+    }
+    
+    body.dark-mode .btn-skip {
+        border-color: #6eb5d4;
+        color: #6eb5d4;
+    }
+    
+    body.dark-mode .btn-skip:hover {
+        background: #6eb5d4;
+        color: white;
+    }
+    
+    body.dark-mode .text-danger {
+        color: #f87171 !important;
+    }
+</style>
+
+<div class="survey-container">
+  <div class="info-card card my-3">
+    <div class="card-header">
+        {% trans "Note" %}
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">{% trans "If you have already answered this survey or do not wish to take it at this time, you can press the Skip Survey button" %}</li>
+        </ul>
+    </div>
   </div>
-  <div class="card-body">
-      <blockquote class="blockquote mb-0">
-          {% blocktrans %}
-          <ul class="list-group list-group-flush">
-              <li class="list-group-item">If you have already answered this survey or do not wish to take it at this time, you can go to the bottom of the page and press the skip button</li>
-          </ul>
-          {% endblocktrans %}
-      </blockquote>
+
+  <div class="survey-header">
+    <h1>{% trans 'Course Feedback Survey' %}</h1>
+    <p class="survey-subtitle">{% trans 'Help us improve by sharing your experience' %}</p>
   </div>
-</div>
 
-  <div class="container mt-5">
-    <h1 class="mb-4">{% trans 'Comment' %}</h1>
+  <div class="text-center mb-4">
+    {% if course_id %}
+      <a href="{% url 'trainingApp:course_detail' course_id %}" class="btn-skip">{% trans 'Skip Survey' %}</a>
+    {% else %}
+      <a href="{% url 'trainingApp:course_list' %}" class="btn-skip">{% trans 'Skip Survey' %}</a>
+    {% endif %}
+  </div>
 
-    <form action="" method="POST" class="mb-4">
-      {% csrf_token %}
+  <form action="" method="POST">
+    {% csrf_token %}
 
-      <div class="form-group">
-        <label for="id_more_liked">{% trans 'More liked:' %}</label>
-        {{ form.more_liked }}
+  <form action="" method="POST">
+    {% csrf_token %}
+
+    <div class="form-section">
+      <label>{% trans 'The course was:' %}</label>
+      <div>
+        {% for value, label in form.course_rating.field.choices %}
+        <div class="choice-row">
+          <label>
+            <input class="form-check-input" type="radio" name="course_rating" id="id_course_rating_{{ forloop.counter }}" value="{{ value }}" {% if form.course_rating.value == value %}checked{% endif %}>
+            {{ label }}
+          </label>
+        </div>
+        {% endfor %}
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="id_more_liked">{% trans 'Least liked:' %}</label>
-        {{ form.least_liked }}
+    <div class="form-section">
+      <label>{% trans 'Training with sound and graphics was:' %}</label>
+      <div>
+        {% for value, label in form.training_method.field.choices %}
+        <div class="choice-row">
+          <label>
+            <input class="form-check-input" type="radio" name="training_method" id="id_training_method_{{ forloop.counter }}" value="{{ value }}" {% if form.training_method.value == value %}checked{% endif %}>
+            {{ label }}
+          </label>
+        </div>
+        {% endfor %}
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="id_more_liked">{% trans 'Comment aditional:' %}</label>
-        {{ form.comment_aditional }}
+    <div class="form-section">
+      <label>{% trans 'Explanations during training are:' %}</label>
+      <div>
+        {% for value, label in form.explanations.field.choices %}
+        <div class="choice-row">
+          <label>
+            <input class="form-check-input" type="radio" name="explanations" id="id_explanations_{{ forloop.counter }}" value="{{ value }}" {% if form.explanations.value == value %}checked{% endif %}>
+            {{ label }}
+          </label>
+        </div>
+        {% endfor %}
       </div>
+    </div>
 
-      <div class="form-group">
-        {{ form.stars.label_tag }}
-        <span class="star-rating">
-          {% for i in "12345" %}
-            <input type="radio" name="{{ form.stars.name }}" id="{{ form.stars.id_for_label }}_{{ i }}" value="{{ i }}">
-            <label for="{{ form.stars.id_for_label }}_{{ i }}"><i class="fas fa-star"></i></label>
-          {% endfor %}
-        </span>
+    <div class="star-rating-section">
+      <label>{% trans 'Rate your overall experience' %}</label>
+      <div class="star-rating">
+        {% for i in "54321" %}
+          <input type="radio" name="{{ form.stars.name }}" id="{{ form.stars.id_for_label }}_{{ i }}" value="{{ i }}" {% if form.stars.value == i %}checked{% endif %}>
+          <label for="{{ form.stars.id_for_label }}_{{ i }}">★</label>
+        {% endfor %}
       </div>
+    </div>
 
-      <button type="submit" class="btn btn-primary">
-        {% trans 'Send' %}
+    <div class="text-center">
+      <button type="submit" class="btn-submit">
+        {% trans 'Submit Feedback' %}
       </button>
-    </form>
+    </div>
+  </form>
 
-    <p class="text-danger mt-3">
-      {{ error }}
-    </p>
+  <p class="text-danger text-center mt-3">
+    {{ error }}
+  </p>
+
+  <div class="text-center mt-4">
+    {% if course_id %}
+      <a href="{% url 'trainingApp:course_detail' course_id %}" class="btn-skip">{% trans 'Skip Survey' %}</a>
+    {% else %}
+      <a href="{% url 'trainingApp:course_list' %}" class="btn-skip">{% trans 'Skip Survey' %}</a>
+    {% endif %}
   </div>
-  <!-- Botón para omitir el comentario-->
-<div class="mt-4">
-  <a href="{% url 'trainingApp:training_List' %}" class="btn btn-primary">{% trans 'Skip Comment' %}</a>
 </div>
 {% endblock %}

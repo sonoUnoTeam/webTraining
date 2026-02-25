@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .course-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: none;
+        overflow: hidden;
+    }
+    body.dark-mode .course-card {
+        background-color: #212529;
+        border: 1px solid #495057;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    body.dark-mode .course-card:hover {
+        box-shadow: 0 12px 24px rgba(0,0,0,0.6);
+    }
+    .course-card .card-body {
+        padding: 1.5rem;
+    }
+    .course-card .card-title {
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #0d6efd;
+        text-align: center;
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+    body.dark-mode .course-card .card-title {
+        color: #6eb5d4 !important;
+    }
+    .course-card .card-text {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: #495057;
+        text-align: justify;
+    }
+    body.dark-mode .course-card .card-text {
+        color: #adb5bd;
+    }
+    .course-card .btn {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+    }
+    body.dark-mode .course-card .btn {
+        background: linear-gradient(135deg, #6eb5d4 0%, #5a9db9 100%);
+        box-shadow: 0 4px 8px rgba(110, 181, 212, 0.3);
+    }
+    .course-card .btn:hover {
+        background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(13, 110, 253, 0.4);
+    }
+    body.dark-mode .course-card .btn:hover {
+        background: linear-gradient(135deg, #5a9db9 0%, #4a8a9f 100%);
+        box-shadow: 0 6px 12px rgba(110, 181, 212, 0.4);
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-not-started {
+        background-color: #e9ecef;
+        color: #6c757d;
+    }
+    body.dark-mode .status-not-started {
+        background-color: #343a40;
+        color: #adb5bd;
+    }
+    .status-in-progress {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+    body.dark-mode .status-in-progress {
+        background-color: #1c3a5c;
+        color: #6eb5d4;
+    }
+    .status-completed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+    body.dark-mode .status-completed {
+        background-color: #1e4b33;
+        color: #75b798;
+    }
+    .progress-container {
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .progress {
+        height: 8px;
+        border-radius: 10px;
+        background-color: #e9ecef;
+    }
+    body.dark-mode .progress {
+        background-color: #343a40;
+    }
+    .progress-bar {
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+    .progress-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+    body.dark-mode .progress-text {
+        color: #adb5bd;
+    }
+    .note-card {
+        background-color: #f7f9fc;
+        border-left: 4px solid #0d6efd;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    body.dark-mode .note-card {
+        background-color: #212529 !important;
+        border-left: 4px solid #6eb5d4 !important;
+    }
+    .note-card .card-header {
+        color: #0d6efd;
+        font-weight: 600;
+        background-color: rgba(13, 110, 253, 0.06);
+        font-size: 1.05rem;
+    }
+    body.dark-mode .note-card .card-header {
+        color: #6eb5d4;
+        background-color: rgba(110, 181, 212, 0.15);
+    }
+    .note-card .card-body p {
+        line-height: 1.7;
+        color: #2d3748;
+    }
+    body.dark-mode .note-card .card-body p {
+        color: #cbd5e0;
+    }
+    .course-header {
+        background: linear-gradient(135deg, #4facfe 0%, #99e1e4 100%);
+        padding: 0.8rem 1rem;
+        margin: -1.5rem -1.5rem 1rem -1.5rem;
+        position: relative;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+    }
+    body.dark-mode .course-header {
+        background: linear-gradient(135deg, #2c5364 0%, #203a43 100%);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    .course-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem;
+        backdrop-filter: blur(10px);
+    }
+    .course-icon i {
+        font-size: 1.5rem;
+        color: #fff;
+    }
+    .course-status-badge {
+        position: absolute;
+        top: 1.4rem;
+        right: 1.4rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        backdrop-filter: blur(10px);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .course-status-badge i {
+        font-size: 0.5em;
+    }
+    .status-completed-header {
+        background: rgba(40, 167, 69, 0.95);
+        color: white;
+    }
+    .status-progress-header {
+        background: rgba(13, 110, 253, 0.95);
+        color: white;
+    }
+    .status-new-header {
+        background: rgba(108, 117, 125, 0.95);
+        color: white;
+    }
+    body.dark-mode .course-status-badge {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .stats-row {
+        display: flex;
+        justify-content: space-around;
+        gap: 0.5rem;
+        margin: 0.75rem 0;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    body.dark-mode .stats-row {
+        background: #1a1d20;
+    }
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0d6efd;
+        display: block;
+    }
+    body.dark-mode .stat-value {
+        color: #6eb5d4;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.25rem;
+    }
+    body.dark-mode .stat-label {
+        color: #adb5bd;
+    }
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    body.dark-mode .info-item {
+        color: #adb5bd;
+    }
+    .info-item i {
+        color: #0d6efd;
+    }
+    body.dark-mode .info-item i {
+        color: #6eb5d4;
+    }
+    .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #dee2e6, transparent);
+        margin: 0.75rem 0;
+    }
+    body.dark-mode .divider {
+        background: linear-gradient(90deg, transparent, #495057, transparent);
+    }
+    .page-title {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #6eb5d4;
+        letter-spacing: -0.02em;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 1rem;
+        text-decoration: none;
+        border: none;
+    }
+    .page-title::after {
+        display: none;
+    }
+    body.dark-mode .page-title {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+</style>
+<div>
+    <h1 class="page-title">
+        <i class="bi bi-grid-3x3-gap-fill me-2" style="font-size: 0.9em;"></i>{% trans "Available Courses" %}
+    </h1>
+    <div class="card my-4 border border-2 note-card">
+        <div class="card-header d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-info-circle-fill"></i>
+            {% trans "Quick Guide" %}
+        </div>
+        <div class="card-body">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-info-circle text-primary fs-5"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    {% blocktrans %}
+                <p>Select a course to view its trainings. Courses have sequential trainings and a final training that unlocks after completion.</p>
+                {% endblocktrans %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for course in course_list %}
+        <div class="col-md-4 mb-4">
+            <div class="card course-card h-100">
+                <!-- Course Header -->
+                <div class="course-header">
+                    <div class="course-icon">
+                        <i class="bi bi-book-half"></i>
+                    </div>
+                    <div class="course-status-badge 
+                        {% if course.status == 'Completed' or course.status == 'Completado' %}status-completed-header
+                        {% elif course.status == 'In Progress' or course.status == 'En progreso' %}status-progress-header
+                        {% else %}status-new-header{% endif %}">
+                        <i class="bi bi-circle-fill"></i>
+                        {{ course.status }}
+                    </div>
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <!-- Course Title -->
+                    <h5 class="card-title">{{ course.name_course }}</h5>
+                    
+                    <!-- Statistics Row -->
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ course.total_trainings|default:'0' }}</span>
+                            <span class="stat-label">{% trans "Trainings" %}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ course.total_duration|default:'0' }}</span>
+                            <span class="stat-label">{% trans "Estimated duration" %}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ course.completed_count|default:'0' }}</span>
+                            <span class="stat-label">{% trans "Done" %}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                     <div>
+                    <p class="card-text flex-grow-1">{{ course.description }}</p>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        {% if course.progress_percentage is not None %}
+                        <div class="progress">
+                            <div class="progress-bar 
+                                {% if course.progress_percentage == 100 %}bg-success
+                                {% elif course.progress_percentage > 0 %}bg-primary
+                                {% else %}bg-secondary{% endif %}" 
+                                role="progressbar" 
+                                style="width: {{ course.progress_percentage }}%" 
+                                aria-valuenow="{{ course.progress_percentage }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="progress-text">
+                            {{ course.progress_percentage }}% {% trans "Complete" %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Additional Info -->
+                    {% if course.last_activity %}
+                    <div class="info-item">
+                        <i class="bi bi-clock-history"></i>
+                        <span>{% trans "Last activity" %}: {{ course.last_activity|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if course.started_date %}
+                    <div class="info-item">
+                        <i class="bi bi-calendar-check"></i>
+                        <span>{% trans "Started" %}: {{ course.started_date|date:"d/m/Y" }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="divider"></div>
+                    
+                    <!-- Action Button -->
+                    <a href="{% url 'trainingApp:course_detail' course.id %}" class="btn btn-primary mt-auto">
+                        <i class="bi bi-arrow-right-circle me-2"></i>{% trans "View Course" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
+                </li>
+            {% endif %}
+
+            {% for i in paginator.page_range %}
+                <li class="page-item {% if i == page_obj.number %} active {% endif %}">
+                    <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                        <span aria-hidden="true">{% trans 'Next' %} &raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-hidden="true">{% trans 'Next' %} &raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
+{% endblock %}

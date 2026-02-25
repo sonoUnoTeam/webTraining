@@ -11,34 +11,45 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
+import logging
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Cargar las variables de entorno desde el archivo .env localizado en la raiz
+dotenv_path = BASE_DIR / '.env'
+logger = logging.getLogger(__name__)
+if dotenv_path.exists():
+    load_dotenv(dotenv_path)
+    print(f"INFO .env file loaded successfully from {dotenv_path}.")
+else:
+    print(f"INFO .env file not found at {dotenv_path}. Make sure it exists.")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2u@^t%bs=fuz+=xt$w8uee%u3gfx0%pmpl#=6dsit2f9czn!m4'
-
-#SECRET_KEY = os.environ["SECRET_KEY"]
-
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-2u@^t%bs=fuz+=xt$w8uee%u3gfx0%pmpl#=6dsit2f9czn!m4')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True')
 
 ALLOWED_HOSTS = []
 
 #Habilita el uso de messages
 MESSAGE_STORAGE= "django.contrib.messages.storage.cookie.CookieStorage"
 
+# Configuración de tags de mensajes para Bootstrap
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
 # Configuración de la duración de la sesión en segundos (30 minutos en este caso)
 SESSION_COOKIE_AGE = 1800
 
 # Application definition
-
 INSTALLED_APPS = [
     'modeltranslation',
     'django.contrib.admin', 
@@ -159,7 +170,9 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = {
 
 #Configuracion de archivos estáticos
 STATIC_URL = '/static/'
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    BASE_DIR / 'logos',
+]
 #STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
@@ -185,11 +198,31 @@ LOGIN_REDIRECT_URL = 'userApp:signup'
 LOGIN_URL = 'userApp:signup'
 
 
-#Configuracion de envios email
-# load_dotenv()
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# Configuracion de envios email
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend',)
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587)) # Asegurar que el puerto sea un entero
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',  # o 'DEBUG' para más verbosidad
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

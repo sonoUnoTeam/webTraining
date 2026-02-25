@@ -2,57 +2,282 @@
 {% load i18n %}
 {% block content %}
 
-<main>
-    <fieldset class="border p-3 rounded">
-        <form method="POST" action="{% url 'trainingApp:review_deploy' deploy_answer.block_answer.id %}">
-            {% csrf_token %}
-            <section class="form-deploy">
-                <div class="form-deploy-image">
-                    <img src="{{ deploy.deploy_image.url }}" class="img-fluid im" alt="Displayed Image">
-                </div>
-                <div class="form-deploy-audio">
-                    <audio controls>
-                        <source src="{{ deploy.deploy_sound.url }}" type="audio/mpeg">
-                        {% blocktrans %} Your browser does not support audio playback. {% endblocktrans %}
-                    </audio>
-                </div>
-                <div class="form-question">
-                    <p class="h5">{{ deploy.question}}</p>
-                </div>
-                <div class="form-choice">
-                    {% for choice in choices %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="flexRadioDisabled" id="{{ choice.id }}" {% if deploy_answer.selectedChoice.id == choice.id %}checked{% endif %} disabled>
-                            <label class="form-check-label" for="{{ choice.choice }}">
-                                {{ choice.choice }}
-                            </label>
-                        </div>
-                    {% endfor %}
-                    
-                    {% if deploy_answer.selectedChoice.correctChoice %}
-                        {% blocktrans %}
-                        <p class="mt-2">
-                            Correct answer
-                        </p>
-                        {% endblocktrans %}
-                    {% else %}
-                        <p class="mt-2">
-                            {% blocktrans %} Wrong answer. The correct answer is: {% endblocktrans %}
-                            {% for choice in choices %}
-                                {% if choice.correctChoice %}
-                                    {{ choice.choice }}
-                                {% endif %}
-                            {% endfor %}
-                        </p>
-                    {% endif %}
-                </div>
-            </section>
+<style>
+    .form-deploy-image {
+        text-align: left;
+        margin-bottom: 0.75rem;
+    }
+    .form-deploy-image img {
+        max-width: 100%;
+        max-height: 350px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-deploy-image .bg-light {
+        border-radius: 8px;
+    }
+    .form-deploy-audio {
+        margin-bottom: 0.75rem;
+    }
+    .form-deploy-audio audio {
+        width: 100%;
+        max-width: 600px;
+    }
+    .form-question {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background-color: #f8f9fa;
+        border-left: 4px solid #007bff;
+        border-radius: 4px;
+    }
+    .form-question p {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #212529;
+    }
+    .form-choice {
+        margin-bottom: 0.75rem;
+    }
+    .form-choice legend {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .form-choice ul {
+        list-style: none;
+        padding-left: 0;
+    }
+    .form-choice li {
+        margin-bottom: 0.5rem;
+    }
+    .form-actions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+    .choice-row {
+        cursor: pointer;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 2px solid #e9ecef;
+        background-color: #fff;
+    }
+    .choice-row:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .choice-row.selected {
+        background-color: rgba(0, 123, 255, 0.1);
+        border-color: #007bff;
+    }
+    .choice-row.correct {
+        background-color: rgba(25, 135, 84, 0.1);
+        border-color: #198754;
+    }
+    .choice-row.incorrect {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-color: #dc3545;
+    }
+    .choice-row label {
+        cursor: pointer;
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .choice-row input[type="radio"] {
+        margin-right: 0.75rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        cursor: pointer;
+    }
+    .feedback-message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: flex;
+        align-items: start;
+        gap: 0.75rem;
+    }
+    .feedback-message.success {
+        background-color: #d1e7dd;
+        border: 1px solid #198754;
+        color: #0f5132;
+    }
+    .feedback-message.error {
+        background-color: #f8d7da;
+        border: 1px solid #dc3545;
+        color: #842029;
+    }
+    .feedback-message strong {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    .feedback-message p {
+        margin: 0;
+    }
+    .correct-answer-highlight {
+        font-weight: 600;
+    }
+    fieldset.border {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+    
+    /* Dark mode styles */
+    body.dark-mode .form-question {
+        background-color: #2b3035;
+        border-left-color: #6eb5d4;
+    }
+    body.dark-mode .form-question p {
+        color: #f8f9fa;
+    }
+    body.dark-mode .form-choice legend {
+        color: #f8f9fa;
+    }
+    body.dark-mode .choice-row {
+        background-color: #343a40;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+    body.dark-mode .choice-row:hover {
+        background-color: #495057;
+        border-color: #6eb5d4;
+    }
+    body.dark-mode .choice-row.selected {
+        background-color: rgba(110, 181, 212, 0.2);
+        border-color: #6eb5d4;
+    }
+    body.dark-mode .choice-row.correct {
+        background-color: rgba(40, 167, 69, 0.2);
+        border-color: #28a745;
+    }
+    body.dark-mode .choice-row.incorrect {
+        background-color: rgba(220, 53, 69, 0.2);
+        border-color: #dc3545;
+    }
+    body.dark-mode .choice-row label {
+        color: #f8f9fa;
+    }
+    body.dark-mode .feedback-message.success {
+        background-color: #1e3a2a;
+        border-color: #28a745;
+        color: #5ce085;
+    }
+    body.dark-mode .feedback-message.error {
+        background-color: #3a1e1e;
+        border-color: #dc3545;
+        color: #f8a5ae;
+    }
+    body.dark-mode fieldset.border {
+        border-color: #495057 !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    body.dark-mode .bg-light {
+        background-color: #2b3035 !important;
+    }
+    body.dark-mode .text-muted {
+        color: #adb5bd !important;
+    }
+    body.dark-mode .form-actions {
+        border-top-color: #495057;
+    }
+</style>
 
-            <button type="submit" aria-pressed="true" class="btn btn-primary">
-                {% trans 'Next' %}
-            </button>
-        </form>
-    </fieldset>
+<fieldset class="border p-3 rounded">
+    <form method="POST" action="{% url 'trainingApp:review_deploy' deploy_answer.block_answer.id %}">
+        {% csrf_token %}
+        <div class="form-deploy-image">
+            {% if deploy.deploy_image %}
+                <img src="{{ deploy.deploy_image.url }}" alt="{{ deploy.question|default:_('Deploy image') }}" loading="lazy">
+            {% else %}
+                <div class="bg-light border d-inline-block" style="width:600px; height:400px; display:flex; align-items:center; justify-content:center;">
+                    <small class="text-muted">{% trans "No image available" %}</small>
+                </div>
+            {% endif %}
+        </div>
+        <div class="form-deploy-audio">
+            {% if deploy.deploy_sound %}
+                <audio controls>
+                    <source src="{{ deploy.deploy_sound.url }}" type="audio/mpeg">
+                    {% blocktrans %} Your browser does not support audio playback. {% endblocktrans %}
+                </audio>
+            {% endif %}
+        </div>
+        <div class="form-question">
+            <p class="h5">{{ deploy.question }}</p>
+        </div>
+        <div class="form-choice">
+            <fieldset>
+                <legend>{% trans 'Review Answer' %}</legend>
+                <ul>
+                    {% for choice in choices %}
+                        <li class="choice-row {% if deploy_answer.selectedChoice.id == choice.id %}{% if choice.correctChoice %}correct{% else %}incorrect{% endif %}{% elif choice.correctChoice %}correct{% endif %}">
+                            <label>
+                                <input class="form-check-input" type="radio" name="flexRadioDisabled" id="choice_{{ choice.id }}" {% if deploy_answer.selectedChoice.id == choice.id %}checked{% endif %} disabled>
+                                {{ choice.choice }}
+                                {% if choice.correctChoice %}
+                                    <span class="badge bg-success ms-2">{% trans "Correct" %}</span>
+                                {% endif %}
+                                {% if deploy_answer.selectedChoice.id == choice.id and not choice.correctChoice %}
+                                    <span class="badge bg-danger ms-2">{% trans "Your answer" %}</span>
+                                {% endif %}
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            
+            {% if deploy_answer.selectedChoice.correctChoice %}
+                <div class="feedback-message success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </svg>
+                    <div>
+                        <strong>{% trans "Correct answer!" %}</strong>
+                        <p>{% trans "Great job! You selected the right answer." %}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="feedback-message error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                    </svg>
+                    <div>
+                        <strong>{% trans "Incorrect answer" %}</strong>
+                        <p>
+                            {% trans "The correct answer is: " %}
+                            <span class="correct-answer-highlight">
+                                {% for choice in choices %}
+                                    {% if choice.correctChoice %}
+                                        {{ choice.choice }}
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    {% trans 'Next' %}
+                </button>
+            </div>
+        </div>
+    </form>
+</fieldset>
 </main>
 
 {% endblock %}

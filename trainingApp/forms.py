@@ -1,11 +1,11 @@
 from django import forms
-from .models import DeployAnswer,Choice,Comment
+from .models import TrainingQuestionAnswer,Choice,Comment
 
 #primer tipo de formulario
 class QuestionForm(forms.ModelForm):
 
     class Meta:
-        model = DeployAnswer
+        model = TrainingQuestionAnswer
         fields = ['selectedChoice']
         
     def __init__(self, *args, **kwargs):
@@ -26,23 +26,26 @@ class CommentForm(forms.ModelForm):
 
     class Meta:
         model = Comment
-        fields = ['more_liked', 'least_liked', 'comment_aditional', 'stars']    
+        fields = ['course_rating', 'training_method', 'explanations', 'stars']    
         widgets = {
-            'more_liked': forms.RadioSelect(),
+            'course_rating': forms.RadioSelect(),
+            'training_method': forms.RadioSelect(),
+            'explanations': forms.RadioSelect(),
             'stars': forms.RadioSelect(),
-            'least_liked': forms.RadioSelect(),
         }       
     
     def __init__(self, *args, **kwargs):
         super(CommentForm, self).__init__(*args, **kwargs)
         
         # Configurar valores predeterminados para RadioSelect
-        self.fields['more_liked'].initial = Comment.MostLiked.WELL_EXPLAINED
+        self.fields['course_rating'].initial = Comment.CourseRating.INTERESTING
+        self.fields['training_method'].initial = Comment.TrainingMethod.NOVEL
+        self.fields['explanations'].initial = Comment.Explanations.VERY_USEFUL
         self.fields['stars'].initial = '1'
-        self.fields['least_liked'].initial = Comment.LeastLiked.NOT_INTERESTING
 
         # Eliminar opciones en blanco de los RadioSelect
-        self.fields['more_liked'].widget.choices = [choice for choice in self.fields['more_liked'].widget.choices if choice[0] != ""]
+        self.fields['course_rating'].widget.choices = [choice for choice in self.fields['course_rating'].widget.choices if choice[0] != ""]
+        self.fields['training_method'].widget.choices = [choice for choice in self.fields['training_method'].widget.choices if choice[0] != ""]
+        self.fields['explanations'].widget.choices = [choice for choice in self.fields['explanations'].widget.choices if choice[0] != ""]
         self.fields['stars'].widget.choices = [choice for choice in self.fields['stars'].widget.choices if choice[0] != ""]
-        self.fields['least_liked'].widget.choices = [choice for choice in self.fields['least_liked'].widget.choices if choice[0] != ""]
 

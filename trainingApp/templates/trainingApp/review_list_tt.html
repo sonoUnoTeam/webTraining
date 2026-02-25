@@ -2,94 +2,360 @@
 {% load i18n %}
 {% block content %}
 
+<style>
+    /* Page title */
+    .page-title {
+        font-weight: 600;
+        color: #007bff;
+    }
+    body.dark-mode .page-title {
+        color: #6eb5d4;
+    }
+    
+    /* Table container */
+    .results-container {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    body.dark-mode .results-container {
+        background-color: #212529;
+        border-color: #495057;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    /* Table styles */
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #ffffff;
+        margin-bottom: 0;
+    }
+    body.dark-mode .table {
+        color: #f8f9fa;
+        background-color: transparent;
+    }
+    
+    .table caption {
+        caption-side: top;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 0;
+        border-bottom: 2px solid #dee2e6;
+        margin-bottom: 1rem;
+    }
+    body.dark-mode .table caption {
+        color: #f8f9fa;
+        border-bottom-color: #495057;
+    }
+    
+    .table thead th {
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        padding: 1rem 0.75rem;
+    }
+    body.dark-mode .table thead th {
+        color: #f8f9fa;
+        border-color: #495057;
+        background-color: #2b3035;
+    }
+    
+    .table tbody td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-color: #e9ecef;
+    }
+    body.dark-mode .table tbody td {
+        color: #dee2e6;
+        border-color: #495057;
+    }
+    
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+    .table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    body.dark-mode .table tbody tr:hover {
+        background-color: rgba(110, 181, 212, 0.1);
+    }
+    
+    /* Result badges */
+    .result-badge {
+        padding: 0.45rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .result-badge.passed {
+        background-color: #28a745;
+        color: white;
+    }
+    .result-badge.failed {
+        background-color: #dc3545;
+        color: white;
+    }
+    body.dark-mode .result-badge.passed {
+        background-color: #2d5f3b;
+        border: 1px solid #4caf50;
+    }
+    body.dark-mode .result-badge.failed {
+        background-color: #5f2d2d;
+        border: 1px solid #f44336;
+    }
+    
+    /* Score display */
+    .score-display {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .score-display.passed {
+        color: #28a745;
+    }
+    .score-display.failed {
+        color: #dc3545;
+    }
+    body.dark-mode .score-display.passed {
+        color: #75b798;
+    }
+    body.dark-mode .score-display.failed {
+        color: #ea868f;
+    }
+    
+    /* Action button */
+    .btn-details {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-details:hover {
+        background-color: #138496;
+        color: white;
+        text-decoration: none;
+    }
+    body.dark-mode .btn-details {
+        background-color: #6eb5d4;
+        border-color: #6eb5d4;
+        color: #000000;
+    }
+    body.dark-mode .btn-details:hover {
+        background-color: #5a9db9;
+        border-color: #5a9db9;
+        color: #000000;
+    }
+    
+    /* Back button */
+    .btn-back {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.65rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-back:hover {
+        background-color: #0056b3;
+        color: white;
+        text-decoration: none;
+    }
+    body.dark-mode .btn-back {
+        background-color: #6eb5d4;
+        border-color: #6eb5d4;
+        color: #000000;
+    }
+    body.dark-mode .btn-back:hover {
+        background-color: #5a9db9;
+        border-color: #5a9db9;
+        color: #000000;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    .empty-state p {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+    body.dark-mode .empty-state p {
+        color: #adb5bd;
+    }
+</style>
+
 {% load tz %}
-<!-- SQLite almacena las fechas y horas en formato UTC, pero no almacena la información de la zona horaria.
-    Django asume que las fechas y horas almacenadas en la base de datos son UTC y las convierte automáticamente a la zona horaria configurada en settings.py
-    la biblioteca de zona horaria con {% load tz %} se usa al principio de la plantilla para poder utilizar el filtro timezone. -->
-<main class="mt-5">
-    <h1>{% trans 'List of reviews' %}</h1>
-    <div class="container">
+<div class="container my-5">
+    <h1 class="text-center page-title">
+        <i class="bi bi-clipboard-data me-2"></i>
+        {% if is_final_exam %}
+            {% trans 'Final Exam Results' %}
+        {% else %}
+            {% trans 'Training Results' %}
+        {% endif %}
+    </h1>
+    
+    <div class="results-container">
         {% if trainee_training_list %}
-            <table class="table table-striped table-bordered">
-                {% blocktrans %}
+            <table class="table table-bordered">
+                {% if is_final_exam %}
                 <caption>
-                    Table of revisions available for viewing
+                    {% trans 'Final Exam Attempts - Course:' %} {{ course.name_course }}
                 </caption>
-                {% endblocktrans %}
+                {% else %}
+                <caption>
+                    {% trans 'Attempts Completed:' %} {{ training.name_training }}
+                </caption>
+                {% endif %}
                 <thead>
                     <tr>
-                        <th>{% trans 'Number' %}</th>
+                        <th>{% if is_final_exam %}{% trans 'Exam Attempt' %}{% else %}{% trans 'Attempt' %}{% endif %}</th>
                         <th>{% trans 'Date' %}</th>
                         <th>{% trans 'Time' %}</th>
                         <th>{% trans 'Time Spent' %}</th>
+                        <th>{% if is_final_exam %}{% trans 'Exam Score' %}{% else %}{% trans 'Score' %}{% endif %}</th>
+                        <th>{% trans 'Result' %}</th>
+                        <th>{% trans 'Action' %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for trainee_training in trainee_training_list %}
                         <tr>
-                            <td>
-                                <a href="{% url 'trainingApp:review_block' trainee_training.id %}" class="btn btn-info"> {{ trainee_training.item_number }}</a>
-                            </td>
+                            <td><strong>#{{ trainee_training.item_number }}</strong></td>
                             <td>{{ trainee_training.pub_date|timezone:"America/Buenos_Aires"|date:"Y-m-d" }}</td>
                             <td>{{ trainee_training.pub_date|timezone:"America/Buenos_Aires"|time:"H:i:s" }}</td>
-                            <td>{{ trainee_training.time_spent }}</td>
-                        </tr>
+                            <td>{{ trainee_training.formatted_time_spent }}</td>
+                            <td>
+                                <span class="score-display {% if trainee_training.state == 'passed' %}passed{% else %}failed{% endif %}">
+                                    {{ trainee_training.score_percentage }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% if trainee_training.state == 'passed' %}
+                                    {% if is_final_exam %}
+                                        <span class="result-badge passed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            {% trans 'Exam Passed' %}
+                                        </span>
+                                    {% else %}
+                                        <span class="result-badge passed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            {% trans 'Passed' %}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if is_final_exam %}
+                                        <span class="result-badge failed">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            {% trans 'Exam Failed' %}
+                                        </span>
+                                    {% else %}
+                                        <span class="result-badge failed">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            {% trans 'Failed' %}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'trainingApp:review_block' trainee_training.id %}" class="btn-details">
+                                    <i class="bi bi-eye-fill"></i>
+                                    {% trans 'View Details' %}
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            {% blocktrans %}
-            <p class="lead">
-                Sorry, no reviews available.
-            </p>
-            {% endblocktrans %}
+            <div class="empty-state">
+                {% if is_final_exam %}
+                    {% blocktrans %}
+                    <p>
+                        <i class="bi bi-info-circle me-2"></i>
+                        You haven't taken the final exam for this course yet.
+                    </p>
+                    {% endblocktrans %}
+                {% else %}
+                    {% blocktrans %}
+                    <p>
+                        <i class="bi bi-info-circle me-2"></i>
+                        You haven't completed any attempts for this training yet.
+                    </p>
+                {% endblocktrans %}
+            {% endif %}
+        {% endif %}
+        
+        <!-- Pagination -->
+        {% if trainee_training_list %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                            <i class="bi bi-chevron-left"></i> {% trans 'Previous' %}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="bi bi-chevron-left"></i> {% trans 'Previous' %}
+                        </span>
+                    </li>
+                {% endif %}
+
+                {% for i in paginator.page_range %}
+                    <li class="page-item {% if i == page_obj.number %}active{% endif %}">
+                        <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                            {% trans 'Next' %} <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            {% trans 'Next' %} <i class="bi bi-chevron-right"></i>
+                        </span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
         {% endif %}
     </div>
-</main>
-
-<!-- Pagination -->
-<div class="mt-4">
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
-                        <span aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
-                    </a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link" aria-hidden="true">&laquo; {% trans 'Previous' %}</span>
-                </li>
-            {% endif %}
-
-            {% for i in paginator.page_range %}
-                <li class="page-item {% if i == page_obj.number %} active {% endif %}">
-                    <a href="?page={{ i }}" class="page-link">{{ i }}</a>
-                </li>
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
-                        <span aria-hidden="true">{% trans 'Next' %} &raquo;</span>
-                    </a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link" aria-hidden="true">{% trans 'Next' %} &raquo;</span>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
+    
+    <!-- Back button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'trainingApp:course_detail' course_id %}" class="btn-back">
+            <i class="bi bi-arrow-left"></i>
+            {% trans 'Back to Course' %}
+        </a>
+    </div>
 </div>
 
-<!-- Botón para volver a la página de trainings -->
-{% blocktrans %}
-<p>If you want to return to the training page, press the back button</p>
-{% endblocktrans %}
-<div class="mt-4">
-    <a href="{% url 'trainingApp:training_List' %}" class="btn btn-primary">{% trans 'Back' %}</a>
-</div>
 {% endblock %}

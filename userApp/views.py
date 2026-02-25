@@ -4,14 +4,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm
+from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm,SigninForm,CustomSetPasswordForm
 from django.contrib import messages
 from .models import Trainee
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin  #LoginRequiredMixin se utiliza como un mixin para requerir que un usuario esté autenticado antes de acceder a una vista específica.
 from django.contrib.auth.views import PasswordChangeView, PasswordResetDoneView
 from django.urls import reverse_lazy
-from trainingApp.models import Group
+from trainingApp.models import TraineeGroup
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -21,6 +21,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from dotenv import load_dotenv
 import os
+import logging
+import smtplib
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView
@@ -57,9 +59,15 @@ def signup(request):
     else:
         form = SignupForm(request.POST)
         if form.is_valid():
+            # Verificar si el email ya fue usado por otro usuario
+            email = form.cleaned_data.get('email')
+            if email and User.objects.filter(email__iexact=email).exists():
+                form.add_error('email', _("The email entered is already registered."))
+                return render(request, 'userApp/signup.html', {"form": form})
+
             user = form.save()
             # Crear el objeto Trainee y se relaciona con el usuario y al grupo por defecto
-            group_defect, created = Group.objects.get_or_create(name_group='Group Defect')
+            group_defect, created = TraineeGroup.objects.get_or_create(name_group='Group Defect')
             trainee = Trainee(
                     user=user,
                     age=form.cleaned_data['age'],
@@ -69,11 +77,10 @@ def signup(request):
                 )
             trainee.save()
             login(request, user)
-            messages.success(request, "Usuario creado exitosamente")
+            messages.success(request, _("User created successfully"))
             return redirect('home')
         
         else:
-            messages.error(request, "Error al crear el usuario")
             return render(request, 'userApp/signup.html', {"form": form})
 import traceback        
 def activate(request, uidb64, token):
@@ -88,10 +95,10 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        messages.success(request, "Your account has been activated successfully.")
+        messages.success(request, _("Your account has been activated successfully."))
         return redirect('home')
     else:
-        messages.error(request, "Error en la activacion de la cuenta")
+        messages.error(request, _("Error activating account"))
         return redirect('home')
         
 @login_required
@@ -102,16 +109,18 @@ def signout(request):
 
 def signin(request):
     if request.method == 'GET':
-        return render(request, 'userApp/signin.html', {"form": AuthenticationForm})
+        form = SigninForm()
+        return render(request, 'userApp/signin.html', {"form": form})
     else:
-        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
-        if user is None:
-            messages.error(request, "Username or Password incorrect")
-            return render(request, 'userApp/signin.html', {"form": AuthenticationForm})
-        else:
+        form = SigninForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            messages.success(request,f"Your are logged in as {request.POST['username']}")
-            return redirect('trainingApp:training_List')
+            messages.success(request, _("You are logged in as %(username)s") % {"username": user.username})
+            return redirect('trainingApp:course_list')
+        else:
+            messages.error(request, _("Username or Password incorrect"))
+            return render(request, 'userApp/signin.html', {"form": form})
 
 #Vista para modificar datos del user y trainee
 class ProfileView(LoginRequiredMixin, View):
@@ -119,8 +128,19 @@ class ProfileView(LoginRequiredMixin, View):
     template_name = "userApp/profile.html"
 
     def get(self, request, username):
-        user = User.objects.get(username= username)
-        trainee = Trainee.objects.get(user_id=user.id)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return redirect('home')
+        
+        if user != request.user:
+            return redirect('userApp:profile', request.user.username)
+        
+        try:
+            trainee = Trainee.objects.get(user_id=user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
         
         # Crea una instancia del formulario combinado y pasa el objeto user y Trainee como instancia
         userform = UserUpdateForm(instance=user)
@@ -129,21 +149,43 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
 
     def post(self, request, username):
-        user = User.objects.get(username= username)
-        trainee = Trainee.objects.get(user_id=user.id)
-
-        # Crea una instancia del formulario combinado y pasa el objeto Trainee como instancia
-        userform = UserUpdateForm(request.POST, instance=user)
-        traineeform = TraineeUpdateForm(request.POST,instance=trainee)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return redirect('home')
         
-        if userform.is_valid() and traineeform.is_valid():
-            userform.save()
-            traineeform.save()
-            messages.success(request,"Your profile has been updated")
-            return redirect('userApp:profile', user.username)  # Redirige a la página de perfil después de guardar los cambios
+        if user != request.user:
+            return redirect('userApp:profile', request.user.username)
+        
+        try:
+            trainee = Trainee.objects.get(user_id=user.id)
+        except Trainee.DoesNotExist:
+            messages.error(request, _("You need to be a trainee to access this page."))
+            return redirect('home')
 
+        # Determine which form was submitted
+        if 'update_user' in request.POST:
+            userform = UserUpdateForm(request.POST, instance=user)
+            traineeform = TraineeUpdateForm(instance=trainee)  # Not submitted, so use instance
+            if userform.is_valid():
+                userform.save()
+                messages.success(request, _("Your profile has been updated"))
+                return redirect('userApp:profile', user.username)
+            else:
+                # Re-render with invalid userform
+                return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
+        elif 'update_trainee' in request.POST:
+            userform = UserUpdateForm(instance=user)  # Not submitted
+            traineeform = TraineeUpdateForm(request.POST, instance=trainee)
+            if traineeform.is_valid():
+                traineeform.save()
+                messages.success(request, _("Your profile has been updated"))
+                return redirect('userApp:profile', user.username)
+            else:
+                # Re-render with invalid traineeform
+                return render(request, self.template_name, {"userform": userform, "traineeform": traineeform})
         else:
-            messages.error(request," error")
+            # No valid submit, redirect
             return redirect('userApp:profile', user.username) 
 
 #Vista para modificar password
@@ -153,15 +195,15 @@ class MyPasswordChangeView(PasswordChangeView):
     
 #Vista una vez modificada la password exisitamente
 class MyPasswordResetDoneView(PasswordResetDoneView):
-    template_name= "userApp/passwordResetDone.html"
+    template_name= "userApp/password_change_done.html"
 
 class CustomPasswordResetView(PasswordResetView):
-    email_template_name = "registration/password_reset_email.html"
+    email_template_name = "userApp/password_reset_email.txt"  # Template de texto plano
     extra_email_context = None
     form_class = PasswordResetForm
     from_email = None
-    html_email_template_name = None
-    subject_template_name = "registration/password_reset_subject.txt"
+    html_email_template_name = "userApp/password_reset_email.html"  # Template HTML
+    subject_template_name = "userApp/password_reset_subject.txt"
     success_url = reverse_lazy("userApp:password_reset_done")
     template_name = "registration/password_reset_form.html"
     title = _("Password reset")
@@ -172,6 +214,12 @@ class CustomPasswordResetView(PasswordResetView):
         return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
+        # Validación: comprobar si el email ingresado está registrado
+        email = form.cleaned_data.get('email')
+        if not get_user_model()._default_manager.filter(email__iexact=(email or '')).exists():
+            messages.error(self.request, _("The email entered is not registered."))
+            return self.form_invalid(form)
+
         opts = {
             "use_https": self.request.is_secure(),
             "token_generator": self.token_generator,
@@ -182,19 +230,31 @@ class CustomPasswordResetView(PasswordResetView):
             "html_email_template_name": self.html_email_template_name,
             "extra_email_context": self.extra_email_context,
         }
-        form.save(**opts)
+        try:
+            form.save(**opts)
+        except (ConnectionRefusedError, smtplib.SMTPAuthenticationError, smtplib.SMTPException, Exception) as e:
+            logger = logging.getLogger(__name__)
+            logger.exception("Error sending password reset email: %s", e)
+            messages.error(
+                self.request,
+                _(
+                    "An error occurred while trying to send the email, contact the administrator."
+                ),
+            )
+            return super().form_valid(form)
+
         return super().form_valid(form)
     
     
 INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
 UserModel = get_user_model()    
 class CustomPasswordResetConfirmView(PasswordContextMixin, FormView):
-    form_class = SetPasswordForm
+    form_class = CustomSetPasswordForm
     post_reset_login = False
     post_reset_login_backend = None
     reset_url_token = "set-password"
     success_url = reverse_lazy("userApp:password_reset_complete")
-    template_name = "registration/password_reset_confirm.html"
+    template_name = "userApp/passwordChange.html"  # Template usado en urls.py
     title = _("Enter new password")
     token_generator = default_token_generator
 
