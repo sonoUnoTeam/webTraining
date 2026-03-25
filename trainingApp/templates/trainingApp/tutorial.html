@@ -13,8 +13,8 @@
                     <div class="hero-icon">
                         <i class="bi bi-lightbulb"></i>
                     </div>
-                    <h1 class="hero-title">{% trans 'Guía de sonoTrainings' %}</h1>
-                    <p class="hero-subtitle">{% trans 'Aprende a usar la plataforma en 5 minutos' %}</p>
+                    <h1 class="hero-title">{% trans 'sonoTrainings Guide' %}</h1>
+                    <p class="hero-subtitle">{% trans 'Learn how to use the platform in 5 minutes' %}</p>
                 </div>
             </div>
         </section>
@@ -25,23 +25,23 @@
                 <div class="nav-pills-wrapper">
                     <button class="nav-pill active" data-section="overview">
                         <i class="bi bi-compass"></i>
-                        <span>{% trans 'Visión General' %}</span>
+                        <span>{% trans 'Overview' %}</span>
                     </button>
                     <button class="nav-pill" data-section="how-it-works">
                         <i class="bi bi-gear"></i>
-                        <span>{% trans 'Cómo Funciona' %}</span>
+                        <span>{% trans 'How It Works' %}</span>
                     </button>
                     <button class="nav-pill" data-section="function-examples">
                         <i class="bi bi-graph-up"></i>
-                        <span>{% trans 'Ejemplos de Funciones' %}</span>
+                        <span>{% trans 'Function Examples' %}</span>
                     </button>
                     <button class="nav-pill" data-section="question-types">
                         <i class="bi bi-question-circle"></i>
-                        <span>{% trans 'Tipos de Preguntas' %}</span>
+                        <span>{% trans 'Question Types' %}</span>
                     </button>
                     <button class="nav-pill" data-section="tips">
                         <i class="bi bi-star"></i>
-                        <span>{% trans 'Consejos' %}</span>
+                        <span>{% trans 'Tips' %}</span>
                     </button>
                 </div>
             </div>
@@ -52,8 +52,8 @@
             <!-- Section 1: Overview -->
             <section id="overview" class="content-section active">
                 <div class="section-header">
-                    <h2>{% trans 'Visión General' %}</h2>
-                    <p class="text-muted">{% trans 'Entiende la estructura de la plataforma' %}</p>
+                    <h2>{% trans 'Overview' %}</h2>
+                    <p class="text-muted">{% trans 'Understand the platform structure' %}</p>
                 </div>
 
                 <div class="info-grid">
@@ -63,8 +63,8 @@
                                 <i class="bi bi-collection"></i>
                             </div>
                             <div class="info-content">
-                                <h3>{% trans 'Curso' %}</h3>
-                                <p>{% trans 'Colección estructurada de entrenamientos' %}</p>
+                                <h3>{% trans 'Course' %}</h3>
+                                <p>{% trans 'Structured collection of trainings' %}</p>
                             </div>
                             <i class="bi bi-chevron-down expand-icon"></i>
                         </div>
@@ -72,23 +72,23 @@
                             <ul class="feature-list">
                                 <li>
                                     <i class="bi bi-arrow-right-circle"></i>
-                                    <span>{% trans 'Entrenamientos secuenciales que se desbloquean progresivamente (debes completar uno para desbloquear el siguiente)' %}</span>
+                                    <span>{% trans 'Sequential trainings that unlock progressively (you must complete one to unlock the next)' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-skip-forward"></i>
-                                    <span>{% trans 'Puedes avanzar al siguiente entrenamiento incluso si fallaste el actual, pero este quedará bloqueado' %}</span>
+                                    <span>{% trans 'You can move to the next training even if you failed the current one, but it will become locked' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-trophy"></i>
-                                    <span>{% trans 'Examen final disponible solo al completar todos los entrenamientos del curso' %}</span>
+                                    <span>{% trans 'Final exam available only after completing all trainings in the course' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-graph-up"></i>
-                                    <span>{% trans 'Debes mantener un promedio mínimo de tus mejores puntajes para acceder al examen final' %}</span>
+                                    <span>{% trans 'You must maintain a minimum average of your best scores to access the final exam' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-award"></i>
-                                    <span>{% trans 'El examen final tiene su propio puntaje mínimo de aprobación' %}</span>
+                                    <span>{% trans 'The final exam has its own minimum passing score' %}</span>
                                 </li>
                             </ul>
                         </div>
@@ -100,8 +100,8 @@
                                 <i class="bi bi-journal-text"></i>
                             </div>
                             <div class="info-content">
-                                <h3>{% trans 'Entrenamiento' %}</h3>
-                                <p>{% trans 'Evaluación con bloques de preguntas' %}</p>
+                                <h3>{% trans 'Training' %}</h3>
+                                <p>{% trans 'Assessment with question blocks' %}</p>
                             </div>
                             <i class="bi bi-chevron-down expand-icon"></i>
                         </div>
@@ -109,27 +109,27 @@
                             <ul class="feature-list">
                                 <li>
                                     <i class="bi bi-puzzle"></i>
-                                    <span>{% trans 'Múltiples bloques de preguntas temáticas que deben completarse en secuencia' %}</span>
+                                    <span>{% trans 'Multiple themed question blocks that must be completed in sequence' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-repeat"></i>
-                                    <span>{% trans 'Cada entrenamiento tiene un número limitado de intentos (ej: 3 intentos)' %}</span>
+                                    <span>{% trans 'Each training has a limited number of attempts (e.g., 3 attempts)' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-percent"></i>
-                                    <span>{% trans 'Cada entrenamiento tiene una puntuación mínima (passing score) que debes alcanzar para aprobarlo' %}</span>
+                                    <span>{% trans 'Each training has a minimum passing score you must reach to pass' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-trophy-fill"></i>
-                                    <span>{% trans 'Se guarda tu mejor puntaje de todos los intentos realizados' %}</span>
+                                    <span>{% trans 'Your best score is saved across all attempts' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-clock-history"></i>
-                                    <span>{% trans 'También se registra tu último puntaje para ver tu progreso más reciente' %}</span>
+                                    <span>{% trans 'Your latest score is also recorded to track your most recent progress' %}</span>
                                 </li>
                                 <li>
                                     <i class="bi bi-file-earmark-check"></i>
-                                    <span>{% trans 'Después de completar puedes revisar tus respuestas y ver las correctas' %}</span>
+                                    <span>{% trans 'After completing, you can review your answers and see the correct ones' %}</span>
                                 </li>
                             </ul>
                         </div>
@@ -138,15 +138,15 @@
 
                 <!-- Status Legend -->
                 <div class="status-legend mt-5">
-                    <h3 class="mb-4">{% trans 'Estados del Entrenamiento' %}</h3>
+                    <h3 class="mb-4">{% trans 'Training States' %}</h3>
                     <div class="status-grid">
                         <div class="status-item" data-status="available">
                             <div class="status-badge bg-info">
                                 <i class="bi bi-play-circle-fill"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Disponible' %}</h4>
-                                <p>{% trans 'Listo para comenzar tu primer intento' %}</p>
+                                <h4>{% trans 'Available' %}</h4>
+                                <p>{% trans 'Ready to start your first attempt' %}</p>
                             </div>
                         </div>
 
@@ -155,8 +155,8 @@
                                 <i class="bi bi-check-circle-fill"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Aprobado' %}</h4>
-                                <p>{% trans 'Has alcanzado el puntaje mínimo. Puedes reintentar para mejorar (opcional)' %}</p>
+                                <h4>{% trans 'Passed' %}</h4>
+                                <p>{% trans 'You reached the minimum score. You can retry to improve (optional)' %}</p>
                             </div>
                         </div>
 
@@ -165,8 +165,8 @@
                                 <i class="bi bi-x-circle-fill"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Fallido' %}</h4>
-                                <p>{% trans 'No alcanzaste el puntaje mínimo. Puedes reintentar si tienes intentos disponibles' %}</p>
+                                <h4>{% trans 'Failed' %}</h4>
+                                <p>{% trans 'You did not reach the minimum score. You can retry if you have attempts available' %}</p>
                             </div>
                         </div>
 
@@ -175,8 +175,8 @@
                                 <i class="bi bi-lock-fill"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Bloqueado' %}</h4>
-                                <p>{% trans 'Debes completar el entrenamiento anterior para desbloquearlo' %}</p>
+                                <h4>{% trans 'Locked' %}</h4>
+                                <p>{% trans 'You must complete the previous training to unlock it' %}</p>
                             </div>
                         </div>
 
@@ -185,8 +185,8 @@
                                 <i class="bi bi-lock-fill"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Bloqueado - Saltado' %}</h4>
-                                <p>{% trans 'Avanzaste al siguiente sin aprobar. Quedó bloqueado pero conservas tu mejor puntaje' %}</p>
+                                <h4>{% trans 'Locked - Skipped' %}</h4>
+                                <p>{% trans 'You moved to the next one without passing. It became locked, but you keep your best score' %}</p>
                             </div>
                         </div>
 
@@ -195,8 +195,8 @@
                                 <i class="bi bi-ban"></i>
                             </div>
                             <div class="status-info">
-                                <h4>{% trans 'Intentos Agotados' %}</h4>
-                                <p>{% trans 'Has usado todos los intentos permitidos. Solo puedes ver los resultados' %}</p>
+                                <h4>{% trans 'Attempts Exhausted' %}</h4>
+                                <p>{% trans 'You have used all allowed attempts. You can only view the results' %}</p>
                             </div>
                         </div>
                     </div>
@@ -204,13 +204,13 @@
                     <div class="alert-box info-box mt-4">
                         <i class="bi bi-info-circle-fill"></i>
                         <div>
-                            <strong>{% trans 'Importante sobre los estados:' %}</strong>
+                            <strong>{% trans 'Important about states:' %}</strong>
                             <ul style="margin-top: 10px; margin-bottom: 0;">
-                                <li>{% trans 'Los entrenamientos se desbloquean secuencialmente (uno después del otro)' %}</li>
-                                <li>{% trans 'Puedes avanzar al siguiente entrenamiento incluso si fallaste el actual' %}</li>
-                                <li>{% trans 'Si avanzas sin aprobar, el entrenamiento anterior quedará bloqueado (estado "Locked - Skipped")' %}</li>
-                                <li>{% trans 'Tu mejor puntaje siempre se conserva, incluso si el entrenamiento queda bloqueado' %}</li>
-                                <li>{% trans 'Cada entrenamiento tiene un número limitado de intentos' %}</li>
+                                <li>{% trans 'Trainings unlock sequentially (one after another)' %}</li>
+                                <li>{% trans 'You can move to the next training even if you failed the current one' %}</li>
+                                <li>{% trans 'If you move on without passing, the previous training will be locked (state "Locked - Skipped")' %}</li>
+                                <li>{% trans 'Your best score is always kept, even if the training becomes locked' %}</li>
+                                <li>{% trans 'Each training has a limited number of attempts' %}</li>
                             </ul>
                         </div>
                     </div>
@@ -220,8 +220,8 @@
             <!-- Section 2: How it Works -->
             <section id="how-it-works" class="content-section">
                 <div class="section-header">
-                    <h2>{% trans 'Cómo Funciona' %}</h2>
-                    <p class="text-muted">{% trans 'Paso a paso para completar un entrenamiento' %}</p>
+                    <h2>{% trans 'How It Works' %}</h2>
+                    <p class="text-muted">{% trans 'Step by step to complete a training' %}</p>
                 </div>
 
                 <div class="timeline">
@@ -234,8 +234,8 @@
                                 <div class="timeline-icon bg-gradient-blue">
                                     <i class="bi bi-list-ul"></i>
                                 </div>
-                                <h4>{% trans 'Selecciona un Curso' %}</h4>
-                                <p>{% trans 'Elige el curso que deseas realizar desde la sección de Trainings' %}</p>
+                                <h4>{% trans 'Select a Course' %}</h4>
+                                <p>{% trans 'Choose the course you want to take from the Trainings section' %}</p>
                             </div>
                         </div>
                     </div>
@@ -249,8 +249,8 @@
                                 <div class="timeline-icon bg-gradient-green">
                                     <i class="bi bi-play-fill"></i>
                                 </div>
-                                <h4>{% trans 'Comienza el Entrenamiento' %}</h4>
-                                <p>{% trans 'Haz clic en "Comenzar" en el entrenamiento disponible' %}</p>
+                                <h4>{% trans 'Start the Training' %}</h4>
+                                <p>{% trans 'Click "Start" on the available training' %}</p>
                             </div>
                         </div>
                     </div>
@@ -264,8 +264,8 @@
                                 <div class="timeline-icon bg-gradient-purple">
                                     <i class="bi bi-pencil-square"></i>
                                 </div>
-                                <h4>{% trans 'Responde las Preguntas' %}</h4>
-                                <p>{% trans 'Completa cada bloque de preguntas cuidadosamente' %}</p>
+                                <h4>{% trans 'Answer the Questions' %}</h4>
+                                <p>{% trans 'Complete each question block carefully' %}</p>
                             </div>
                         </div>
                     </div>
@@ -279,8 +279,8 @@
                                 <div class="timeline-icon bg-gradient-orange">
                                     <i class="bi bi-bar-chart"></i>
                                 </div>
-                                <h4>{% trans 'Revisa tus Resultados' %}</h4>
-                                <p>{% trans 'Analiza tu desempeño y aprende de los errores' %}</p>
+                                <h4>{% trans 'Review your Results' %}</h4>
+                                <p>{% trans 'Analyze your performance and learn from mistakes' %}</p>
                             </div>
                         </div>
                     </div>
@@ -289,8 +289,8 @@
                 <div class="alert-box info-box mt-5">
                     <i class="bi bi-info-circle"></i>
                     <div>
-                        <strong>{% trans 'Sistema de Progresión Flexible:' %}</strong>
-                        <p>{% trans 'Puedes avanzar al siguiente entrenamiento incluso si no aprobaste el actual. Esto bloqueará el entrenamiento anterior, pero tu mejor puntaje se conservará para el cálculo del promedio del curso. Si aprobaste, puedes reintentar opcionalmente para mejorar tu puntaje. Si fallaste y avanzas, perderás la oportunidad de reintentar ese entrenamiento.' %}</p>
+                        <strong>{% trans 'Flexible Progression System:' %}</strong>
+                        <p>{% trans 'You can move to the next training even if you did not pass the current one. This will lock the previous training, but your best score will be kept for the course average calculation. If you passed, you can optionally retry to improve your score. If you failed and move on, you will lose the chance to retry that training.' %}</p>
                     </div>
                 </div>
             </section>
@@ -298,8 +298,8 @@
             <!-- Section 3: Function Examples -->
             <section id="function-examples" class="content-section">
                 <div class="section-header">
-                    <h2>{% trans 'Ejemplos de Funciones' %}</h2>
-                    <p class="text-muted">{% trans 'Visualiza y escucha diferentes tipos de funciones sonificadas' %}</p>
+                    <h2>{% trans 'Function Examples' %}</h2>
+                    <p class="text-muted">{% trans 'Visualize and listen to different types of sonified functions' %}</p>
                 </div>
 
                 <!-- Basic Functions -->
@@ -309,8 +309,8 @@
                             <i class="bi bi-activity"></i>
                         </div>
                         <div>
-                            <h3>{% trans 'Funciones Básicas' %}</h3>
-                            <p>{% trans 'Formas de onda simples y fundamentales' %}</p>
+                            <h3>{% trans 'Basic Functions' %}</h3>
+                            <p>{% trans 'Simple and fundamental waveforms' %}</p>
                         </div>
                     </div>
 
@@ -318,48 +318,48 @@
                         <!-- Sine Wave -->
                         <div class="function-card" data-modal="modal-function-sine" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Onda Senoidal' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Sine Wave' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Onda Senoidal' %}</h4>
-                                <p>{% trans 'Oscilación periódica suave y regular' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Sine Wave' %}</h4>
+                                <p>{% trans 'Smooth and regular periodic oscillation' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
 
                         <!-- Cosine Wave -->
                         <div class="function-card" data-modal="modal-function-cosine" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Onda Cosenoidal' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Cosine Wave' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Onda Cosenoidal' %}</h4>
-                                <p>{% trans 'Similar a la senoidal pero con fase diferente' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Cosine Wave' %}</h4>
+                                <p>{% trans 'Similar to sine but with a different phase' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
 
                         <!-- Linear Function -->
                         <div class="function-card" data-modal="modal-function-constant" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/fc-constanteplot.png" alt="{% trans 'Función Constante' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/fc-constanteplot.png" alt="{% trans 'Constant Function' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Función Constante' %}</h4>
-                                <p>{% trans 'Valor constante sin variación' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Constant Function' %}</h4>
+                                <p>{% trans 'Constant value without variation' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
 
                         <!-- Exponential Function -->
                         <div class="function-card" data-modal="modal-function-decreasing" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/decrecienteplot.png" alt="{% trans 'Función Decreciente' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/decrecienteplot.png" alt="{% trans 'Decreasing Function' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Función Decreciente' %}</h4>
-                                <p>{% trans 'Decrecimiento gradual' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Decreasing Function' %}</h4>
+                                <p>{% trans 'Gradual decrease' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
                     </div>
@@ -372,8 +372,8 @@
                             <i class="bi bi-graph-up-arrow"></i>
                         </div>
                         <div>
-                            <h3>{% trans 'Funciones Avanzadas' %}</h3>
-                            <p>{% trans 'Combinaciones y formas complejas' %}</p>
+                            <h3>{% trans 'Advanced Functions' %}</h3>
+                            <p>{% trans 'Combinations and complex shapes' %}</p>
                         </div>
                     </div>
 
@@ -381,24 +381,24 @@
                         <!-- Sum of Sinusoidals -->
                         <div class="function-card" data-modal="modal-function-quadratic" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadratica2plot.png" alt="{% trans 'Función Cuadrática' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadratica2plot.png" alt="{% trans 'Quadratic Function' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Función Cuadrática' %}</h4>
-                                <p>{% trans 'Parábola con forma de U' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Quadratic Function' %}</h4>
+                                <p>{% trans 'U-shaped parabola' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
 
                         <!-- Modulated Wave -->
                         <div class="function-card" data-modal="modal-function-quadratic2" style="cursor: pointer;">
                             <div class="function-image">
-                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadraticaplot.png" alt="{% trans 'Función Cuadrática Invertida' %}">
+                                <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadraticaplot.png" alt="{% trans 'Inverted Quadratic Function' %}">
                             </div>
                             <div class="function-info">
-                                <h4>{% trans 'Función Cuadrática Invertida' %}</h4>
-                                <p>{% trans 'Parábola invertida' %}</p>
-                                <span class="view-more">{% trans 'Click para ver detalles' %}</span>
+                                <h4>{% trans 'Inverted Quadratic Function' %}</h4>
+                                <p>{% trans 'Inverted parabola' %}</p>
+                                <span class="view-more">{% trans 'Click to view details' %}</span>
                             </div>
                         </div>
 
@@ -408,8 +408,8 @@
                 <div class="alert-box info-box mt-5">
                     <i class="bi bi-headphones"></i>
                     <div>
-                        <strong>{% trans 'Consejo:' %}</strong>
-                        <p>{% trans 'Usa auriculares para apreciar mejor los detalles de cada función sonificada. Presta atención a las diferencias entre las funciones básicas y las que tienen ruido añadido.' %}</p>
+                        <strong>{% trans 'Tip:' %}</strong>
+                        <p>{% trans 'Use headphones to better appreciate the details of each sonified function. Pay attention to the differences between basic functions and those with added noise.' %}</p>
                     </div>
                 </div>
             </section>
@@ -417,8 +417,8 @@
             <!-- Section 4: Question Types -->
             <section id="question-types" class="content-section">
                 <div class="section-header">
-                    <h2>{% trans 'Tipos de Preguntas' %}</h2>
-                    <p class="text-muted">{% trans 'Conoce los formatos de evaluación' %}</p>
+                    <h2>{% trans 'Question Types' %}</h2>
+                    <p class="text-muted">{% trans 'Learn the assessment formats' %}</p>
                 </div>
 
                 <div class="question-types-grid">
@@ -426,10 +426,10 @@
                         <div class="question-type-icon">
                             <i class="bi bi-fonts"></i>
                         </div>
-                        <h4>{% trans 'Texto' %}</h4>
-                        <p>{% trans 'Preguntas basadas en enunciados escritos' %}</p>
+                        <h4>{% trans 'Text' %}</h4>
+                        <p>{% trans 'Questions based on written statements' %}</p>
                         <button class="btn-preview" data-modal="modal-text">
-                            <span>{% trans 'Ver ejemplo' %}</span>
+                            <span>{% trans 'View example' %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
@@ -438,10 +438,10 @@
                         <div class="question-type-icon">
                             <i class="bi bi-image"></i>
                         </div>
-                        <h4>{% trans 'Imagen' %}</h4>
-                        <p>{% trans 'Identifica elementos visuales' %}</p>
+                        <h4>{% trans 'Image' %}</h4>
+                        <p>{% trans 'Identify visual elements' %}</p>
                         <button class="btn-preview" data-modal="modal-image">
-                            <span>{% trans 'Ver ejemplo' %}</span>
+                            <span>{% trans 'View example' %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
@@ -451,9 +451,9 @@
                             <i class="bi bi-volume-up"></i>
                         </div>
                         <h4>{% trans 'Audio' %}</h4>
-                        <p>{% trans 'Reconoce sonidos y técnicas auditivas' %}</p>
+                        <p>{% trans 'Recognize sounds and auditory techniques' %}</p>
                         <button class="btn-preview" data-modal="modal-audio">
-                            <span>{% trans 'Ver ejemplo' %}</span>
+                            <span>{% trans 'View example' %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
@@ -463,9 +463,9 @@
                             <i class="bi bi-collection-play"></i>
                         </div>
                         <h4>{% trans 'Multimedia' %}</h4>
-                        <p>{% trans 'Combina imagen y audio' %}</p>
+                        <p>{% trans 'Combines image and audio' %}</p>
                         <button class="btn-preview" data-modal="modal-multimedia">
-                            <span>{% trans 'Ver ejemplo' %}</span>
+                            <span>{% trans 'View example' %}</span>
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>
@@ -475,8 +475,8 @@
             <!-- Section 5: Tips -->
             <section id="tips" class="content-section">
                 <div class="section-header">
-                    <h2>{% trans 'Consejos para el Éxito' %}</h2>
-                    <p class="text-muted">{% trans 'Maximiza tu aprendizaje' %}</p>
+                    <h2>{% trans 'Tips for Success' %}</h2>
+                    <p class="text-muted">{% trans 'Maximize your learning' %}</p>
                 </div>
 
                 <div class="tips-container">
@@ -484,32 +484,32 @@
                         <div class="tip-icon">
                             <i class="bi bi-headphones"></i>
                         </div>
-                        <h4>{% trans 'Usa Auriculares' %}</h4>
-                        <p>{% trans 'Mejora la calidad del audio en preguntas sonoras' %}</p>
+                        <h4>{% trans 'Use Headphones' %}</h4>
+                        <p>{% trans 'Improve audio quality for sound-based questions' %}</p>
                     </div>
 
                     <div class="tip-card" data-tip="2">
                         <div class="tip-icon">
                             <i class="bi bi-clock"></i>
                         </div>
-                        <h4>{% trans 'Tómate tu Tiempo' %}</h4>
-                        <p>{% trans 'Lee cuidadosamente antes de responder' %}</p>
+                        <h4>{% trans 'Take your Time' %}</h4>
+                        <p>{% trans 'Read carefully before answering' %}</p>
                     </div>
 
                     <div class="tip-card" data-tip="3">
                         <div class="tip-icon">
                             <i class="bi bi-eye"></i>
                         </div>
-                        <h4>{% trans 'Revisa tus Respuestas' %}</h4>
-                        <p>{% trans 'Verifica antes de enviar cada bloque' %}</p>
+                        <h4>{% trans 'Review your Answers' %}</h4>
+                        <p>{% trans 'Check before submitting each block' %}</p>
                     </div>
 
                     <div class="tip-card" data-tip="4">
                         <div class="tip-icon">
                             <i class="bi bi-lightbulb"></i>
                         </div>
-                        <h4>{% trans 'Aprende de los Errores' %}</h4>
-                        <p>{% trans 'Revisa las respuestas incorrectas para mejorar' %}</p>
+                        <h4>{% trans 'Learn from Mistakes' %}</h4>
+                        <p>{% trans 'Review incorrect answers to improve' %}</p>
                     </div>
                 </div>
             </section>
@@ -522,19 +522,19 @@
                 <div class="card border-0 shadow-lg cta-card">
                     <div class="card-body text-center py-5 px-4">
                         <h2 class="display-6 fw-bold text-white mb-3">
-                            {% trans '¿Listo para comenzar?' %}
+                            {% trans 'Ready to start?' %}
                         </h2>
                         <p class="lead text-white mb-4">
-                            {% trans 'Elige un curso y empieza tu aprendizaje hoy' %}
+                            {% trans 'Choose a course and start learning today' %}
                         </p>
                         <div class="cta-buttons">
                             <a href="{% url 'trainingApp:course_list' %}" class="btn-cta primary">
                                 <i class="bi bi-play-circle"></i>
-                                {% trans 'Ver Cursos' %}
+                                {% trans 'View Courses' %}
                             </a>
                             <a href="/" class="btn-cta secondary">
                                 <i class="bi bi-house"></i>
-                                {% trans 'Volver al Inicio' %}
+                                {% trans 'Back to Home' %}
                             </a>
                         </div>
                     </div>
@@ -550,21 +550,21 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Ejemplo: Pregunta de Texto' %}</h3>
+            <h3>{% trans 'Example: Text Question' %}</h3>
             <div class="example-question">
-                <p class="question-text"><strong>{% trans '¿Qué característica tiene una función senoidal sonificada?' %}</strong></p>
+                <p class="question-text"><strong>{% trans 'What characteristic does a sonified sine function have?' %}</strong></p>
                 <div class="options-list">
                     <div class="option-item">
                         <input type="radio" name="example1" id="ex1a">
-                        <label for="ex1a">{% trans 'Produce un sonido constante sin variaciones' %}</label>
+                        <label for="ex1a">{% trans 'Produces a constant sound with no variations' %}</label>
                     </div>
                     <div class="option-item correct">
                         <input type="radio" name="example1" id="ex1b" checked>
-                        <label for="ex1b">{% trans 'Genera una oscilación periódica con tono que sube y baja de manera regular' %} <i class="bi bi-check-circle-fill"></i></label>
+                        <label for="ex1b">{% trans 'Generates a periodic oscillation with a tone that rises and falls regularly' %} <i class="bi bi-check-circle-fill"></i></label>
                     </div>
                     <div class="option-item">
                         <input type="radio" name="example1" id="ex1c">
-                        <label for="ex1c">{% trans 'Crea un patrón de ruido aleatorio sin estructura' %}</label>
+                        <label for="ex1c">{% trans 'Creates a random noise pattern with no structure' %}</label>
                     </div>
                 </div>
             </div>
@@ -576,24 +576,24 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Ejemplo: Pregunta con Imagen' %}</h3>
+            <h3>{% trans 'Example: Image Question' %}</h3>
             <div class="example-question">
-                <p class="question-text"><strong>{% trans 'Observa el gráfico. ¿Qué tipo de función se muestra?' %}</strong></p>
+                <p class="question-text"><strong>{% trans 'Look at the graph. What type of function is shown?' %}</strong></p>
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Gráfico de función coseno' %}" style="max-width: 100%; height: auto; border-radius: 12px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Cosine function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px;">
                 </div>
                 <div class="options-list">
                     <div class="option-item">
                         <input type="radio" name="example2" id="ex2a">
-                        <label for="ex2a">{% trans 'Función lineal creciente' %}</label>
+                        <label for="ex2a">{% trans 'Increasing linear function' %}</label>
                     </div>
                     <div class="option-item correct">
                         <input type="radio" name="example2" id="ex2b" checked>
-                        <label for="ex2b">{% trans 'Función coseno' %} <i class="bi bi-check-circle-fill"></i></label>
+                        <label for="ex2b">{% trans 'Cosine function' %} <i class="bi bi-check-circle-fill"></i></label>
                     </div>
                     <div class="option-item">
                         <input type="radio" name="example2" id="ex2c">
-                        <label for="ex2c">{% trans 'Función exponencial decreciente' %}</label>
+                        <label for="ex2c">{% trans 'Decreasing exponential function' %}</label>
                     </div>
                 </div>
             </div>
@@ -605,27 +605,27 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Ejemplo: Pregunta con Audio' %}</h3>
+            <h3>{% trans 'Example: Audio Question' %}</h3>
             <div class="example-question">
-                <p class="question-text"><strong>{% trans 'Escucha el audio. ¿Qué función corresponde a este sonido?' %}</strong></p>
+                <p class="question-text"><strong>{% trans 'Listen to the audio. Which function matches this sound?' %}</strong></p>
                 <div class="question-media">
                     <button class="audio-player">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                 </div>
                 <div class="options-list">
                     <div class="option-item">
                         <input type="radio" name="example3" id="ex3a">
-                        <label for="ex3a">{% trans 'Función triangular' %}</label>
+                        <label for="ex3a">{% trans 'Triangular function' %}</label>
                     </div>
                     <div class="option-item correct">
                         <input type="radio" name="example3" id="ex3b" checked>
-                        <label for="ex3b">{% trans 'Suma de dos senoidales con frecuencias diferentes' %} <i class="bi bi-check-circle-fill"></i></label>
+                        <label for="ex3b">{% trans 'Sum of two sinusoidal waves with different frequencies' %} <i class="bi bi-check-circle-fill"></i></label>
                     </div>
                     <div class="option-item">
                         <input type="radio" name="example3" id="ex3c">
-                        <label for="ex3c">{% trans 'Función constante' %}</label>
+                        <label for="ex3c">{% trans 'Constant function' %}</label>
                     </div>
                 </div>
             </div>
@@ -637,11 +637,11 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Ejemplo: Pregunta Multimedia' %}</h3>
+            <h3>{% trans 'Example: Multimedia Question' %}</h3>
             <div class="example-question">
-                <p class="question-text"><strong>{% trans 'Observa el gráfico y escucha el audio. ¿Qué función se representa?' %}</strong></p>
+                <p class="question-text"><strong>{% trans 'Look at the graph and listen to the audio. Which function is represented?' %}</strong></p>
                 <div class="question-media multimedia">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Gráfico de función seno' %}" style="max-width: 45%; height: auto; border-radius: 12px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Sine function graph' %}" style="max-width: 45%; height: auto; border-radius: 12px;">
                     <button class="audio-player">
                         <i class="bi bi-play-fill"></i>
                         {% trans 'Audio' %}
@@ -650,15 +650,15 @@
                 <div class="options-list">
                     <div class="option-item">
                         <input type="radio" name="example4" id="ex4a">
-                        <label for="ex4a">{% trans 'Función coseno' %}</label>
+                        <label for="ex4a">{% trans 'Cosine function' %}</label>
                     </div>
                     <div class="option-item correct">
                         <input type="radio" name="example4" id="ex4b" checked>
-                        <label for="ex4b">{% trans 'Función seno' %} <i class="bi bi-check-circle-fill"></i></label>
+                        <label for="ex4b">{% trans 'Sine function' %} <i class="bi bi-check-circle-fill"></i></label>
                     </div>
                     <div class="option-item">
                         <input type="radio" name="example4" id="ex4c">
-                        <label for="ex4c">{% trans 'Función constante' %}</label>
+                        <label for="ex4c">{% trans 'Constant function' %}</label>
                     </div>
                 </div>
             </div>
@@ -671,16 +671,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Onda Senoidal' %}</h3>
+            <h3>{% trans 'Sine Wave' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Gráfico de función seno' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/senoplot.png" alt="{% trans 'Sine function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función seno representa una oscilación periódica suave y regular. En la sonificación, genera un tono puro y continuo.' %}</p>
+                <p class="question-text">{% trans 'The sine function represents a smooth and regular periodic oscillation. In sonification, it generates a pure and continuous tone.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-sine').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-sine" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/seno_sound.mp3" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
@@ -693,16 +693,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Onda Cosenoidal' %}</h3>
+            <h3>{% trans 'Cosine Wave' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Gráfico de función coseno' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cosenoplot.png" alt="{% trans 'Cosine function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función coseno es similar a la senoidal pero con una fase inicial diferente. Produce un tono puro con el mismo periodo pero desfasado.' %}</p>
+                <p class="question-text">{% trans 'The cosine function is similar to the sine function but with a different initial phase. It produces a pure tone with the same period but phase-shifted.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-cosine').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-cosine" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/coseno_sound.mp3" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
@@ -715,16 +715,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Función Constante' %}</h3>
+            <h3>{% trans 'Constant Function' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/fc-constanteplot.png" alt="{% trans 'Gráfico de función constante' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/fc-constanteplot.png" alt="{% trans 'Constant function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función constante mantiene un valor fijo en el tiempo. Su sonificación produce un tono continuo sin variación de frecuencia.' %}</p>
+                <p class="question-text">{% trans 'The constant function keeps a fixed value over time. Its sonification produces a continuous tone with no frequency variation.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-constant').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-constant" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/constante.wav" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
@@ -737,16 +737,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Función Decreciente' %}</h3>
+            <h3>{% trans 'Decreasing Function' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/decrecienteplot.png" alt="{% trans 'Gráfico de función decreciente' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/decrecienteplot.png" alt="{% trans 'Decreasing function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función decreciente muestra una disminución gradual del valor. Su sonificación produce un tono que desciende progresivamente.' %}</p>
+                <p class="question-text">{% trans 'The decreasing function shows a gradual decrease in value. Its sonification produces a tone that progressively descends.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-decreasing').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-decreasing" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/decreciente_sound.mp3" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
@@ -759,16 +759,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Función Cuadrática' %}</h3>
+            <h3>{% trans 'Quadratic Function' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadratica2plot.png" alt="{% trans 'Gráfico de función cuadrática' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadratica2plot.png" alt="{% trans 'Quadratic function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función cuadrática tiene forma de parábola (U). Su sonificación crea un patrón que acelera en los extremos y desacelera en el centro.' %}</p>
+                <p class="question-text">{% trans 'The quadratic function has a parabola (U) shape. Its sonification creates a pattern that speeds up at the ends and slows down in the center.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-quadratic').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-quadratic" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/cuadratica2_sound.mp3" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
@@ -781,16 +781,16 @@
     <div class="modal-container">
         <button class="modal-close">&times;</button>
         <div class="modal-content">
-            <h3>{% trans 'Función Cuadrática Invertida' %}</h3>
+            <h3>{% trans 'Inverted Quadratic Function' %}</h3>
             <div class="example-question">
                 <div class="question-media">
-                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadraticaplot.png" alt="{% trans 'Gráfico de función cuadrática invertida' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
+                    <img src="{{ MEDIA_URL }}trainingApp/images/tutorial/cuadraticaplot.png" alt="{% trans 'Inverted quadratic function graph' %}" style="max-width: 100%; height: auto; border-radius: 12px; margin-bottom: 20px;">
                 </div>
-                <p class="question-text">{% trans 'La función cuadrática invertida tiene forma de parábola invertida. Su sonificación es el patrón opuesto: desacelera en los extremos y acelera en el centro.' %}</p>
+                <p class="question-text">{% trans 'The inverted quadratic function has an upside-down parabola shape. Its sonification is the opposite pattern: it slows at the ends and speeds up in the center.' %}</p>
                 <div class="question-media" style="margin-top: 20px;">
                     <button class="audio-player" onclick="document.getElementById('audio-quadratic2').play()">
                         <i class="bi bi-play-fill"></i>
-                        {% trans 'Reproducir Audio' %}
+                        {% trans 'Play Audio' %}
                     </button>
                     <audio id="audio-quadratic2" src="{{ MEDIA_URL }}trainingApp/sound/tutorial/cuadratica_sound.mp3" controls style="margin-top: 15px; width: 100%;"></audio>
                 </div>
