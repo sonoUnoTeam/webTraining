@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 
-
+#TESTING
 class CourseList(ListView):
     model = Course 
     template_name = "trainingApp/course_list.html"
