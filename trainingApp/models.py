@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from userApp.models import Trainee
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -84,7 +85,11 @@ class TrainingQuestion(models.Model):
     block = models.ForeignKey(TrainingBlock, on_delete=models.CASCADE, null=True)
     question = models.CharField(max_length=100, null=True)
     deploy_image = models.ImageField(upload_to="trainingApp/images", blank=True)
-    deploy_sound = models.FileField(upload_to="trainingApp/sound", blank=True)
+    deploy_sound = models.FileField(
+        upload_to="trainingApp/sound",
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])]
+    )
     #Respuesta correcta
     #correct_answer = models.CharField(max_length=100, null=True) 
 
