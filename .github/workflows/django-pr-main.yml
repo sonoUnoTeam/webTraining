@@ -1,0 +1,65 @@
+name: Django PR Main Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  quality-and-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-libmysqlclient-dev pkg-config gettext
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff black isort bandit pip-audit
+
+      - name: Format check (black)
+        run: black --check manage.py webTraining trainingApp userApp
+
+      - name: Import order check (isort)
+        run: isort --check-only manage.py webTraining trainingApp userApp
+
+      - name: Lint (ruff)
+        run: ruff check manage.py webTraining trainingApp userApp
+
+      - name: Validate pending model changes
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Apply migrations
+        run: python manage.py migrate --noinput
+
+      - name: Django system checks
+        run: python manage.py check
+
+      - name: Run tests
+        run: python manage.py test
+
+      - name: Validate translations compile
+        run: python manage.py compilemessages
+
+      - name: Verify static files build
+        run: python manage.py collectstatic --noinput
+
+      - name: Security scan (bandit)
+        run: bandit -q -r . -x ./venv,./.git,./media
+
+      - name: Dependency vulnerability audit (pip-audit)
+        run: pip-audit
