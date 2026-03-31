@@ -1831,3 +1831,502 @@ msgstr "Enviar opinión"
 #: trainingApp/templates/trainingApp/comment_form.html
 msgid "Skip Survey"
 msgstr "Omitir encuesta"
+
+
+# Tutorial page translations (English source -> Spanish)
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Advanced Functions"
+msgstr "Funciones Avanzadas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "After completing, you can review your answers and see the correct ones"
+msgstr "Después de completar puedes revisar tus respuestas y ver las correctas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Analyze your performance and learn from mistakes"
+msgstr "Analiza tu desempeño y aprende de los errores"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Answer the Questions"
+msgstr "Responde las Preguntas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Assessment with question blocks"
+msgstr "Evaluación con bloques de preguntas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Audio"
+msgstr "Audio"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Back to Home"
+msgstr "Volver al Inicio"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Basic Functions"
+msgstr "Funciones Básicas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Check before submitting each block"
+msgstr "Verifica antes de enviar cada bloque"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Choose a course and start learning today"
+msgstr "Elige un curso y empieza tu aprendizaje hoy"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Choose the course you want to take from the Trainings section"
+msgstr "Elige el curso que deseas realizar desde la sección de Trainings"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Click \"Start\" on the available training"
+msgstr "Haz clic en \"Comenzar\" en el entrenamiento disponible"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Click to view details"
+msgstr "Click para ver detalles"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Combinations and complex shapes"
+msgstr "Combinaciones y formas complejas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Combines image and audio"
+msgstr "Combina imagen y audio"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Complete each question block carefully"
+msgstr "Completa cada bloque de preguntas cuidadosamente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Constant Function"
+msgstr "Función Constante"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Constant function"
+msgstr "Función constante"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Constant function graph"
+msgstr "Gráfico de función constante"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Constant value without variation"
+msgstr "Valor constante sin variación"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Cosine Wave"
+msgstr "Onda Cosenoidal"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Cosine function"
+msgstr "Función coseno"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Cosine function graph"
+msgstr "Gráfico de función coseno"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Course"
+msgstr "Curso"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Creates a random noise pattern with no structure"
+msgstr "Crea un patrón de ruido aleatorio sin estructura"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Decreasing Function"
+msgstr "Función Decreciente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Decreasing exponential function"
+msgstr "Función exponencial decreciente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Decreasing function graph"
+msgstr "Gráfico de función decreciente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Each training has a limited number of attempts"
+msgstr "Cada entrenamiento tiene un número limitado de intentos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Each training has a limited number of attempts (e.g., 3 attempts)"
+msgstr "Cada entrenamiento tiene un número limitado de intentos (ej: 3 intentos)"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Each training has a minimum passing score you must reach to pass"
+msgstr "Cada entrenamiento tiene una puntuación mínima (passing score) que debes alcanzar para aprobarlo"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Example: Audio Question"
+msgstr "Ejemplo: Pregunta con Audio"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Example: Image Question"
+msgstr "Ejemplo: Pregunta con Imagen"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Example: Multimedia Question"
+msgstr "Ejemplo: Pregunta Multimedia"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Example: Text Question"
+msgstr "Ejemplo: Pregunta de Texto"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Final exam available only after completing all trainings in the course"
+msgstr "Examen final disponible solo al completar todos los entrenamientos del curso"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Flexible Progression System:"
+msgstr "Sistema de Progresión Flexible:"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Function Examples"
+msgstr "Ejemplos de Funciones"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Generates a periodic oscillation with a tone that rises and falls regularly"
+msgstr "Genera una oscilación periódica con tono que sube y baja de manera regular"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Gradual decrease"
+msgstr "Decrecimiento gradual"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "How It Works"
+msgstr "Cómo Funciona"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Identify visual elements"
+msgstr "Identifica elementos visuales"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "If you move on without passing, the previous training will be locked (state \"Locked - Skipped\")"
+msgstr "Si avanzas sin aprobar, el entrenamiento anterior quedará bloqueado (estado \"Locked - Skipped\")"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Image"
+msgstr "Imagen"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Important about states:"
+msgstr "Importante sobre los estados:"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Improve audio quality for sound-based questions"
+msgstr "Mejora la calidad del audio en preguntas sonoras"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Increasing linear function"
+msgstr "Función lineal creciente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Inverted Quadratic Function"
+msgstr "Función Cuadrática Invertida"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Inverted parabola"
+msgstr "Parábola invertida"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Inverted quadratic function graph"
+msgstr "Gráfico de función cuadrática invertida"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Learn from Mistakes"
+msgstr "Aprende de los Errores"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Learn how to use the platform in 5 minutes"
+msgstr "Aprende a usar la plataforma en 5 minutos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Learn the assessment formats"
+msgstr "Conoce los formatos de evaluación"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Listen to the audio. Which function matches this sound?"
+msgstr "Escucha el audio. ¿Qué función corresponde a este sonido?"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Locked"
+msgstr "Bloqueado"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Locked - Skipped"
+msgstr "Bloqueado - Saltado"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Look at the graph and listen to the audio. Which function is represented?"
+msgstr "Observa el gráfico y escucha el audio. ¿Qué función se representa?"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Look at the graph. What type of function is shown?"
+msgstr "Observa el gráfico. ¿Qué tipo de función se muestra?"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Maximize your learning"
+msgstr "Maximiza tu aprendizaje"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Multimedia"
+msgstr "Multimedia"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Multiple themed question blocks that must be completed in sequence"
+msgstr "Múltiples bloques de preguntas temáticas que deben completarse en secuencia"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Overview"
+msgstr "Visión General"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Play Audio"
+msgstr "Reproducir Audio"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Produces a constant sound with no variations"
+msgstr "Produce un sonido constante sin variaciones"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Quadratic Function"
+msgstr "Función Cuadrática"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Quadratic function graph"
+msgstr "Gráfico de función cuadrática"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Question Types"
+msgstr "Tipos de Preguntas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Questions based on written statements"
+msgstr "Preguntas basadas en enunciados escritos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Read carefully before answering"
+msgstr "Lee cuidadosamente antes de responder"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Ready to start your first attempt"
+msgstr "Listo para comenzar tu primer intento"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Ready to start?"
+msgstr "¿Listo para comenzar?"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Recognize sounds and auditory techniques"
+msgstr "Reconoce sonidos y técnicas auditivas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Review incorrect answers to improve"
+msgstr "Revisa las respuestas incorrectas para mejorar"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Review your Answers"
+msgstr "Revisa tus Respuestas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Review your Results"
+msgstr "Revisa tus Resultados"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Select a Course"
+msgstr "Selecciona un Curso"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Sequential trainings that unlock progressively (you must complete one to unlock the next)"
+msgstr "Entrenamientos secuenciales que se desbloquean progresivamente (debes completar uno para desbloquear el siguiente)"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Similar to sine but with a different phase"
+msgstr "Similar a la senoidal pero con fase diferente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Simple and fundamental waveforms"
+msgstr "Formas de onda simples y fundamentales"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Sine Wave"
+msgstr "Onda Senoidal"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Sine function"
+msgstr "Función seno"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Sine function graph"
+msgstr "Gráfico de función seno"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Smooth and regular periodic oscillation"
+msgstr "Oscilación periódica suave y regular"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Start the Training"
+msgstr "Comienza el Entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Step by step to complete a training"
+msgstr "Paso a paso para completar un entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Structured collection of trainings"
+msgstr "Colección estructurada de entrenamientos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Sum of two sinusoidal waves with different frequencies"
+msgstr "Suma de dos senoidales con frecuencias diferentes"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Take your Time"
+msgstr "Tómate tu Tiempo"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Text"
+msgstr "Texto"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The constant function keeps a fixed value over time. Its sonification produces a continuous tone with no frequency variation."
+msgstr "La función constante mantiene un valor fijo en el tiempo. Su sonificación produce un tono continuo sin variación de frecuencia."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The cosine function is similar to the sine function but with a different initial phase. It produces a pure tone with the same period but phase-shifted."
+msgstr "La función coseno es similar a la senoidal pero con una fase inicial diferente. Produce un tono puro con el mismo periodo pero desfasado."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The decreasing function shows a gradual decrease in value. Its sonification produces a tone that progressively descends."
+msgstr "La función decreciente muestra una disminución gradual del valor. Su sonificación produce un tono que desciende progresivamente."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The final exam has its own minimum passing score"
+msgstr "El examen final tiene su propio puntaje mínimo de aprobación"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The inverted quadratic function has an upside-down parabola shape. Its sonification is the opposite pattern: it slows at the ends and speeds up in the center."
+msgstr "La función cuadrática invertida tiene forma de parábola invertida. Su sonificación es el patrón opuesto: desacelera en los extremos y acelera en el centro."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The quadratic function has a parabola (U) shape. Its sonification creates a pattern that speeds up at the ends and slows down in the center."
+msgstr "La función cuadrática tiene forma de parábola (U). Su sonificación crea un patrón que acelera en los extremos y desacelera en el centro."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "The sine function represents a smooth and regular periodic oscillation. In sonification, it generates a pure and continuous tone."
+msgstr "La función seno representa una oscilación periódica suave y regular. En la sonificación, genera un tono puro y continuo."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Tip:"
+msgstr "Consejo:"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Tips"
+msgstr "Consejos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Tips for Success"
+msgstr "Consejos para el Éxito"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Training"
+msgstr "Entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Training States"
+msgstr "Estados del Entrenamiento"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Trainings unlock sequentially (one after another)"
+msgstr "Los entrenamientos se desbloquean secuencialmente (uno después del otro)"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Triangular function"
+msgstr "Función triangular"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "U-shaped parabola"
+msgstr "Parábola con forma de U"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Understand the platform structure"
+msgstr "Entiende la estructura de la plataforma"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Use Headphones"
+msgstr "Usa Auriculares"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Use headphones to better appreciate the details of each sonified function. Pay attention to the differences between basic functions and those with added noise."
+msgstr "Usa auriculares para apreciar mejor los detalles de cada función sonificada. Presta atención a las diferencias entre las funciones básicas y las que tienen ruido añadido."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "View Courses"
+msgstr "Ver Cursos"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "View example"
+msgstr "Ver ejemplo"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Visualize and listen to different types of sonified functions"
+msgstr "Visualiza y escucha diferentes tipos de funciones sonificadas"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "What characteristic does a sonified sine function have?"
+msgstr "¿Qué característica tiene una función senoidal sonificada?"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You can move to the next training even if you did not pass the current one. This will lock the previous training, but your best score will be kept for the course average calculation. If you passed, you can optionally retry to improve your score. If you failed and move on, you will lose the chance to retry that training."
+msgstr "Puedes avanzar al siguiente entrenamiento incluso si no aprobaste el actual. Esto bloqueará el entrenamiento anterior, pero tu mejor puntaje se conservará para el cálculo del promedio del curso. Si aprobaste, puedes reintentar opcionalmente para mejorar tu puntaje. Si fallaste y avanzas, perderás la oportunidad de reintentar ese entrenamiento."
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You can move to the next training even if you failed the current one"
+msgstr "Puedes avanzar al siguiente entrenamiento incluso si fallaste el actual"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You can move to the next training even if you failed the current one, but it will become locked"
+msgstr "Puedes avanzar al siguiente entrenamiento incluso si fallaste el actual, pero este quedará bloqueado"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You did not reach the minimum score. You can retry if you have attempts available"
+msgstr "No alcanzaste el puntaje mínimo. Puedes reintentar si tienes intentos disponibles"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You have used all allowed attempts. You can only view the results"
+msgstr "Has usado todos los intentos permitidos. Solo puedes ver los resultados"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You moved to the next one without passing. It became locked, but you keep your best score"
+msgstr "Avanzaste al siguiente sin aprobar. Quedó bloqueado pero conservas tu mejor puntaje"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You must complete the previous training to unlock it"
+msgstr "Debes completar el entrenamiento anterior para desbloquearlo"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You must maintain a minimum average of your best scores to access the final exam"
+msgstr "Debes mantener un promedio mínimo de tus mejores puntajes para acceder al examen final"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "You reached the minimum score. You can retry to improve (optional)"
+msgstr "Has alcanzado el puntaje mínimo. Puedes reintentar para mejorar (opcional)"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Your best score is always kept, even if the training becomes locked"
+msgstr "Tu mejor puntaje siempre se conserva, incluso si el entrenamiento queda bloqueado"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Your best score is saved across all attempts"
+msgstr "Se guarda tu mejor puntaje de todos los intentos realizados"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "Your latest score is also recorded to track your most recent progress"
+msgstr "También se registra tu último puntaje para ver tu progreso más reciente"
+
+#: .\trainingApp\templates\trainingApp\tutorial.html
+msgid "sonoTrainings Guide"
+msgstr "Guía de sonoTrainings"
+
