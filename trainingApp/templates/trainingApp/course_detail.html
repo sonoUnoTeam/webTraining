@@ -859,7 +859,7 @@
                     <tbody>
                         {% for ct in course_trainings %}
                             <!-- Clase de fila según estado: row-passed, row-locked-progress, row-locked-attempts, row-failed, row-available, row-locked -->
-                            <tr class="{% if ct.best_attempt and ct.best_attempt.state.value == 'passed' %}row-passed{% elif ct.is_locked_by_next %}row-locked-progress{% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}row-locked-attempts{% elif ct.completed_attempts|default:0 > 0 %}row-failed{% elif ct.enabled %}row-available{% else %}row-locked{% endif %}">
+                            <tr class="{% if ct.best_attempt and ct.best_attempt.state == 'passed' %}row-passed{% elif ct.is_locked_by_next %}row-locked-progress{% elif ct.completed_attempts|default:0 >= ct.training.attempts_allowed %}row-locked-attempts{% elif ct.completed_attempts|default:0 > 0 %}row-failed{% elif ct.enabled %}row-available{% else %}row-locked{% endif %}">
                                 <!-- Posición del training en el curso -->
                                 <td><strong>{{ ct.position }}</strong></td>
                                 <!-- Nombre del training y puntaje mínimo requerido -->
@@ -900,7 +900,7 @@
                                             {% if ct.best_score is not None and ct.best_attempt %}
                                                 <div class="score-line">
                                                     <span class="label">{% trans "Best" %}:</span>
-                                                    <span class="value {% if ct.best_attempt.state.value == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.best_score }}%</span>
+                                                    <span class="value {% if ct.best_attempt.state == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.best_score }}%</span>
                                                     <span class="text-muted">({{ ct.best_attempt.correct_answers }}/{{ ct.best_attempt.correct_answers|add:ct.best_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
                                                 </div>
                                             {% endif %}
@@ -908,7 +908,7 @@
                                             {% if ct.last_score is not None and ct.last_attempt and ct.best_attempt.id != ct.last_attempt.id %}
                                                 <div class="score-line">
                                                     <span class="label">{% trans "Last" %}:</span>
-                                                    <span class="value {% if ct.last_attempt.state.value == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.last_score }}%</span>
+                                                    <span class="value {% if ct.last_attempt.state == 'passed' %}passed{% else %}failed{% endif %}">{{ ct.last_score }}%</span>
                                                     <span class="text-muted">({{ ct.last_attempt.correct_answers }}/{{ ct.last_attempt.correct_answers|add:ct.last_attempt.incorrect_answers }} <span class="icon-check">✓</span>)</span>
                                                 </div>
                                             {% endif %}
@@ -919,7 +919,7 @@
                                 </td>
                                 <!-- Estado del training: Passed, Failed, Available, Locked (varios tipos) -->
                                 <td>
-                                    {% if ct.best_attempt and ct.best_attempt.state.value == 'passed' %}
+                                    {% if ct.best_attempt and ct.best_attempt.state == 'passed' %}
                                         <span class="badge-passed"><i class="bi bi-check-circle-fill"></i> {% trans "Passed" %}</span>
                                     {% elif ct.is_locked_by_next %}
                                         <span class="badge-locked-progress" title="{% trans 'Locked because you advanced to the next training without reaching the passing score' %}"><i class="bi bi-lock-fill"></i> {% trans "Locked" %} ({% trans "Skipped" %})</span>
@@ -943,7 +943,7 @@
                                         <br><small class="text-warning"><i class="bi bi-lock-fill"></i> {% trans "Locked - moved to next training" %}</small>
                                     
                                     {# Caso 2: Training aprobado pero con intentos restantes (reintentar opcional) #}
-                                    {% elif ct.best_attempt.state == 'passed' and ct.completed_attempts < ct.training.attempts_allowed %}
+                                    {% elif ct.best_attempt and ct.best_attempt.state == 'passed' and ct.completed_attempts < ct.training.attempts_allowed %}
                                         <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-start-training">
                                             <i class="bi bi-play-fill"></i> {% trans "Start" %} ({% trans "Optional" %})
                                         </a>
@@ -953,7 +953,7 @@
                                         </small>
                                     
                                     {# Caso 3: Training fallido con intentos restantes (reintentar obligatorio para avanzar) #}
-                                    {% elif ct.best_attempt.state == 'failed' and ct.completed_attempts < ct.training.attempts_allowed %}
+                                    {% elif ct.best_attempt and ct.best_attempt.state == 'failed' and ct.completed_attempts < ct.training.attempts_allowed %}
                                         <a href="{% url 'trainingApp:block_deploy_list' course.id ct.training.id %}" class="btn-retry-training">
                                             <i class="bi bi-arrow-clockwise"></i> {% trans "Retry" %} ({{ ct.training.attempts_allowed|subtract:ct.completed_attempts }} {% trans "remaining" %})
                                         </a>
@@ -1046,7 +1046,7 @@
                 </thead>
                 <tbody>
                     <!-- Fila del examen final: solo una fila con toda la información -->
-                    <tr class="{% if final_exam_attempt.state == 'passed' %}row-passed{% elif all_completed %}row-available{% else %}row-locked{% endif %}">
+                    <tr class="{% if final_exam_attempt and final_exam_attempt.state == 'passed' %}row-passed{% elif all_completed %}row-available{% else %}row-locked{% endif %}">
                         <td class="training-name-cell">
                             <strong>{{ course.final_exam.name_training }}</strong>
                             <br><small class="text-muted">{% trans "Passing Score" %}: {{ course.final_exam_passing_score }}%</small>
@@ -1066,7 +1066,7 @@
                         <td>
                             {% if final_exam_attempt %}
                                 <strong style="font-size: 1.1em; 
-                                {% if final_exam_attempt.state == 'passed' %}color: #28a745;{% else %}color: #dc3545;{% endif %}">
+                                    {% if final_exam_attempt and final_exam_attempt.state == 'passed' %}color: #28a745;{% else %}color: #dc3545;{% endif %}">
                                     {{ final_exam_attempt.score_percentage }}%
                                 </strong>
                             {% else %}
