@@ -62,3 +62,8 @@ Thumbs.db
 
 # Misc
 *.pot
+
+# Django media files (uploaded content)
+media/
+
+
