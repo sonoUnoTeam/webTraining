@@ -1,0 +1,238 @@
+name: Django CD - Apache Deployment
+
+# Despliega en el servidor propio (runner self-hosted) cuando "Django Main Validation"
+# termina bien sobre main, o a mano desde la pestaña Actions (solo rama main).
+#
+# Variables del repositorio (Settings → Secrets and variables → Actions → Variables):
+#   DEPLOY_USER        usuario dueño del proyecto en el servidor     (ej: jcasado)
+#   DEPLOY_PATH        clon del repo en el servidor (donde está manage.py)
+#   DEPLOY_VENV        virtualenv del proyecto                        (ej: /home/jcasado/venv-training)
+#   SITE_URL           URL pública para el smoke test                 (ej: https://sonotraining.um.edu.ar)
+#   DEPLOY_BACKUP_DIR  opcional; default: <carpeta padre de DEPLOY_PATH>/backups/webTraining
+#
+# La base (MariaDB en producción) se lee del .env del servidor; el backup usa mysqldump.
+
+on:
+  workflow_run:
+    workflows: ["Django Main Validation"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# Nunca dos despliegues a la vez; uno nuevo espera al que está corriendo
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: >-
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: self-hosted
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    env:
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      DEPLOY_VENV: ${{ vars.DEPLOY_VENV }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      DEPLOY_BACKUP_DIR: ${{ vars.DEPLOY_BACKUP_DIR }}
+      # Commit exacto que validó CI (no lo que haya en main en este momento)
+      TARGET_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+        # El workspace del runner puede no ser legible por DEPLOY_USER; todos los comandos usan rutas absolutas
+        working-directory: /tmp
+
+    steps:
+      - name: Check configuration and server state
+        id: precheck
+        run: |
+          set -euo pipefail
+          for var in DEPLOY_USER DEPLOY_PATH DEPLOY_VENV SITE_URL; do
+            if [ -z "${!var}" ]; then echo "::error::Repository variable $var is not set"; exit 1; fi
+          done
+          sudo -u "$DEPLOY_USER" test -f "$DEPLOY_PATH/manage.py" || { echo "::error::manage.py not found in $DEPLOY_PATH"; exit 1; }
+          sudo -u "$DEPLOY_USER" test -x "$DEPLOY_VENV/bin/python" || { echo "::error::No python in $DEPLOY_VENV"; exit 1; }
+
+          branch=$(sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" rev-parse --abbrev-ref HEAD)
+          if [ "$branch" != "main" ]; then echo "::error::Server checkout is on '$branch', expected 'main'"; exit 1; fi
+
+          # Cambios locales en archivos versionados harían fallar el pull (o se perderían): frenar y avisar
+          dirty=$(sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" status --porcelain --untracked-files=no)
+          if [ -n "$dirty" ]; then
+            echo "::error::Server has local changes in tracked files. Commit them to the repo or discard them before deploying:"
+            echo "$dirty"
+            exit 1
+          fi
+
+          prev=$(sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" rev-parse HEAD)
+          echo "prev_sha=$prev" >> "$GITHUB_OUTPUT"
+          echo "Deploying $prev -> $TARGET_SHA"
+
+          # Funciones compartidas por los pasos de backup y rollback
+          cat > "$RUNNER_TEMP/deploy-db.sh" <<'LIB'
+          # Lee la base configurada en Django (.env del servidor). En MariaDB/MySQL escribe las credenciales
+          # en un archivo de opciones con permisos 600 (la contraseña no queda en `ps` ni en el log).
+          # Uso: db_info <cnf> → imprime "mysql <db_name>" o "sqlite <ruta>"
+          db_info() {
+            local code
+            code=$(cat <<'PY'
+          import os
+          from django.conf import settings
+
+          db = settings.DATABASES['default']
+
+          def option(value):
+              # Archivo de opciones MySQL: valor entre comillas (admite # y espacios), solo se escapa la barra
+              value = str(value).replace('\\', '\\\\')
+              for quote in ('"', "'"):
+                  if quote not in value:
+                      return quote + value + quote
+              raise SystemExit('DB credentials contain both quote characters; cannot build the option file')
+
+          if 'mysql' in db['ENGINE']:
+              fields = (('user', db['USER']), ('password', db['PASSWORD']),
+                        ('host', db['HOST'] or 'localhost'), ('port', db['PORT'] or 3306))
+              with open(os.environ['CNF'], 'w') as f:
+                  f.write('[client]\n' + ''.join(f'{key}={option(value)}\n' for key, value in fields))
+              print('DBINFO mysql', db['NAME'])
+          else:
+              print('DBINFO sqlite', db['NAME'])
+          PY
+            )
+            sudo -u "$DEPLOY_USER" env CNF="$1" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" shell -c "$code" | sed -n 's/^DBINFO //p'
+          }
+          new_cnf() { sudo -u "$DEPLOY_USER" mktemp; }
+          LIB
+
+      - name: Backup database
+        id: backup
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/deploy-db.sh"
+          backup_dir="${DEPLOY_BACKUP_DIR:-$(dirname "$DEPLOY_PATH")/backups/webTraining}"
+          sudo -u "$DEPLOY_USER" mkdir -p "$backup_dir"
+          stamp="$(date +%Y%m%d-%H%M%S)-${{ steps.precheck.outputs.prev_sha }}"
+
+          cnf=$(new_cnf)
+          trap 'sudo -u "$DEPLOY_USER" rm -f "$cnf"' EXIT
+          read -r engine name < <(db_info "$cnf")
+          echo "Database engine: $engine"
+
+          if [ "$engine" = "mysql" ]; then
+            file="$backup_dir/db-$stamp.sql.gz"
+            # --single-transaction: dump consistente sin bloquear tablas InnoDB mientras el sitio sigue online
+            sudo -u "$DEPLOY_USER" bash -c "set -o pipefail; mysqldump --defaults-extra-file='$cnf' --single-transaction --routines --triggers '$name' | gzip > '$file'"
+          elif [ "$engine" = "sqlite" ]; then
+            file="$backup_dir/db-$stamp.sqlite3"
+            sudo -u "$DEPLOY_USER" cp "$name" "$file"
+          else
+            echo "::error::Could not read the database configuration"; exit 1
+          fi
+          echo "engine=$engine" >> "$GITHUB_OUTPUT"
+          echo "file=$file" >> "$GITHUB_OUTPUT"
+          echo "Backup: $file ($(sudo -u "$DEPLOY_USER" du -h "$file" | cut -f1))"
+          # Conservar los 15 backups más recientes
+          sudo -u "$DEPLOY_USER" bash -c "ls -1t '$backup_dir'/db-* | tail -n +16 | xargs -r rm --"
+
+      - name: Pull validated commit
+        id: update
+        run: |
+          set -euo pipefail
+          sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" fetch origin main
+          sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" merge --ff-only "$TARGET_SHA"
+          sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" log -1 --oneline
+
+      - name: Install dependencies
+        run: |
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet -r "$DEPLOY_PATH/requirements.txt"
+
+      - name: Validate production settings
+        run: |
+          set -euo pipefail
+          # Falla si falta SECRET_KEY u otra configuración (settings lanza ImproperlyConfigured)
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" check --deploy --fail-level ERROR
+          # Sin estas variables el sitio respondería 400 a todo o fallarían los formularios
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" shell -c "
+          from django.conf import settings
+          errors = []
+          if settings.DEBUG: errors.append('DJANGO_DEBUG must be False in production')
+          if not settings.ALLOWED_HOSTS: errors.append('ALLOWED_HOSTS is empty')
+          if not settings.CSRF_TRUSTED_ORIGINS: errors.append('CSRF_TRUSTED_ORIGINS is empty')
+          # Sin DB_ENGINE settings cae en SQLite: migrate crearía una base vacía y el sitio quedaría sin datos
+          if 'mysql' not in settings.DATABASES['default']['ENGINE']: errors.append('DB_ENGINE must point to MariaDB (django.db.backends.mysql)')
+          # La clave django-insecure-... estuvo publicada en el repo: no se acepta en producción
+          if settings.SECRET_KEY.startswith('django-insecure') or len(settings.SECRET_KEY) < 50: errors.append('SECRET_KEY is insecure; generate a new one')
+          if errors: raise SystemExit('Invalid .env: ' + '; '.join(errors))
+          print('Settings OK:', settings.ALLOWED_HOSTS)
+          "
+
+      - name: Run database migrations
+        id: migrate
+        run: |
+          set -euo pipefail
+          echo "Migration plan:"
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" migrate --plan
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" migrate --noinput
+
+      - name: Collect static files
+        run: |
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" collectstatic --noinput
+
+      - name: Restart Apache
+        id: restart
+        run: |
+          sudo systemctl restart apache2
+
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 15 "$SITE_URL/en/" || true)
+            echo "Attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::$SITE_URL/en/ did not return 200 after restart"
+          exit 1
+
+      # Si algo falla antes de reiniciar Apache, se vuelve al commit anterior (y a la base anterior
+      # si la migración falló). Si falla después del reinicio, se informa cómo volver atrás a mano.
+      - name: Roll back on failure
+        if: failure() && steps.update.outcome == 'success' && steps.restart.outcome != 'success'
+        run: |
+          set -euo pipefail
+          prev="${{ steps.precheck.outputs.prev_sha }}"
+          echo "::warning::Rolling back code to $prev"
+          sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" reset --hard "$prev"
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet -r "$DEPLOY_PATH/requirements.txt"
+          backup="${{ steps.backup.outputs.file }}"
+          if [ "${{ steps.migrate.outcome }}" = "failure" ] && [ -n "$backup" ]; then
+            echo "::warning::Restoring database from $backup"
+            source "$RUNNER_TEMP/deploy-db.sh"
+            cnf=$(new_cnf)
+            trap 'sudo -u "$DEPLOY_USER" rm -f "$cnf"' EXIT
+            read -r engine name < <(db_info "$cnf")
+            if [ "$engine" = "mysql" ]; then
+              sudo -u "$DEPLOY_USER" bash -c "set -o pipefail; gunzip -c '$backup' | mysql --defaults-extra-file='$cnf' '$name'"
+            else
+              sudo -u "$DEPLOY_USER" cp "$backup" "$name"
+            fi
+          fi
+          sudo systemctl restart apache2
+
+      - name: Manual rollback instructions
+        if: failure() && steps.restart.outcome == 'success'
+        run: |
+          echo "::error::Deployment failed after restarting Apache. To roll back on the server:"
+          echo "  sudo -u $DEPLOY_USER git -C $DEPLOY_PATH reset --hard ${{ steps.precheck.outputs.prev_sha }}"
+          echo "  # only if migrations changed data (MariaDB):"
+          echo "  gunzip -c ${{ steps.backup.outputs.file }} | mysql -u <DB_USER> -p <DB_NAME>"
+          echo "  sudo systemctl restart apache2"
