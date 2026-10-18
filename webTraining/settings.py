@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 import logging
 import sys
@@ -28,10 +29,43 @@ else:
     print(f"INFO .env file not found at {dotenv_path}. Make sure it exists.")
 
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-2u@^t%bs=fuz+=xt$w8uee%u3gfx0%pmpl#=6dsit2f9czn!m4')
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True')
+def env_bool(name, default=False):
+    return os.environ.get(name, str(default)).strip().lower() in ('1', 'true', 'yes', 'on')
 
-ALLOWED_HOSTS = []
+
+def env_list(name, default=''):
+    return [item.strip() for item in os.environ.get(name, default).split(',') if item.strip()]
+
+
+# DEBUG solo se activa explícitamente (DJANGO_DEBUG=True en el .env de desarrollo)
+DEBUG = env_bool('DJANGO_DEBUG', False)
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    if not DEBUG:
+        # manage.py oculta ImproperlyConfigured detrás de otro error: avisar explícitamente
+        sys.stderr.write("ERROR SECRET_KEY must be set when DJANGO_DEBUG is not True.\n")
+        raise ImproperlyConfigured("SECRET_KEY must be set when DJANGO_DEBUG is not True.")
+    SECRET_KEY = 'django-insecure-local-development-only'  # nosec B105 - solo con DEBUG
+
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1' if DEBUG else '')
+# Necesario detrás de HTTPS para los POST (ej: https://sonotraining.um.edu.ar)
+CSRF_TRUSTED_ORIGINS = env_list('CSRF_TRUSTED_ORIGINS')
+
+# Seguridad en producción. Valores por defecto conservadores: el redirect a HTTPS y HSTS
+# se activan por variable de entorno una vez verificado el proxy (Apache) para evitar loops.
+if not DEBUG:
+    SESSION_COOKIE_SECURE = env_bool('SESSION_COOKIE_SECURE', True)
+    CSRF_COOKIE_SECURE = env_bool('CSRF_COOKIE_SECURE', True)
+    SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False)
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', 0))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', False)
+    if env_bool('USE_X_FORWARDED_PROTO', False):
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Servir /media/ (audios e imágenes) desde Django. Producción hoy depende de esto porque
+# Apache no sirve MEDIA_ROOT; desactivar (SERVE_MEDIA=False) cuando lo haga el servidor web.
+SERVE_MEDIA = env_bool('SERVE_MEDIA', True)
 
 #Habilita el uso de messages
 MESSAGE_STORAGE= "django.contrib.messages.storage.cookie.CookieStorage"
@@ -105,12 +139,31 @@ WSGI_APPLICATION = 'webTraining.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Producción usa MariaDB (DB_ENGINE=django.db.backends.mysql en el .env).
+# Sin DB_ENGINE se usa SQLite: desarrollo local, tests y CI.
+DB_ENGINE = os.environ.get('DB_ENGINE', '').strip()
+if DB_ENGINE:
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': os.environ.get('DB_NAME', ''),
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -177,8 +230,8 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
     "default": {
+        # Usa MEDIA_ROOT / MEDIA_URL
         "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "LOCATION": "/media/",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",

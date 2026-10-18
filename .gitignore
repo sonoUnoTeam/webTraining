@@ -50,6 +50,7 @@ Thumbs.db
 # dotenv
 .env
 .env.*
+!.env.example
 
 # OneDrive/temp files
 ~$*

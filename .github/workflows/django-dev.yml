@@ -9,6 +9,11 @@ on:
 jobs:
   django-checks:
     runs-on: ubuntu-latest
+    env:
+      # Settings exigen SECRET_KEY cuando DEBUG no está activo
+      SECRET_KEY: ci-only-insecure-secret-key
+      DJANGO_DEBUG: "False"
+      ALLOWED_HOSTS: localhost,testserver
 
     steps:
       - name: Checkout repository

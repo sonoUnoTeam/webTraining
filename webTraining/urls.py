@@ -15,9 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
-from django.conf.urls.static import static
+from django.views.static import serve
 from userApp import views
 from django.conf.urls.i18n import i18n_patterns
 
@@ -30,8 +30,15 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path("trainingApp/", include("trainingApp.urls")),
     path('userApp/', include('userApp.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 urlpatterns = [
     *i18n_patterns(*urlpatterns, prefix_default_language=True),
+    ]
+
+# Media fuera de i18n_patterns (sin prefijo /en/). static() solo funciona con DEBUG,
+# por eso con SERVE_MEDIA se registra la vista serve directamente.
+if settings.SERVE_MEDIA:
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     ]
