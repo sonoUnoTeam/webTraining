@@ -5,6 +5,7 @@ from django.views.generic import ListView
 from django.db import models
 from .forms import QuestionForm,CommentForm
 from .models import Training, TrainingQuestion, TrainingQuestionAnswer, TraineeTraining, TrainingBlock, Choice, Comment,TrainingBlockAnswer, Course, CourseTraining, TraineeCourse
+from . import rules
 from userApp.models import Trainee
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -54,13 +55,11 @@ class CourseList(ListView):
                 course.status = trainee_course.get_state_display()
                 
                 # Calcular estadísticas del curso
-                total_trainings = CourseTraining.objects.filter(course=course).count()
+                total_trainings = rules.course_trainings(course).count()
                 course.total_trainings = total_trainings
-                
+
                 # Calcular duración total del curso
-                total_duration = CourseTraining.objects.filter(
-                    course=course
-                ).aggregate(
+                total_duration = rules.course_trainings(course).aggregate(
                     total=models.Sum('training__estimatedDuration')
                 )['total'] or 0
                 course.total_duration = total_duration
@@ -108,17 +107,15 @@ class CourseList(ListView):
                 }
                 course.status = _("Not Started")
                 course.progress_percentage = 0
-                course.total_trainings = CourseTraining.objects.filter(course=course).count()
+                course.total_trainings = rules.course_trainings(course).count()
                 course.completed_count = 0
                 course.last_activity = None
                 course.started_date = None
                 course.difficulty_level = 'medium'
                 course.difficulty_display = _('Medium')
-                
+
                 # Calcular duración total para cursos no iniciados
-                total_duration = CourseTraining.objects.filter(
-                    course=course
-                ).aggregate(
+                total_duration = rules.course_trainings(course).aggregate(
                     total=models.Sum('training__estimatedDuration')
                 )['total'] or 0
                 course.total_duration = total_duration
@@ -138,6 +135,9 @@ class CourseDetailView(ListView):
         try:
             trainee = Trainee.objects.get(user_id=user.id)
             course = Course.objects.get(id=course_id)
+            if not rules.can_view_course(trainee, course):
+                messages.error(request, _("You do not have access to this course."))
+                return redirect('trainingApp:course_list')
             TraineeCourse.objects.get_or_create(
                 trainee=trainee,
                 course=course,
@@ -158,9 +158,8 @@ class CourseDetailView(ListView):
 
     def get_queryset(self):
         course_id = self.kwargs['course_id']
-        # Orden por el campo order de CourseTraining (secuencial absoluto)
-        course_trainings = CourseTraining.objects.filter(course_id=course_id).select_related('training').order_by('order')
-        return course_trainings
+        # Orden por el campo order de CourseTraining (secuencial absoluto), solo trainings activos
+        return rules.course_trainings(course_id)
 
     def get_context_data(self, **kwargs):
         """
@@ -445,193 +444,64 @@ class CourseDetailView(ListView):
         return context
 
 
+def get_trainee(request):
+    """Trainee del usuario logueado, o None (dejando el mensaje de error)."""
+    trainee = Trainee.objects.filter(user=request.user).first()
+    if trainee is None:
+        messages.error(request, _("You need to be a trainee to access trainings."))
+    return trainee
+
+
 class TrainingBlockDeployList(ListView):
     model = TrainingBlock
     template_name = "trainingApp/block_deploy_list.html"
     context_object_name = "block_list"
     paginate_by = 5
-   
-    def get_queryset(self):
-        course_id = self.kwargs['course_id']
-        training_id = self.kwargs['training_id']
-        course = get_object_or_404(Course, id=course_id)
-        training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
-            return TrainingBlock.objects.none()
-        
-        queryset = TrainingBlock.objects.filter(
-            training__id=training_id,
-        )
-        queryset = queryset.order_by('id')
-        return queryset
-    
+
     def dispatch(self, request, *args, **kwargs):
         course_id = self.kwargs['course_id']
         training_id = self.kwargs['training_id']
-        course = get_object_or_404(Course, id=course_id)
-        training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
+        self.course = get_object_or_404(Course, id=course_id)
+        self.training = get_object_or_404(Training, id=training_id)
+        if not rules.training_in_course(self.course, training_id):
             raise Http404("Training not in course")
 
-        trainee = Trainee.objects.get(user_id=request.user.id)
-        
-        # Contar intentos completados (passed o failed)
-        completed_attempts = TraineeTraining.objects.filter(
-            trainee=trainee,
-            training=training,
-            course=course
-        ).exclude(
-            state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-        ).count()
-        
-        # Verificar si hay un intento en progreso
-        in_progress_attempts = TraineeTraining.objects.filter(
-            trainee=trainee,
-            training=training,
-            course=course,
-            state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-        ).count()
-        
-        # Verificar si ya avanzó al siguiente training (bloquear intentos)
-        # Usar el orden secuencial por el campo 'order'
-        course_trainings = CourseTraining.objects.filter(course=course).select_related('training').order_by('order')
-        
-        current_position = None
-        for idx, ct in enumerate(course_trainings):
-            if ct.training.id == training_id:
-                current_position = idx
-                break
-        
-        # Si hay un training siguiente en el orden secuencial y tiene intentos, bloquear este
-        # Pero no aplicar para el examen final
-        if course.final_exam_id != training_id and current_position is not None and current_position < len(course_trainings) - 1:
-            next_training = course_trainings[current_position + 1]
-            has_next_attempts = TraineeTraining.objects.filter(
-                trainee=trainee,
-                training=next_training.training,
-                course=course
-            ).exclude(
-                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-            ).exists()
-            
-            if has_next_attempts:
-                messages.error(request, _("You cannot retry this training because you have already started the next one."))
-                return redirect('trainingApp:course_detail', course_id=course_id)
-        
-        # Verificar límite de intentos
-        if completed_attempts >= training.attempts_allowed and in_progress_attempts == 0:
-            messages.error(request, _("You have reached the maximum number of attempts for this training."))
-            return redirect('trainingApp:course_detail', course_id=course_id)
-        
-        if in_progress_attempts > 0:
-            # Permitir continuar el intento en progreso
-            pass
-        elif completed_attempts < training.attempts_allowed:
-            # Permitir iniciar nuevo intento
-            pass
-        else:
-            messages.error(request, _("Cannot start this training."))
+        trainee = get_trainee(request)
+        if trainee is None:
+            return redirect('home')
+
+        # Grupo, estado, secuencia, bloqueos y límite de intentos
+        error = rules.check_can_attempt(trainee, self.course, self.training)
+        if error:
+            messages.error(request, error)
             return redirect('trainingApp:course_detail', course_id=course_id)
 
-        self.initialize_trainee_training(request, course_id, training_id)
-
+        self.trainee_training = rules.start_or_resume_attempt(request, trainee, self.course, self.training)
         return super().dispatch(request, *args, **kwargs)
 
-    def initialize_trainee_training(self, request, course_id, training_id):
-        session_key = f'current_trainee_training_id_{course_id}_{training_id}'
-        start_time_key = f'start_time_{course_id}_{training_id}'
-        
-        # Verifica si es la primera vez que el trainee ingresa al entrenamiento
-        if session_key not in request.session:
-            usuario = request.user
-            try:
-                trainee= Trainee.objects.get(user_id=usuario.id)
-            except Trainee.DoesNotExist:
-                messages.error(request, _("You need to be a trainee to access trainings."))
-                return redirect('home')
-            course = get_object_or_404(Course, id=course_id)
-            training = get_object_or_404(Training, pk=training_id)
-            
-            # Check if there is an in_progress training
-            in_progress = TraineeTraining.objects.filter(
-                trainee=trainee,
-                training=training,
-                course=course,
-                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-            ).first()
-            trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
-            
-            if in_progress:
-                trainee_training = in_progress
-            else:
-                # Si es el examen final, bloquear todos los entrenamientos con intentos restantes
-                # Esto se logra simplemente iniciando el examen, ya que la lógica de bloqueo
-                # en course_detail verifica si existe algún intento del siguiente training
-                # (incluido in_progress)
-                
-                # Create new
-                trainee_training = TraineeTraining.objects.create(
-                    trainee_course=trainee_course,
-                    trainee=trainee,
-                    training=training,
-                    course=course,
-                    pub_date=timezone.now(),
-                    state=TraineeTraining.StateTraineeTraining.IN_PROGRESS,
-                    is_final_exam_attempt=(course.final_exam_id == training_id)
-                )
-                # Se guarda el tiempo de inicio del training
-                request.session[start_time_key] = timezone.now().isoformat()
-                
-                # Update course state if starting first training
-                if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
-                    trainee_course.state = TraineeCourse.StateTraineeCourse.In_Progress
-                    trainee_course.save()
-            
-            # Almacena el ID del TraineeTraining en la sesión
-            request.session[session_key] = trainee_training.id
-        
-        # Asegurarse de que start_time esté en sesión incluso si session_key ya existía
-        if start_time_key not in request.session:
-            trainee_training_id = request.session.get(session_key)
-            if trainee_training_id:
-                try:
-                    trainee_training = TraineeTraining.objects.get(pk=trainee_training_id)
-                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
-                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
-                except TraineeTraining.DoesNotExist:
-                    pass
-            
-    
+    def get_queryset(self):
+        return rules.active_blocks(self.training)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        course_id = self.kwargs['course_id']
-        training_id = self.kwargs['training_id']
-
-        session_key = f'current_trainee_training_id_{course_id}_{training_id}'
-        current_trainee_training = self.request.session.get(session_key)
-
-        if current_trainee_training is None:
-            raise ValueError("current_trainee_training no está presente en la sesión.")
-
         states_blocks_answers = {}
-
         for block in context['block_list']:
             block_answer = (
                 TrainingBlockAnswer.objects
-                .filter(trainee_Training=current_trainee_training, block=block.id)
+                .filter(trainee_Training=self.trainee_training, block=block)
                 .order_by('-id')
                 .first()
             )
             if block_answer:
                 states_blocks_answers[f'{block.id}'] = block_answer.state_block
             else:
-                states_blocks_answers[f'{block.id}'] =  _('not started')
+                states_blocks_answers[f'{block.id}'] = _('not started')
 
-        context['states_blocks_answers'] = states_blocks_answers 
-        context['TrainingBlockAnswer'] = TrainingBlockAnswer 
-        context['course_id'] = course_id
-        context['training_id'] = training_id
+        context['states_blocks_answers'] = states_blocks_answers
+        context['TrainingBlockAnswer'] = TrainingBlockAnswer
+        context['course_id'] = self.course.id
+        context['training_id'] = self.training.id
         return context
 
 
@@ -639,313 +509,187 @@ class DeployDetailView(View):
     template_name = 'trainingApp/forms.html'
 
     def dispatch(self, request, *args, **kwargs):
-        course_id = self.kwargs.get('course_id') or kwargs.get('course_id')
-        training_id = self.kwargs.get('training_id') or kwargs.get('training_id')
-        
-        course = get_object_or_404(Course, id=course_id)
-        training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
+        course_id = kwargs['course_id']
+        training_id = kwargs['training_id']
+        self.course = get_object_or_404(Course, id=course_id)
+        self.training = get_object_or_404(Training, id=training_id)
+        if not rules.training_in_course(self.course, training_id):
             raise Http404("Training not in course")
-        
-        self.initialize_trainee_training(request, course_id, training_id)
-        
+
+        trainee = get_trainee(request)
+        if trainee is None:
+            return redirect('home')
+
+        # Mismas reglas que la lista de bloques: entrar directo por URL no las saltea
+        error = rules.check_can_attempt(trainee, self.course, self.training)
+        if error:
+            messages.error(request, error)
+            return redirect('trainingApp:course_detail', course_id=course_id)
+
+        self.block = get_object_or_404(rules.active_blocks(self.training), pk=kwargs['block_id'])
+        self.trainee_training = rules.start_or_resume_attempt(request, trainee, self.course, self.training)
+
+        if rules.block_completed(self.trainee_training, self.block):
+            messages.info(request, _("You have already completed this block."))
+            return redirect('trainingApp:block_deploy_list', course_id=course_id, training_id=training_id)
+
+        self.deploys = list(TrainingQuestion.objects.filter(block=self.block).order_by('id'))
+        self.index_key = f'current_deploy_index_{course_id}_{training_id}_{self.block.id}'
+        self.block_answer_key = f'current_block_answer_id_{course_id}_{training_id}_{self.block.id}'
+        self.block_answer = self.get_block_answer(request)
         return super().dispatch(request, *args, **kwargs)
-    
-    def initialize_trainee_training(self, request, course_id, training_id):
-        session_key = f'current_trainee_training_id_{course_id}_{training_id}'
-        start_time_key = f'start_time_{course_id}_{training_id}'
-        
-        # Verifica si es la primera vez que el trainee ingresa al entrenamiento
-        if session_key not in request.session:
-            usuario = request.user
-            try:
-                trainee = Trainee.objects.get(user_id=usuario.id)
-            except Trainee.DoesNotExist:
-                messages.error(request, _("You need to be a trainee to access trainings."))
-                return redirect('home')
-            course = get_object_or_404(Course, id=course_id)
-            training = get_object_or_404(Training, pk=training_id)
-            
-            # Check if there is an in_progress training
-            in_progress = TraineeTraining.objects.filter(
-                trainee=trainee,
-                training=training,
-                course=course,
-                state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-            ).first()
-            trainee_course, created = TraineeCourse.objects.get_or_create(
-                trainee=trainee,
-                course=course,
-                defaults={
-                    'state': TraineeCourse.StateTraineeCourse.Not_Started,
-                    'current_training_index': 0,
-                    'exam_passed': False,
-                    'pub_date': timezone.now()
-                }
+
+    def get_block_answer(self, request):
+        """TrainingBlockAnswer en progreso de este bloque para el intento actual (lo crea si no existe)."""
+        in_progress = TrainingBlockAnswer.objects.filter(
+            trainee_Training=self.trainee_training,
+            block=self.block,
+            state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress,
+        )
+        session_block_answer_id = request.session.get(self.block_answer_key)
+        block_answer = in_progress.filter(pk=session_block_answer_id).first() if session_block_answer_id else None
+        if block_answer is None:
+            block_answer = in_progress.order_by('-id').first()
+        if block_answer is None:
+            block_answer = TrainingBlockAnswer.objects.create(
+                trainee_Training=self.trainee_training,
+                block=self.block,
+                state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress,
             )
-            
-            if in_progress:
-                trainee_training = in_progress
-            else:
-                # Create new
-                trainee_training = TraineeTraining.objects.create(
-                    trainee_course=trainee_course,
-                    trainee=trainee,
-                    training=training,
-                    course=course,
-                    pub_date=timezone.now(),
-                    state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
-                )
-                # Se guarda el tiempo de inicio del training
-                request.session[start_time_key] = timezone.now().isoformat()
-                
-                # Update course state if starting first training
-                if trainee_course.state == TraineeCourse.StateTraineeCourse.Not_Started:
-                    trainee_course.state = TraineeCourse.StateTraineeCourse.In_Progress
-                    trainee_course.save()
-            
-            # Almacena el ID del TraineeTraining en la sesión
-            request.session[session_key] = trainee_training.id
-        
-        # Asegurarse de que start_time esté en sesión incluso si session_key ya existía
-        if start_time_key not in request.session:
-            trainee_training_id = request.session.get(session_key)
-            if trainee_training_id:
-                try:
-                    trainee_training = TraineeTraining.objects.get(pk=trainee_training_id)
-                    # Usar la fecha de publicación del trainee_training como tiempo de inicio
-                    request.session[start_time_key] = trainee_training.pub_date.isoformat()
-                except TraineeTraining.DoesNotExist:
-                    pass
+        request.session[self.block_answer_key] = block_answer.id
+        return block_answer
+
+    def current_index(self, request):
+        index = request.session.get(self.index_key, 0)
+        # Un índice desfasado (sesión vieja, preguntas borradas) vuelve al inicio del bloque
+        if not 0 <= index < len(self.deploys):
+            index = 0
+        return index
+
+    def render_question(self, request, deploy, form, index):
+        return render(request, self.template_name, {
+            'deploy': deploy,
+            'form': form,
+            'block_id': self.block.id,
+            'course_id': self.course.id,
+            'training_id': self.training.id,
+            'current_deploy_index': index,
+            'deploys_count': len(self.deploys),
+        })
 
     def get(self, request, course_id, training_id, block_id):
-        deploys = TrainingQuestion.objects.filter(block=block_id)
-        
-        session_key = f'current_deploy_index_{course_id}_{training_id}_{block_id}'
-        current_deploy_index = request.session.get(session_key, 0)
-        # Guardar el índice actual en la sesión
-        request.session[session_key] = current_deploy_index
-        
-        current_deploy = deploys[current_deploy_index]
-        deploys_count = deploys.count()
-        
-        # Verifica si es la primera vez que el trainee ingresa al entrenamiento
-        self.initialize_block(request, course_id, training_id, block_id)
+        index = self.current_index(request)
+        request.session[self.index_key] = index
+        current_deploy = self.deploys[index]
 
-        # Verificar si ya existe una respuesta guardada para este deploy
-        block_answer_session_key = f'current_block_answer_id_{course_id}_{training_id}_{block_id}'
-        current_block_answer_id = request.session.get(block_answer_session_key)
-        
+        # Precargar la respuesta si ya se había respondido esta pregunta
         initial_data = {}
-        if current_block_answer_id:
-            block_answer_obj = TrainingBlockAnswer.objects.get(pk=current_block_answer_id)
-            deploy_answer = TrainingQuestionAnswer.objects.filter(
-                block_answer=block_answer_obj,
-                deploy=current_deploy
-            ).first()
-            
-            if deploy_answer and deploy_answer.selectedChoice:
-                initial_data['selectedChoice'] = deploy_answer.selectedChoice.id
+        deploy_answer = TrainingQuestionAnswer.objects.filter(block_answer=self.block_answer, deploy=current_deploy).first()
+        if deploy_answer:
+            initial_data['selectedChoice'] = deploy_answer.selectedChoice_id
 
-        self.form = QuestionForm(instance=current_deploy, initial=initial_data)
-        block = TrainingBlock.objects.get(pk = block_id)
-        return render(request, self.template_name, {
-            'deploy': current_deploy,
-            'form': self.form,
-            'block_id': block.id,
-            'course_id': course_id,
-            'training_id': training_id,
-            'current_deploy_index': current_deploy_index,
-            'deploys_count': deploys_count,
-        })
-    
+        form = QuestionForm(instance=current_deploy, initial=initial_data)
+        return self.render_question(request, current_deploy, form, index)
+
     def post(self, request, course_id, training_id, block_id):
-        course = get_object_or_404(Course, id=course_id)
-        training = get_object_or_404(Training, id=training_id)
-        deploys = TrainingQuestion.objects.filter(block=block_id)
-        
-        session_key = f'current_deploy_index_{course_id}_{training_id}_{block_id}'
-        current_deploy_index = request.session.get(session_key, 0)
-        current_deploy = deploys[current_deploy_index]
-        
+        index = self.current_index(request)
+        current_deploy = self.deploys[index]
+
         form = QuestionForm(request.POST, instance=current_deploy)
-        
-        block_answer_session_key = f'current_block_answer_id_{course_id}_{training_id}_{block_id}'
-        current_block_answer_id =request.session.get(block_answer_session_key)
-        
+        if not form.is_valid():
+            return self.render_question(request, current_deploy, form, index)
 
-        if form.is_valid():
-            selected_choice_id = form.cleaned_data['selectedChoice']
-            selected_choice = Choice.objects.get(id=selected_choice_id)
-            
-            block_answer_obj = TrainingBlockAnswer.objects.get(pk=current_block_answer_id)
-            deploy_answer = TrainingQuestionAnswer.objects.filter(
-                block_answer=block_answer_obj,
-                deploy=current_deploy
-            ).first()
-            
-            if deploy_answer:
-                deploy_answer.selectedChoice = selected_choice
-                deploy_answer.save()
-            else:
-                deploy_answer = TrainingQuestionAnswer.objects.create(
-                    block_answer=block_answer_obj,
-                    deploy=current_deploy,
-                    selectedChoice=selected_choice
-                )
-
-            current_deploy_index += 1
-            
-            if current_deploy_index >= deploys.count():
-                request.session[session_key] = 0   
-                current_block_answer_id = request.session.get(block_answer_session_key)
-                block_answer = TrainingBlockAnswer.objects.get(pk=current_block_answer_id)
-                block_answer.state_block = TrainingBlockAnswer.StateBlockAnswer.Completed
-                block_answer.save()
-                del request.session[block_answer_session_key]
-                
-                trainee_training_session_key = f'current_trainee_training_id_{course_id}_{training_id}'
-                current_trainee_training_id = request.session.get(trainee_training_session_key)
-                all_block_answers = TrainingBlockAnswer.objects.filter(trainee_Training= current_trainee_training_id )
-                all_blocks = TrainingBlock.objects.filter(training=training_id,)
-                
-                all_completed = all(block_answer.state_block == TrainingBlockAnswer.StateBlockAnswer.Completed for block_answer in all_block_answers)
-                
-                correct_number_of_answers = len(all_block_answers) == len(all_blocks)
-                
-                if all_completed and correct_number_of_answers:               
-                    trainee_training = TraineeTraining.objects.get(pk=current_trainee_training_id)
-                    
-                    # Lógica para calcular el tiempo empleado
-                    start_time_session_key = f'start_time_{course_id}_{training_id}'
-                    start_time_str = request.session.get(start_time_session_key)
-                    
-                    if start_time_str:
-                        start_time = datetime.fromisoformat(start_time_str)
-                        if timezone.is_naive(start_time):
-                            start_time = timezone.make_aware(start_time)
-                    else:
-                        start_time = trainee_training.pub_date
-                    
-                    end_time = timezone.now()
-                    
-                    tiempo_transcurrido = end_time - start_time
-                    duracion_total = tiempo_transcurrido.total_seconds()
-                    duracion_timedelta = timedelta(seconds=duracion_total)
-
-                    trainee_training.time_spent = duracion_timedelta
-                    trainee_training.save()
-                    
-                    # Calcular puntuación y actualizar estado (passed/failed)
-                    trainee_training.update_score_and_state()
-                
-                    trainee = Trainee.objects.get(user=self.request.user)
-                
-                    # Si aprobó el training, actualizar progreso del curso
-                    if trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
-                        courses_as_exam = Course.objects.filter(final_exam=training)
-                        for course_exam in courses_as_exam:
-                            try:
-                                trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course_exam)
-                                trainee_course.exam_passed = True
-                                trainee_course.state = TraineeCourse.StateTraineeCourse.Completed
-                                trainee_course.save()
-                            except TraineeCourse.DoesNotExist:
-                                pass
-                        
-                        try:
-                            trainee_course = TraineeCourse.objects.get(trainee=trainee, course=course)
-                            trainee_course.current_training_index += 1
-                            trainee_course.save()
-                        except TraineeCourse.DoesNotExist:
-                            pass
-                    
-                    del request.session[session_key]
-                    del request.session[start_time_session_key]
-                    del request.session[trainee_training_session_key]
-                    
-                    training = Training.objects.get(pk=training_id)
-                    
-                    # Mensaje personalizado según si aprobó o no
-                    if trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
-                        messages.success(
-                            request, 
-                            _("Congratulations! You passed '%(training)s' with %(score)s%%") % {
-                                "training": training.name_training,
-                                "score": trainee_training.score_percentage
-                            }
-                        )
-                    else:
-                        messages.warning(
-                            request,
-                            _("You completed '%(training)s' with %(score)s%%. You need %(passing)s%% to pass. You can retry if attempts are available.") % {
-                                "training": training.name_training,
-                                "score": trainee_training.score_percentage,
-                                "passing": training.passing_score
-                            }
-                        )
-                    
-                    courses_as_exam = Course.objects.filter(final_exam=training)
-                    if courses_as_exam.exists() and trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED:
-                        return HttpResponseRedirect(reverse('trainingApp:comment', args=[course_id, training_id]))
-                    else:
-                        return HttpResponseRedirect(reverse('trainingApp:course_detail', args=[course_id]))
-                else : 
-                    return HttpResponseRedirect(reverse('trainingApp:block_deploy_list', args=[course_id, training_id]))
-                
-            else:
-                request.session[session_key] = current_deploy_index
-                print("Todavia no termino el block")
-
-                return HttpResponseRedirect(reverse('trainingApp:forms', args=[course_id, training_id, block_id]))
-
+        selected_choice = get_object_or_404(Choice, id=form.cleaned_data['selectedChoice'], deploy=current_deploy)
+        deploy_answer = TrainingQuestionAnswer.objects.filter(block_answer=self.block_answer, deploy=current_deploy).first()
+        if deploy_answer:
+            deploy_answer.selectedChoice = selected_choice
+            deploy_answer.save()
         else:
-            block = TrainingBlock.objects.get(pk = block_id)
-            deploys_count = deploys.count()
-            return render(request, self.template_name, {
-                'deploy': current_deploy,
-                'form': form,
-                'block_id': block.id,
-                'course_id': course_id,
-                'training_id': training_id,
-                'current_deploy_index': current_deploy_index,
-                'deploys_count': deploys_count,
-            })
-        
-        
-    def initialize_block(self, request, course_id, training_id, block_id):
-        block_answer_session_key = f'current_block_answer_id_{course_id}_{training_id}_{block_id}'
-        # Verifica si es la primera vez que el trainee ingresa al block
-        if block_answer_session_key not in request.session:
-            trainee_training_session_key = f'current_trainee_training_id_{course_id}_{training_id}'
-            current_trainee_training = self.request.session.get(trainee_training_session_key)
+            TrainingQuestionAnswer.objects.create(
+                block_answer=self.block_answer,
+                deploy=current_deploy,
+                selectedChoice=selected_choice
+            )
 
-            trainee_training = get_object_or_404(TraineeTraining, pk=current_trainee_training)
-            block = get_object_or_404(TrainingBlock, pk=block_id)
+        index += 1
+        if index < len(self.deploys):
+            request.session[self.index_key] = index
+            return redirect('trainingApp:forms', course_id=course_id, training_id=training_id, block_id=block_id)
 
-            # Buscar si existe un TrainingBlockAnswer en progreso para este trainee_training y block
-            block_answer = TrainingBlockAnswer.objects.filter(
-                trainee_Training=trainee_training,
-                block=block,
-                state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress
-            ).order_by('-id').first()
-            
-            # Si no existe, crear uno nuevo
-            if not block_answer:
-                block_answer = TrainingBlockAnswer.objects.create(
-                    trainee_Training=trainee_training,
-                    block=block,
-                    state_block=TrainingBlockAnswer.StateBlockAnswer.in_progress
-                )
+        # Fin del bloque
+        request.session.pop(self.index_key, None)
+        request.session.pop(self.block_answer_key, None)
+        self.block_answer.state_block = TrainingBlockAnswer.StateBlockAnswer.Completed
+        self.block_answer.save()
 
-            # Almacena el ID del BlockAnswer en la sesión
-            request.session[block_answer_session_key] = block_answer.id
+        if not rules.all_blocks_completed(self.trainee_training):
+            return redirect('trainingApp:block_deploy_list', course_id=course_id, training_id=training_id)
+        return self.finish_attempt(request)
 
-#Funcion que retrocede un deploy             
+    def finish_attempt(self, request):
+        """Cierra el intento: tiempo empleado, puntaje, estado del curso, mensaje y redirección."""
+        trainee_training = self.trainee_training
+        session_key, start_time_key = rules.attempt_session_keys(self.course.id, self.training.id)
+
+        start_time_str = request.session.get(start_time_key)
+        if start_time_str:
+            start_time = datetime.fromisoformat(start_time_str)
+            if timezone.is_naive(start_time):
+                start_time = timezone.make_aware(start_time)
+        else:
+            start_time = trainee_training.pub_date
+        trainee_training.time_spent = timezone.now() - start_time
+        trainee_training.save()
+
+        # Calcular puntuación y actualizar estado (passed/failed)
+        trainee_training.update_score_and_state()
+        request.session.pop(session_key, None)
+        request.session.pop(start_time_key, None)
+
+        passed = trainee_training.state == TraineeTraining.StateTraineeTraining.PASSED
+        trainee_course = trainee_training.trainee_course
+        if trainee_training.is_final_exam_attempt:
+            if passed:
+                trainee_course.exam_passed = True
+                trainee_course.state = TraineeCourse.StateTraineeCourse.Completed
+                trainee_course.completion_date = timezone.now()
+            elif rules.finished_attempts(trainee_training.trainee, self.course, self.training).count() >= self.training.attempts_allowed:
+                # Examen final desaprobado sin intentos restantes
+                trainee_course.state = TraineeCourse.StateTraineeCourse.Failed
+                trainee_course.completion_date = timezone.now()
+            trainee_course.save()
+        elif passed:
+            trainee_course.current_training_index += 1
+            trainee_course.save()
+
+        # Mensaje personalizado según si aprobó o no
+        if passed:
+            messages.success(
+                request,
+                _("Congratulations! You passed '%(training)s' with %(score)s%%") % {
+                    "training": self.training.name_training,
+                    "score": trainee_training.score_percentage
+                }
+            )
+        else:
+            passing_score = self.course.final_exam_passing_score if trainee_training.is_final_exam_attempt else self.training.passing_score
+            messages.warning(
+                request,
+                _("You completed '%(training)s' with %(score)s%%. You need %(passing)s%% to pass. You can retry if attempts are available.") % {
+                    "training": self.training.name_training,
+                    "score": trainee_training.score_percentage,
+                    "passing": passing_score
+                }
+            )
+
+        if trainee_training.is_final_exam_attempt and passed:
+            return redirect('trainingApp:comment', course_id=self.course.id, training_id=self.training.id)
+        return redirect('trainingApp:course_detail', course_id=self.course.id)
+
+#Funcion que retrocede un deploy
 def backDeploy(request, course_id, training_id, block_id):
         session_key = f'current_deploy_index_{course_id}_{training_id}_{block_id}'
-        current_deploy_index = request.session.get(session_key)
-        current_deploy_index = current_deploy_index -1
+        current_deploy_index = request.session.get(session_key, 0) - 1
         if current_deploy_index <0 :
             return redirect('trainingApp:block_deploy_list', course_id=course_id, training_id=training_id)
         else:
@@ -954,11 +698,11 @@ def backDeploy(request, course_id, training_id, block_id):
 
 
 class ReviewListTT(ListView):
-    model = TraineeTraining 
+    model = TraineeTraining
     template_name = "trainingApp/review_list_tt.html"
     context_object_name = "trainee_training_list"
     paginate_by = 10
-    
+
     def get_queryset(self):
         course_id = self.kwargs['course_id']
         training_id = self.kwargs['training_id']
@@ -966,16 +710,18 @@ class ReviewListTT(ListView):
         training = get_object_or_404(Training, id=training_id)
         if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
             raise Http404("Training not in course")
-        
+
         try:
             trainee = Trainee.objects.get(user=self.request.user)
         except Trainee.DoesNotExist:
             messages.error(self.request, _("You need to be a trainee to access this page."))
             return TraineeTraining.objects.none()
-        
+        if not rules.can_view_course(trainee, course):
+            raise Http404("Course not available")
+
         # Determinar si este training es el examen final del curso
         is_final_exam = course.final_exam_id == training_id
-        
+
         queryset = TraineeTraining.objects.filter(
             training_id=training_id,
             course_id=course_id,
@@ -983,18 +729,18 @@ class ReviewListTT(ListView):
         ).exclude(
             state=TraineeTraining.StateTraineeTraining.IN_PROGRESS
         )
-        
+
         # Filtrar por tipo de intento
         if is_final_exam:
             queryset = queryset.filter(is_final_exam_attempt=True)
         else:
             queryset = queryset.filter(is_final_exam_attempt=False)
-        
+
         for i, trainee_training in enumerate(queryset, start=1):
             trainee_training.item_number = i
-            
+
         queryset = sorted(queryset, key=attrgetter('item_number'), reverse=True)
-        
+
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -1003,109 +749,114 @@ class ReviewListTT(ListView):
         training_id = self.kwargs['training_id']
         course = get_object_or_404(Course, id=course_id)
         training = get_object_or_404(Training, id=training_id)
-        
+
         context['course_id'] = course_id
         context['training_id'] = training_id
         context['course'] = course
         context['training'] = training
-        
+
         # Determinar si este training es el examen final del curso
         context['is_final_exam'] = course.final_exam_id == training_id
-        
+
         return context
 
 
 class ReviewBlock(ListView):
-    model = TrainingBlockAnswer 
+    model = TrainingBlockAnswer
     template_name = "trainingApp/review_block.html"
     context_object_name = "blocks_answers"
     paginate_by = 10
-    
-    def get_queryset(self):
-        trainee_training_id = self.kwargs['trainee_training_id']
-        
-        # Filtra los objetos BlockAnswer por trainee_training_id
-        queryset = TrainingBlockAnswer.objects.filter(
-            trainee_Training= trainee_training_id,
+
+    def dispatch(self, request, *args, **kwargs):
+        # Solo intentos propios y terminados (un intento en curso revelaría las respuestas correctas)
+        self.trainee_training = get_object_or_404(
+            TraineeTraining.objects.exclude(state=TraineeTraining.StateTraineeTraining.IN_PROGRESS),
+            pk=kwargs['trainee_training_id'],
+            trainee__user=request.user,
         )
-        
-        return queryset
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return TrainingBlockAnswer.objects.filter(trainee_Training=self.trainee_training).order_by('id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        trainee_training_id = self.kwargs['trainee_training_id']
-        trainee_training = TraineeTraining.objects.get(pk=trainee_training_id)
-        context['training_id'] = trainee_training.training.id
-        context['course_id'] = trainee_training.course.id
+        context['training_id'] = self.trainee_training.training_id
+        context['course_id'] = self.trainee_training.course_id
         return context
 
 
 class ReviewDeploy(View):
     template_name = 'trainingApp/review_deploy.html'
-    
+
+    def dispatch(self, request, *args, **kwargs):
+        # Solo bloques de intentos propios y terminados
+        self.block_answer = get_object_or_404(
+            TrainingBlockAnswer.objects.exclude(trainee_Training__state=TraineeTraining.StateTraineeTraining.IN_PROGRESS),
+            pk=kwargs['block_answer_id'],
+            trainee_Training__trainee__user=request.user,
+        )
+        self.deploys_answer = list(
+            TrainingQuestionAnswer.objects
+            .filter(block_answer=self.block_answer)
+            .select_related('deploy', 'selectedChoice')
+            .order_by('id')
+        )
+        if not self.deploys_answer:
+            messages.info(request, _("This block has no answers to review."))
+            return redirect('trainingApp:review_block', self.block_answer.trainee_Training_id)
+        self.index_key = f'current_deploy_index_review_{self.block_answer.id}'
+        return super().dispatch(request, *args, **kwargs)
+
+    def current_index(self, request):
+        index = request.session.get(self.index_key, 0)
+        return index if 0 <= index < len(self.deploys_answer) else 0
+
     def get(self, request, block_answer_id):
-        deploys_answer = TrainingQuestionAnswer.objects.filter(block_answer=block_answer_id)
-        deploys = [deploy_answer.deploy for deploy_answer in deploys_answer]
-        
-        current_deploy_index_review = request.session.get(f'current_deploy_index_review_{block_answer_id}', 0)
-        current_deploy_review = deploys[current_deploy_index_review]
-        current_deploy_answer = deploys_answer[current_deploy_index_review]
-        choices = Choice.objects.filter(deploy_id = current_deploy_review.id)
-        return render(request, self.template_name, {'deploy': current_deploy_review, 'choices':choices, 'deploy_answer':current_deploy_answer})
-    
-    def post(self, request, block_answer_id): 
-        block_answer= TrainingBlockAnswer.objects.get(pk=block_answer_id)
-        deploys_answer = TrainingQuestionAnswer.objects.filter(block_answer=block_answer_id)
-        deploys = [deploy_answer.deploy for deploy_answer in deploys_answer]
-        
-        current_deploy_index_review = request.session.get(f'current_deploy_index_review_{block_answer_id}', 0)
-        current_deploy_index_review += 1
-        if current_deploy_index_review >= len(deploys):
-            request.session[f'current_deploy_index_review_{block_answer_id}'] = 0  
-            return redirect('trainingApp:review_block',block_answer.trainee_Training.id)
-        
-        request.session[f'current_deploy_index_review_{block_answer_id}'] = current_deploy_index_review
+        current_deploy_answer = self.deploys_answer[self.current_index(request)]
+        current_deploy_review = current_deploy_answer.deploy
+        choices = Choice.objects.filter(deploy_id=current_deploy_review.id)
+        return render(request, self.template_name, {'deploy': current_deploy_review, 'choices': choices, 'deploy_answer': current_deploy_answer})
+
+    def post(self, request, block_answer_id):
+        current_deploy_index_review = self.current_index(request) + 1
+        if current_deploy_index_review >= len(self.deploys_answer):
+            request.session[self.index_key] = 0
+            return redirect('trainingApp:review_block', self.block_answer.trainee_Training_id)
+
+        request.session[self.index_key] = current_deploy_index_review
         return redirect('trainingApp:review_deploy', block_answer_id=block_answer_id)
 
 
 class CommentView(LoginRequiredMixin, View):
-    login_url = 'signup'
+    login_url = 'userApp:signup'
     template_name = "trainingApp/comment_form.html"
 
-    def get(self, request, course_id, training_id):
-        user = self.request.user
-        try:
-            trainee = Trainee.objects.get(user_id= user.id)
-        except Trainee.DoesNotExist:
-            messages.error(request, _("You need to be a trainee to access this page."))
-            return redirect('home')
-        
+    def get_trainee_and_training(self, request, course_id, training_id):
+        """Valida que el trainee tenga acceso al curso y haya terminado el training; si no, 404."""
+        trainee = get_object_or_404(Trainee, user=request.user)
         course = get_object_or_404(Course, id=course_id)
         training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
-            raise Http404("Training not in course")
-        
+        if not (
+            rules.can_view_course(trainee, course)
+            and rules.training_in_course(course, training_id)
+            and rules.finished_attempts(trainee, course, training).exists()
+        ):
+            raise Http404("Training not available for comments")
+        return trainee, training
+
+    def get(self, request, course_id, training_id):
+        self.get_trainee_and_training(request, course_id, training_id)
         commentform = CommentForm()
 
         return render(request, self.template_name, {"form": commentform, "course_id": course_id, "training_id": training_id})
 
     def post(self, request, course_id, training_id):
-        user = self.request.user
-        try:
-            trainee = Trainee.objects.get(user_id= user.id)
-        except Trainee.DoesNotExist:
-            messages.error(request, _("You need to be a trainee to access this page."))
-            return redirect('home')
-        
-        course = get_object_or_404(Course, id=course_id)
-        training = get_object_or_404(Training, id=training_id)
-        if not (course.trainings.filter(id=training_id).exists() or course.final_exam_id == training_id):
-            raise Http404("Training not in course")
-        
+        trainee, training = self.get_trainee_and_training(request, course_id, training_id)
         commentform = CommentForm(request.POST)
-        
+
         if commentform.is_valid():
-            comment = Comment.objects.create(
+            Comment.objects.create(
                 trainee=trainee,
                 training=training,
                 pub_date=timezone.now(),

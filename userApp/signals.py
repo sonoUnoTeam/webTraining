@@ -7,11 +7,6 @@ from .models import Trainee
 
 logger = logging.getLogger(__name__)
 
-try:
-    from trainingApp.models import Group
-except Exception:
-    Group = None
-
 User = get_user_model()
 
 
@@ -30,12 +25,13 @@ def create_trainee_for_superuser(sender, instance, created, **kwargs):
         return
 
     try:
-        group = None
-        if Group is not None:
-            group, _ = Group.objects.get_or_create(
-                name_group="Group Defect",
-                defaults={"description": "Default group for superusers"},
-            )
+        # Import diferido: trainingApp.models importa userApp.models
+        from trainingApp.models import TraineeGroup
+
+        group, _ = TraineeGroup.objects.get_or_create(
+            name_group="Group Defect",
+            defaults={"description": "Default group for superusers"},
+        )
 
         Trainee.objects.get_or_create(
             user=instance,

@@ -2330,3 +2330,34 @@ msgstr "También se registra tu último puntaje para ver tu progreso más recien
 msgid "sonoTrainings Guide"
 msgstr "Guía de sonoTrainings"
 
+#: trainingApp/rules.py
+msgid "You do not have access to this course."
+msgstr "No tienes acceso a este curso."
+
+#: trainingApp/rules.py
+msgid "This training is not part of the course."
+msgstr "Este entrenamiento no forma parte del curso."
+
+#: trainingApp/rules.py
+msgid "This training is not available."
+msgstr "Este entrenamiento no está disponible."
+
+#: trainingApp/rules.py
+msgid "You have not met the requirements to take the final exam yet."
+msgstr "Todavía no cumples los requisitos para rendir el examen final."
+
+#: trainingApp/rules.py
+msgid "You must complete the previous training first."
+msgstr "Primero debes completar el entrenamiento anterior."
+
+#: trainingApp/rules.py
+msgid "You cannot retry this training because you have already started the final exam."
+msgstr "No puedes reintentar este entrenamiento porque ya iniciaste el examen final."
+
+#: trainingApp/views.py
+msgid "You have already completed this block."
+msgstr "Ya completaste este bloque."
+
+#: trainingApp/views.py
+msgid "This block has no answers to review."
+msgstr "Este bloque no tiene respuestas para revisar."

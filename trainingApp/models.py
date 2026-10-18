@@ -152,23 +152,29 @@ class TraineeTraining(models.Model):
         """
         Calcula el porcentaje de respuestas correctas del training y devuelve
         un diccionario con el porcentaje, respuestas correctas e incorrectas.
+
+        El total son todas las preguntas de los bloques activos del training: una pregunta
+        sin responder cuenta como incorrecta. Si una pregunta se respondió más de una vez
+        en el intento, vale la última respuesta.
         """
-        # Obtener todos los block answers de este trainee training
-        block_answers = TrainingBlockAnswer.objects.filter(trainee_Training=self)
-        
-        total_questions = 0
-        correct_answers = 0
-        
-        for block_answer in block_answers:
-            # Obtener las respuestas de cada block
-            question_answers = TrainingQuestionAnswer.objects.filter(block_answer=block_answer)
-            
-            for question_answer in question_answers:
-                total_questions += 1
-                # Verificar si la respuesta seleccionada es correcta
-                if question_answer.selectedChoice.correctChoice:
-                    correct_answers += 1
-        
+        question_ids = set(
+            TrainingQuestion.objects.filter(
+                block__training=self.training,
+                block__state_block=TrainingBlock.StateBlock.Active,
+            ).values_list('id', flat=True)
+        )
+        question_answers = (
+            TrainingQuestionAnswer.objects
+            .filter(block_answer__trainee_Training=self, deploy_id__in=question_ids)
+            .select_related('selectedChoice')
+            .order_by('id')
+        )
+        is_correct_by_question = {}
+        for question_answer in question_answers:
+            is_correct_by_question[question_answer.deploy_id] = question_answer.selectedChoice.correctChoice
+
+        total_questions = len(question_ids)
+        correct_answers = sum(is_correct_by_question.values())
         incorrect_answers = total_questions - correct_answers
         
         # Calcular porcentaje
@@ -209,26 +215,18 @@ class TraineeTraining(models.Model):
         else:
             self.state = self.StateTraineeTraining.FAILED
         
-        # Actualizar best_score
-        if self.best_score is None or self.score_percentage > self.best_score:
-            self.best_score = self.score_percentage
-        
         self.save()
-        
-        # Actualizar best_score en otros intentos del mismo training
-        other_attempts = TraineeTraining.objects.filter(
+
+        # best_score = mejor puntaje entre todos los intentos terminados del mismo training/curso.
+        # Solo se propaga best_score: correct/incorrect_answers son propios de cada intento.
+        finished_attempts = TraineeTraining.objects.filter(
             trainee=self.trainee,
             training=self.training,
             course=self.course
-        ).exclude(id=self.id)
-        
-        for attempt in other_attempts:
-            if attempt.best_score is None or self.best_score > attempt.best_score:
-                attempt.best_score = self.best_score
-                # También actualizar las respuestas correctas/incorrectas del mejor score
-                attempt.correct_answers = self.correct_answers
-                attempt.incorrect_answers = self.incorrect_answers
-                attempt.save()
+        ).exclude(state=self.StateTraineeTraining.IN_PROGRESS)
+        best_score = finished_attempts.aggregate(best=Max('score_percentage'))['best'] or 0
+        finished_attempts.update(best_score=best_score)
+        self.best_score = best_score
     
     @property
     def formatted_time_spent(self):

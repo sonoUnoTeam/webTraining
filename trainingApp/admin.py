@@ -211,7 +211,7 @@ class TrainingQuestionAnswerAdmin(ExportActionMixin, admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('id','training','get_trainee_username','stars','pub_date')
     list_filter = ('stars','training')
-    search_fields = ('trainee__user__username','training__name_training','comment_aditional')
+    search_fields = ('trainee__user__username','training__name_training')
 
     def get_trainee_username(self,obj):
         try:

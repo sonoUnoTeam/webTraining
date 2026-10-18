@@ -1869,3 +1869,35 @@ msgstr "Ready to start?"
 #: .\trainingApp\templates\trainingApp\tutorial.html
 msgid "¿Qué característica tiene una función senoidal sonificada?"
 msgstr "What characteristic does a sonified sine function have?"
+
+#: trainingApp/rules.py
+msgid "You do not have access to this course."
+msgstr ""
+
+#: trainingApp/rules.py
+msgid "This training is not part of the course."
+msgstr ""
+
+#: trainingApp/rules.py
+msgid "This training is not available."
+msgstr ""
+
+#: trainingApp/rules.py
+msgid "You have not met the requirements to take the final exam yet."
+msgstr ""
+
+#: trainingApp/rules.py
+msgid "You must complete the previous training first."
+msgstr ""
+
+#: trainingApp/rules.py
+msgid "You cannot retry this training because you have already started the final exam."
+msgstr ""
+
+#: trainingApp/views.py
+msgid "You have already completed this block."
+msgstr ""
+
+#: trainingApp/views.py
+msgid "This block has no answers to review."
+msgstr ""
