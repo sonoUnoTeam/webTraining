@@ -152,7 +152,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet -r "$DEPLOY_PATH/requirements.txt"
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet --no-cache-dir -r "$DEPLOY_PATH/requirements.txt"
 
       - name: Validate production settings
         run: |
@@ -214,7 +214,7 @@ jobs:
           prev="${{ steps.precheck.outputs.prev_sha }}"
           echo "::warning::Rolling back code to $prev"
           sudo -u "$DEPLOY_USER" git -C "$DEPLOY_PATH" reset --hard "$prev"
-          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet -r "$DEPLOY_PATH/requirements.txt"
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/pip" install --quiet --no-cache-dir -r "$DEPLOY_PATH/requirements.txt"
           backup="${{ steps.backup.outputs.file }}"
           if [ "${{ steps.migrate.outcome }}" = "failure" ] && [ -n "$backup" ]; then
             echo "::warning::Restoring database from $backup"
