@@ -241,9 +241,9 @@ class CustomPasswordResetView(PasswordResetView):
                     "An error occurred while trying to send the email, contact the administrator."
                 ),
             )
-            return super().form_valid(form)
 
-        return super().form_valid(form)
+        # No usar super().form_valid(): PasswordResetView vuelve a llamar form.save() y enviaría el email dos veces
+        return HttpResponseRedirect(self.get_success_url())
     
     
 INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
