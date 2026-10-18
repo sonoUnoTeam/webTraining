@@ -186,10 +186,12 @@ jobs:
         run: |
           sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" collectstatic --noinput
 
-      - name: Restart Apache
+      # mod_wsgi en modo daemon (WSGIDaemonProcess webTraining): tocar wsgi.py recarga solo este sitio,
+      # sin reiniciar Apache ni cortar los otros sitios del servidor
+      - name: Reload application
         id: restart
         run: |
-          sudo systemctl restart apache2
+          sudo -u "$DEPLOY_USER" touch "$DEPLOY_PATH/webTraining/wsgi.py"
 
       - name: Smoke test
         run: |
@@ -200,11 +202,11 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 5
           done
-          echo "::error::$SITE_URL/en/ did not return 200 after restart"
+          echo "::error::$SITE_URL/en/ did not return 200 after reloading"
           exit 1
 
-      # Si algo falla antes de reiniciar Apache, se vuelve al commit anterior (y a la base anterior
-      # si la migración falló). Si falla después del reinicio, se informa cómo volver atrás a mano.
+      # Si algo falla antes de recargar la aplicación, se vuelve al commit anterior (y a la base anterior
+      # si la migración falló). Si falla después de recargar, se informa cómo volver atrás a mano.
       - name: Roll back on failure
         if: failure() && steps.update.outcome == 'success' && steps.restart.outcome != 'success'
         run: |
@@ -226,13 +228,13 @@ jobs:
               sudo -u "$DEPLOY_USER" cp "$backup" "$name"
             fi
           fi
-          sudo systemctl restart apache2
+          sudo -u "$DEPLOY_USER" touch "$DEPLOY_PATH/webTraining/wsgi.py"
 
       - name: Manual rollback instructions
         if: failure() && steps.restart.outcome == 'success'
         run: |
-          echo "::error::Deployment failed after restarting Apache. To roll back on the server:"
+          echo "::error::Deployment failed after reloading the application. To roll back on the server:"
           echo "  sudo -u $DEPLOY_USER git -C $DEPLOY_PATH reset --hard ${{ steps.precheck.outputs.prev_sha }}"
           echo "  # only if migrations changed data (MariaDB):"
           echo "  gunzip -c ${{ steps.backup.outputs.file }} | mysql -u <DB_USER> -p <DB_NAME>"
-          echo "  sudo systemctl restart apache2"
+          echo "  sudo -u $DEPLOY_USER touch $DEPLOY_PATH/webTraining/wsgi.py"
