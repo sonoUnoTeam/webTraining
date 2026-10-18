@@ -715,12 +715,6 @@ msgstr "Magister"
 msgid "Doctor"
 msgstr "Doctor"
 
-#: .\userApp\templates\userApp\passwordChange.html:6
-#, fuzzy
-#| msgid "Change Password"
-msgid "Reset Your Password"
-msgstr "Change Password"
-
 #: .\userApp\templates\userApp\passwordChange.html:10
 #, fuzzy
 #| msgid "Change Password"
@@ -744,10 +738,6 @@ msgstr "Password Successfully Changed"
 msgid "Reset your password"
 msgstr "Change Password"
 
-#: .\userApp\templates\userApp\password_reset.html:9
-msgid "Send Reset Link"
-msgstr ""
-
 #: .\userApp\templates\userApp\password_reset_done.html:4
 msgid "Password reset sent"
 msgstr ""
@@ -758,22 +748,10 @@ msgid ""
 "check your inbox."
 msgstr ""
 
-#: .\userApp\templates\userApp\profile.html:9
-msgid "User Information"
-msgstr "User Information"
-
 #: .\userApp\templates\userApp\profile.html:14
 #: .\userApp\templates\userApp\profile.html:32
 msgid "Update"
 msgstr "Update"
-
-#: .\userApp\templates\userApp\profile.html:27
-msgid "Trainee Information"
-msgstr "Trainee Information"
-
-#: .\userApp\templates\userApp\profile.html:45
-msgid "Change Password"
-msgstr "Change Password"
 
 #: .\userApp\templates\userApp\signin.html:5
 #: .\userApp\templates\userApp\signin.html:20
@@ -799,10 +777,6 @@ msgstr "Complete all fields please:"
 msgid "Enter a username of your choice"
 msgstr "Enter a username of your choice"
 
-#: .\userApp\templates\userApp\signup.html:16
-msgid "Username"
-msgstr ""
-
 #: .\userApp\templates\userApp\signup.html:21
 #, fuzzy
 #| msgid ""
@@ -823,26 +797,6 @@ msgstr ""
 "\">Your username must be between 6 and 15 characters and can only contain "
 "letters, numbers, and underscores.</small>\n"
 "                    "
-
-#: .\userApp\templates\userApp\signup.html:26
-msgid "First Name"
-msgstr ""
-
-#: .\userApp\templates\userApp\signup.html:31
-#, fuzzy
-#| msgid "Name"
-msgid "Last Name"
-msgstr "Name"
-
-#: .\userApp\templates\userApp\signup.html:36
-msgid "Email"
-msgstr ""
-
-#: .\userApp\templates\userApp\signup.html:41
-#, fuzzy
-#| msgid "Change Password"
-msgid "Password"
-msgstr "Change Password"
 
 #: .\userApp\templates\userApp\signup.html:46
 #, fuzzy
@@ -886,16 +840,8 @@ msgstr ""
 "\">Write your password one more time</small>\n"
 "                    "
 
-#: .\userApp\templates\userApp\signup.html:61
-msgid "Age"
-msgstr ""
-
 #: .\userApp\templates\userApp\signup.html:66
 msgid "Educational Level:"
-msgstr ""
-
-#: .\userApp\templates\userApp\signup.html:71
-msgid "Occupation"
 msgstr ""
 
 #: .\userApp\views.py:65

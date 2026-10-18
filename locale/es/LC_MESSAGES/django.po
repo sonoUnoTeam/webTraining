@@ -143,10 +143,6 @@ msgstr "Mensaje:"
 msgid "Home"
 msgstr "Inicio"
 
-#: .\templates\navbar.html:28
-msgid "Trainings"
-msgstr "Entrenamientos"
-
 #: .\templates\navbar.html:31 .\userApp\templates\userApp\profile.html:6
 msgid "Profile"
 msgstr "Perfil"
@@ -206,10 +202,6 @@ msgstr "Completado"
 msgid "Well explained"
 msgstr "Bien explicado"
 
-#: .\trainingApp\models.py:154
-msgid "Interesting"
-msgstr "Interesante"
-
 #: .\trainingApp\models.py:155
 msgid "Easy to understand"
 msgstr "Fácil de entender"
@@ -229,10 +221,6 @@ msgstr "Pobremente explicado"
 #: .\trainingApp\models.py:161
 msgid "Confusing"
 msgstr "Confuso"
-
-#: .\trainingApp\models.py:162
-msgid "Repetitive"
-msgstr "Repetitivo"
 
 #: .\trainingApp\models.py:232 .\trainingApp\views.py:63
 msgid "Not Started"
@@ -662,28 +650,6 @@ msgstr "Debes completar todos los entrenamientos antes de realizar el examen."
 msgid "Congratulations! You have passed the exam and completed the course."
 msgstr "¡Felicitaciones! Has aprobado el examen y completado el curso."
 
-#: .\userApp\forms.py:20 .\userApp\templates\userApp\signup.html:26
-msgid "First Name"
-msgstr "Nombre"
-
-#: .\userApp\forms.py:21 .\userApp\templates\userApp\signup.html:31
-msgid "Last Name"
-msgstr "Apellido"
-
-#: .\userApp\forms.py:22 .\userApp\templates\userApp\signup.html:36
-msgid "Email"
-msgstr "Email"
-
-#: .\userApp\forms.py:48 .\userApp\models.py:17
-#: .\userApp\templates\userApp\signup.html:61
-msgid "Age"
-msgstr "Edad"
-
-#: .\userApp\forms.py:49 .\userApp\models.py:24
-#: .\userApp\templates\userApp\signup.html:71
-msgid "Occupation"
-msgstr "Ocupación"
-
 #: .\userApp\models.py:8
 msgid "Primary School"
 msgstr "Primaria"
@@ -712,14 +678,6 @@ msgstr "Magister"
 msgid "Doctor"
 msgstr "Doctor/Doctora"
 
-#: .\userApp\models.py:22
-msgid "Educational Level"
-msgstr "Nivel Educativo"
-
-#: .\userApp\templates\userApp\passwordChange.html:6
-msgid "Reset Your Password"
-msgstr "Restablecer tu contraseña"
-
 #: .\userApp\templates\userApp\passwordChange.html:10
 msgid "Enter New Password"
 msgstr "Ingrese nueva contraseña"
@@ -737,10 +695,6 @@ msgstr "contraseña actualizada con éxito"
 msgid "Reset your password"
 msgstr "Restablecer tu contraseña"
 
-#: .\userApp\templates\userApp\password_reset.html:9
-msgid "Send Reset Link"
-msgstr "Enviar enlace de restablecimiento"
-
 #: .\userApp\templates\userApp\password_reset_done.html:4
 msgid "Password reset sent"
 msgstr "Restablecimiento de contraseña enviado"
@@ -751,22 +705,10 @@ msgid ""
 "check your inbox."
 msgstr "Te hemos enviado un correo con instrucciones para restablecer tu contraseña. Por favor revisa tu bandeja de entrada."
 
-#: .\userApp\templates\userApp\profile.html:9
-msgid "User Information"
-msgstr "Información del usuario"
-
 #: .\userApp\templates\userApp\profile.html:14
 #: .\userApp\templates\userApp\profile.html:32
 msgid "Update"
 msgstr "Actualizar"
-
-#: .\userApp\templates\userApp\profile.html:27
-msgid "Trainee Information"
-msgstr "Información del usuario como aprendiz"
-
-#: .\userApp\templates\userApp\profile.html:45
-msgid "Change Password"
-msgstr "Cambiar contraseña"
 
 #: .\userApp\templates\userApp\signin.html:5
 #: .\userApp\templates\userApp\signin.html:20
@@ -790,10 +732,6 @@ msgstr "Complete todos los campos, por favor:"
 msgid "Enter a username of your choice"
 msgstr "Ingrese un nombre de usuario"
 
-#: .\userApp\templates\userApp\signup.html:16
-msgid "Username"
-msgstr "Nombre de usuario"
-
 #: .\userApp\templates\userApp\signup.html:21
 msgid ""
 "\n"
@@ -807,10 +745,6 @@ msgstr ""
 "\">Su nombre de usuario debe tener entre 6 y 15 caracteres y solo puede "
 "contener letras, números y guiones bajos.</small>\n"
 "                        "
-
-#: .\userApp\templates\userApp\signup.html:41
-msgid "Password"
-msgstr "Contraseña"
 
 #: .\userApp\templates\userApp\signup.html:46
 msgid ""
@@ -1325,10 +1259,6 @@ msgid "Review Answer"
 msgstr "Revisar Respuesta"
 
 #: .\trainingApp\templates\trainingApp\review_deploy.html
-msgid "Correct"
-msgstr "Correcta"
-
-#: .\trainingApp\templates\trainingApp\review_deploy.html
 msgid "Your answer"
 msgstr "Tu respuesta"
 
@@ -1831,7 +1761,6 @@ msgstr "Enviar opinión"
 #: trainingApp/templates/trainingApp/comment_form.html
 msgid "Skip Survey"
 msgstr "Omitir encuesta"
-
 
 # Tutorial page translations (English source -> Spanish)
 #: .\trainingApp\templates\trainingApp\tutorial.html

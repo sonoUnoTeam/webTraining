@@ -28,7 +28,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y default-libmysqlclient-dev pkg-config
+          sudo apt-get install -y default-libmysqlclient-dev pkg-config gettext
 
       - name: Install Python dependencies
         run: |
@@ -46,6 +46,10 @@ jobs:
 
       - name: Run tests
         run: python manage.py test
+
+      # Igual que en main: msgfmt rechaza .po inválidos (p. ej. mensajes duplicados)
+      - name: Validate translations compile
+        run: python manage.py compilemessages
 
       - name: Verify static files build
         run: python manage.py collectstatic --noinput
