@@ -117,7 +117,8 @@ ROOT_URLCONF = 'webTraining.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        # Ruta absoluta: bajo mod_wsgi el directorio de trabajo no es la carpeta del proyecto
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
