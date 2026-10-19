@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-
+<!-- Se agrega el bloque de título para que sea dinámico y se pueda traducir -->
+{% block title %}{% trans "Formulario de Comentarios" %} | {% endblock %}
 {% block content %}
 <style>
     /* Modern container styles */

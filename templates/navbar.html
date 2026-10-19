@@ -20,41 +20,41 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
+                        <ul class="navbar-nav ms-auto"> <!-- Se agrega % url para los enlaces -->
                             <li class="nav-item">
-                                <a href="/" class="nav-link">{% trans 'Home' %}</a>
+                                <a href="{% url 'home' %}" class="nav-link">{% trans 'Home' %}</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{% url 'trainingApp:tutorial' %}" class="nav-link">{% trans 'Tutorial' %}</a>
                             </li>
                             {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="/trainingApp/">{% trans 'Trainings' %}</a>
+                                <a class="nav-link" href="{% url 'trainingApp:home' %}">{% trans 'Trainings' %}</a>
                             </li>
                             <li>
                                 <a class="nav-link" href="{% url 'userApp:profile' request.user.username %}">{% trans 'Profile' %}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/userApp/logout">{% trans 'Logout' %}</a>
+                                <a class="nav-link" href="{% url 'userApp:logout' %}">{% trans 'Logout' %}</a>
                             </li>
                                 {% if user.is_superuser %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="/admin">{% trans 'Admin' %}</a>
+                                        <a class="nav-link" href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
                                     </li>
                                 {% endif %}
                             {% else %}
                             <li class="nav-item">
-                                <a href="/userApp/signin" class="nav-link">{% trans 'Login' %}</a>
+                                <a href="{% url 'userApp:signin' %}" class="nav-link">{% trans 'Login' %}</a>
                             </li>
                             <li class="nav-item">
-                                <a href="/userApp/signup" class="nav-link">{% trans 'Register' %}</a>
+                                <a href="{% url 'userApp:signup' %}" class="nav-link">{% trans 'Register' %}</a>
                             </li>
                             {% endif %}
                             <li class="nav-item">
-                                <a href="https://www.sonouno.org.ar/" target="_blank" class="nav-link">{% trans 'Go' %} sonoUno</a>
+                                <a href="https://www.sonouno.org.ar/" target="_blank" rel="noopener" class="nav-link">{% trans 'Go' %} sonoUno</a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
-                                <button id="themeToggle" class="theme-toggle btn btn-link nav-link p-2" aria-label="Toggle theme" title="Cambiar tema">
+                                <button id="themeToggle" class="theme-toggle btn btn-link nav-link p-2" aria-label="{% trans 'Toggle theme' %}" title="{% trans 'Toggle theme' %}" aria-pressed="false">
                                     <svg id="themeIcon" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
                                         <!-- Sol (modo claro) -->
                                         <path class="sun-icon" d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
@@ -77,11 +77,13 @@
                                             <path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286zm1.634-.736L5.5 3.956h-.049l-.679 2.022z"/>
                                             <path d="M0 2a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v3h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm7.138 9.995q.289.451.63.846c-.748.575-1.673 1.001-2.768 1.292.178.217.451.635.555.867 1.125-.359 2.08-.844 2.886-1.494.777.665 1.739 1.165 2.93 1.472.133-.254.414-.673.629-.89-1.125-.253-2.057-.694-2.82-1.284.681-.747 1.222-1.651 1.621-2.757H14V8h-3v1.047h.765c-.318.844-.74 1.546-1.272 2.13a6 6 0 0 1-.415-.492 2 2 0 0 1-.94.31"/>
                                         </svg>
-                                        {% for language in languages %}
+                                        {% for language in languages %} <!-- Loop para cambiar de lenguaje, se agrega el atributo lang para accesibilidad -->
                                             <button type="button" 
                                                     class="btn btn-sm language-btn {% if language.code == LANGUAGE_CODE %}active{% endif %}" 
                                                     data-lang="{{ language.code }}"
-                                                    title="{{ language.name_local }}">
+                                                    lang="{{ language.code }}"      
+                                                    title="{{ language.name_local }}"
+                                                    {% if language.code == LANGUAGE_CODE %} aria-current="true"{% endif %}>
                                                 {{ language.code|upper }}
                                             </button>
                                         {% endfor %}

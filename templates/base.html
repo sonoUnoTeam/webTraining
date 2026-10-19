@@ -4,7 +4,8 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %} <!-- Se obtiene el idioma actual para establecer el atributo lang en la etiqueta html -->
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,13 +21,15 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'sonoUno.png' %}">
     <link rel="apple-touch-icon" href="{% static 'sonoUno.png' %}">
-    
-    <title>sonoTrainings</title>
+    <!-- Se agrega el bloque title para que cada página pueda definir su propio título -->
+    <title>{% block title %}{% endblock %} sonoTrainings</title> 
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh;">
+   <!-- Se incluye botón oculto para saltar al contenido -->
+    <a class="visually-hidden-focusable" href="#contenido">Saltar al contenido</a>
     <!-- Se incluye la navbar -->
     {% include 'navbar.html' %}
-    <main style="flex: 1;">
+    <main id="contenido" style="flex: 1;"> <!-- Agregado id para el salto al contenido -->
         <div class="container mt-2 mb-0">
 
             <!-- Se incluye mensajes -->

@@ -2,7 +2,8 @@
 {% load i18n %}
 
 {% block content %}
-
+<!-- Se agrega el bloque de título para que sea dinámico y se pueda traducir -->
+{% block title %}{% trans "Lista de Bloques" %} | {% endblock %}
 <style>
     /* Dark mode table styles */
     body.dark-mode .table {
@@ -105,8 +106,7 @@
 
 <!-- Se carga un filtro para obtener la clave de un diccionario -->
 {% load custom_filters %}
-
-<main class="mt-5">
+<section class="mt-5"> <!-- Se cambia el nombre del bloque a section para mejorar la estructura -->
     <h1 class="h2">{% trans "List of Blocks" %}</h1>
     <div class="card my-3 border border-3">
         <div class="card-header">
@@ -155,8 +155,7 @@
             {% endblocktrans %}
         {% endif %}
     </div>
-</main>
-
+</section>
 <!-- Pagination -->
 <div class="mt-4">
     <nav aria-label="Page navigation">

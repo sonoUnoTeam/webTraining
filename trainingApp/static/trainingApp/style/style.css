@@ -94,3 +94,12 @@ body.dark-mode .partner-logo-container {
 body.dark-mode .im {
     border-color: #6eb5d4;
 }
+/* Estilos para el enfoque de accesibilidad */
+*:focus-visible { 
+    outline: 3px solid #ffbf47 !important; /* Un naranja/amarillo de alto contraste */
+    outline-offset: 2px;
+}
+
+body.dark-mode *:focus-visible {
+    outline: 3px solid #66b3ff !important; /* Un celeste para el modo oscuro */
+}
