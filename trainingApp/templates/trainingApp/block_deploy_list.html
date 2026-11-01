@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block title %}{% trans "Blocks" %} · {{ training.name_training }}{% endblock %}
 {% block content %}
-
 <style>
     /* Dark mode table styles */
     body.dark-mode .table {
@@ -105,8 +105,7 @@
 
 <!-- Se carga un filtro para obtener la clave de un diccionario -->
 {% load custom_filters %}
-
-<main class="mt-5">
+<section class="mt-5">
     <h1 class="h2">{% trans "List of Blocks" %}</h1>
     <div class="card my-3 border border-3">
         <div class="card-header">
@@ -155,8 +154,7 @@
             {% endblocktrans %}
         {% endif %}
     </div>
-</main>
-
+</section>
 <!-- Pagination -->
 <div class="mt-4">
     <nav aria-label="Page navigation">

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block title %}{% trans "Review" %} · {% blocktrans with number=question_number total=questions_count %}Question {{ number }} of {{ total }}{% endblocktrans %} · {{ training.name_training }}{% endblock %}
 {% block content %}
-
 <style>
     .form-deploy-image {
         text-align: left;
@@ -214,7 +214,7 @@
             {% endif %}
         </div>
         <div class="form-question">
-            <p class="h5">{{ deploy.question }}</p>
+            <h1 class="h5">{{ deploy.question }}</h1>
         </div>
         <div class="form-choice">
             <fieldset>

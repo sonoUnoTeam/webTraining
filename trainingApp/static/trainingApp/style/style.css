@@ -94,3 +94,31 @@ body.dark-mode .partner-logo-container {
 body.dark-mode .im {
     border-color: #6eb5d4;
 }
+/* Foco visible (WCAG 2.4.7): azul oscuro sobre fondos claros, amarillo sobre la barra y el pie oscuros */
+*:focus-visible {
+    outline: 3px solid #0b4f9c !important;
+    outline-offset: 2px;
+}
+
+.navbar *:focus-visible,
+.modern-footer *:focus-visible,
+body.dark-mode *:focus-visible {
+    outline-color: #ffbf47 !important;
+}
+
+/* El <main> recibe el foco del enlace "saltar al contenido" sin mostrar contorno */
+main:focus,
+main:focus-visible {
+    outline: none !important;
+}
+
+.skip-link:focus {
+    position: absolute !important;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 2000;
+    padding: 0.5rem 1rem;
+    background-color: #ffffff;
+    color: #0b4f9c;
+    font-weight: 600;
+}

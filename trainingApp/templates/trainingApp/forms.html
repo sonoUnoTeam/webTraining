@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% block title %}{% blocktrans with number=current_deploy_index|add:1 total=deploys_count %}Question {{ number }} of {{ total }}{% endblocktrans %} · {{ deploy.block.name_block }}{% endblock %}
 {% block content %} 
-
     <script>
         function validateAndSubmitForm() {
         // Realizar validación del formulario
