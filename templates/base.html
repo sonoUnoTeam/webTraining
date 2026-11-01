@@ -4,7 +4,8 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-{% get_current_language as LANGUAGE_CODE %} <!-- Se obtiene el idioma actual para establecer el atributo lang en la etiqueta html -->
+<!-- Idioma activo en el atributo lang, para que el lector de pantalla use la voz correcta -->
+{% get_current_language as LANGUAGE_CODE %}
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8" />
@@ -21,15 +22,15 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{% static 'sonoUno.png' %}">
     <link rel="apple-touch-icon" href="{% static 'sonoUno.png' %}">
-    <!-- Se agrega el bloque title para que cada página pueda definir su propio título -->
-    <title>{% block title %}{% endblock %} sonoTrainings</title> 
+    <!-- Cada página define su título en el bloque title, de lo más específico a lo general -->
+    <title>{% block title %}sonoTrainings{% endblock %} · sonoTrainings</title>
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh;">
-   <!-- Se incluye botón oculto para saltar al contenido -->
-    <a class="visually-hidden-focusable" href="#contenido">Saltar al contenido</a>
+    <!-- Enlace oculto para saltar la navegación; se muestra al recibir el foco -->
+    <a class="visually-hidden-focusable skip-link" href="#contenido">{% trans "Skip to main content" %}</a>
     <!-- Se incluye la navbar -->
     {% include 'navbar.html' %}
-    <main id="contenido" style="flex: 1;"> <!-- Agregado id para el salto al contenido -->
+    <main id="contenido" tabindex="-1" style="flex: 1;">
         <div class="container mt-2 mb-0">
 
             <!-- Se incluye mensajes -->
@@ -46,35 +47,36 @@
     
     <!-- Script para el toggle de tema -->
     <script>
-        // Cargar preferencia de tema guardada
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
+        // Aplica el tema y sincroniza íconos y aria-pressed del botón
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.body.classList.toggle('dark-mode', isDark);
             const sunIcon = document.querySelector('.sun-icon');
             const moonIcon = document.querySelector('.moon-icon');
             if (sunIcon && moonIcon) {
-                sunIcon.style.display = 'none';
-                moonIcon.style.display = 'block';
+                sunIcon.style.display = isDark ? 'none' : 'block';
+                moonIcon.style.display = isDark ? 'block' : 'none';
+            }
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) {
+                toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
             }
         }
 
+        // Cargar preferencia de tema guardada (localStorage puede no estar disponible)
+        let savedTheme = 'light';
+        try {
+            savedTheme = localStorage.getItem('theme') || 'light';
+        } catch (e) {}
+        applyTheme(savedTheme);
+
         // Toggle de tema
         document.getElementById('themeToggle').addEventListener('click', function() {
-            const body = document.body;
-            const sunIcon = document.querySelector('.sun-icon');
-            const moonIcon = document.querySelector('.moon-icon');
-            
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                sunIcon.style.display = 'block';
-                moonIcon.style.display = 'none';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.add('dark-mode');
-                sunIcon.style.display = 'none';
-                moonIcon.style.display = 'block';
-                localStorage.setItem('theme', 'dark');
-            }
+            const theme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+            applyTheme(theme);
+            try {
+                localStorage.setItem('theme', theme);
+            } catch (e) {}
         });
     </script>
     

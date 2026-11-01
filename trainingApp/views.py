@@ -502,6 +502,7 @@ class TrainingBlockDeployList(ListView):
         context['TrainingBlockAnswer'] = TrainingBlockAnswer
         context['course_id'] = self.course.id
         context['training_id'] = self.training.id
+        context['training'] = self.training
         return context
 
 
@@ -783,6 +784,7 @@ class ReviewBlock(ListView):
         context = super().get_context_data(**kwargs)
         context['training_id'] = self.trainee_training.training_id
         context['course_id'] = self.trainee_training.course_id
+        context['training'] = self.trainee_training.training
         return context
 
 
@@ -813,10 +815,18 @@ class ReviewDeploy(View):
         return index if 0 <= index < len(self.deploys_answer) else 0
 
     def get(self, request, block_answer_id):
-        current_deploy_answer = self.deploys_answer[self.current_index(request)]
+        index = self.current_index(request)
+        current_deploy_answer = self.deploys_answer[index]
         current_deploy_review = current_deploy_answer.deploy
         choices = Choice.objects.filter(deploy_id=current_deploy_review.id)
-        return render(request, self.template_name, {'deploy': current_deploy_review, 'choices': choices, 'deploy_answer': current_deploy_answer})
+        return render(request, self.template_name, {
+            'deploy': current_deploy_review,
+            'choices': choices,
+            'deploy_answer': current_deploy_answer,
+            'training': self.block_answer.trainee_Training.training,
+            'question_number': index + 1,
+            'questions_count': len(self.deploys_answer),
+        })
 
     def post(self, request, block_answer_id):
         current_deploy_index_review = self.current_index(request) + 1

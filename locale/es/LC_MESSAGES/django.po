@@ -81,10 +81,8 @@ msgid "Made by"
 msgstr "Hecho por"
 
 #: .\templates\home.html:10
-#, fuzzy
-#| msgid "Question"
 msgid "Hero section"
-msgstr "Pregunta"
+msgstr "Sección principal"
 
 #: .\templates\home.html:19
 msgid "Platform for Scientific Sonification"
@@ -146,7 +144,7 @@ msgstr ""
 
 #: .\templates\home.html:71
 msgid "Platform features"
-msgstr ""
+msgstr "Funcionalidades de la plataforma"
 
 #: .\templates\home.html:80
 msgid "Multisensory Training"
@@ -192,25 +190,27 @@ msgstr "Nuestros Colaboradores"
 
 #: .\templates\home.html:130
 msgid "Collaborating institutions"
-msgstr ""
+msgstr "Instituciones colaboradoras"
 
 #: .\templates\home.html:133
 msgid "albedo, collaborator institution"
-msgstr ""
+msgstr "albedo, institución colaboradora"
 
 #: .\templates\home.html:138
 msgid ""
 "CONICET - National Scientific and Technical Research Council, collaborator "
 "institution"
 msgstr ""
+"CONICET - Consejo Nacional de Investigaciones Científicas y Técnicas, "
+"institución colaboradora"
 
 #: .\templates\home.html:143
 msgid "Universidad de Mendoza, collaborator institution"
-msgstr ""
+msgstr "Universidad de Mendoza, institución colaboradora"
 
 #: .\templates\home.html:148
 msgid "UTN - National Technological University, collaborator institution"
-msgstr ""
+msgstr "UTN - Universidad Tecnológica Nacional, institución colaboradora"
 
 #: .\templates\home.html:169
 msgid "Astronomical data sonification software"
@@ -226,7 +226,7 @@ msgstr "Visitar SonoUno App"
 
 #: .\templates\home.html:186
 msgid "Call to action"
-msgstr ""
+msgstr "Llamado a la acción"
 
 #: .\templates\home.html:189
 msgid "Ready to Explore the Cosmos?"
@@ -246,7 +246,7 @@ msgstr "Mensaje:"
 #: .\templates\navbar.html:28
 #: .\trainingApp\templates\trainingApp\tutorial.html:6
 msgid "Tutorial"
-msgstr ""
+msgstr "Tutorial"
 
 #: .\templates\navbar.html:38
 msgid "Logout"
@@ -255,10 +255,6 @@ msgstr "Cerrar sesión"
 #: .\templates\navbar.html:54
 msgid "Go"
 msgstr "Ir"
-
-#: .\templates\navbar.html:57
-msgid "Toggle theme"
-msgstr "Cambiar de Tema"
 
 #: .\trainingApp\models.py:22
 #: .\trainingApp\templates\trainingApp\course_detail.html:873
@@ -378,14 +374,11 @@ msgid "You must complete the previous training first."
 msgstr "Primero debes completar el entrenamiento anterior."
 
 #: .\trainingApp\rules.py:91
-#, fuzzy
-#| msgid ""
-#| "You cannot retry this training because you have already started the final "
-#| "exam."
 msgid ""
-"You cannot retry this training because you have already started the next one."
+"You cannot retry this training because you have already started the next "
+"one."
 msgstr ""
-"No puedes reintentar este entrenamiento porque ya iniciaste el examen final."
+"No puedes reintentar este entrenamiento porque ya comenzaste el siguiente."
 
 #: .\trainingApp\rules.py:93
 msgid ""
@@ -395,16 +388,8 @@ msgstr ""
 "No puedes reintentar este entrenamiento porque ya iniciaste el examen final."
 
 #: .\trainingApp\rules.py:97
-#, fuzzy
-#| msgid "You haven't completed any attempts for this training yet."
 msgid "You have reached the maximum number of attempts for this training."
-msgstr "Aún no has completado ningún intento de este entrenamiento."
-
-#: .\trainingApp\templates\trainingApp\block_deploy_list.html:5
-#, fuzzy
-#| msgid "List of Blocks"
-msgid "Lista de Bloques"
-msgstr "Lista de Bloques"
+msgstr "Alcanzaste la cantidad máxima de intentos para este entrenamiento."
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:110
 #: .\trainingApp\templates\trainingApp\review_block.html:181
@@ -453,20 +438,13 @@ msgid "State "
 msgstr "Estado"
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:153
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                <p class=\"lead\">Sorry, no trainings are available.</p>\n"
-#| "            "
 msgid ""
 "\n"
-"                <p class=\"lead\">Sorry, no blocks are available for this "
-"training.</p>\n"
+"                <p class=\"lead\">Sorry, no blocks are available for this training.</p>\n"
 "            "
 msgstr ""
 "\n"
-"                <p class=\"lead\">Lo sentimos, no hay entrenamientos "
-"disponibles.</p>\n"
+"                <p class=\"lead\">Lo sentimos, no hay bloques disponibles para este entrenamiento.</p>\n"
 "            "
 
 #: .\trainingApp\templates\trainingApp\block_deploy_list.html:167
@@ -491,10 +469,6 @@ msgstr "Previo"
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:343
 msgid "Next"
 msgstr "Siguiente"
-
-#: .\trainingApp\templates\trainingApp\comment_form.html:3
-msgid "Formulario de Comentarios"
-msgstr ""
 
 #: .\trainingApp\templates\trainingApp\comment_form.html:267
 msgid ""
@@ -771,25 +745,18 @@ msgid "Below Required Average"
 msgstr "Por Debajo del Promedio Requerido"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:1018
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                <p class=\"lead\">No trainings in this course.</p>\n"
-#| "            "
 msgid ""
 "\n"
 "            <p class=\"lead\">No trainings in this course.</p>\n"
 "        "
 msgstr ""
 "\n"
-"                <p class=\"lead\">No hay entrenamientos en este curso.</p>\n"
-"            "
+"            <p class=\"lead\">No hay entrenamientos en este curso.</p>\n"
+"        "
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:1029
-#, fuzzy
-#| msgid "Take Final Exam"
 msgid "Final Exam"
-msgstr "Tomar Examen Final"
+msgstr "Examen final"
 
 #: .\trainingApp\templates\trainingApp\course_detail.html:1036
 msgid "Exam Name"
@@ -881,10 +848,8 @@ msgid "Last activity"
 msgstr "Última actividad"
 
 #: .\trainingApp\templates\trainingApp\course_list.html:401
-#, fuzzy
-#| msgid "Start"
 msgid "Started"
-msgstr "Comenzar"
+msgstr "Comenzado"
 
 #: .\trainingApp\templates\trainingApp\course_list.html:409
 msgid "View Course"
@@ -942,13 +907,6 @@ msgid "Name Block"
 msgstr "Nombre del bloque"
 
 #: .\trainingApp\templates\trainingApp\review_block.html:209
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "            <p class=\"lead\">\n"
-#| "                Sorry, no reviews available.\n"
-#| "            </p>\n"
-#| "            "
 msgid ""
 "\n"
 "                <p class=\"lead\">\n"
@@ -958,33 +916,21 @@ msgid ""
 "                "
 msgstr ""
 "\n"
-"            <p class=\"lead\">\n"
-"                Lo siento, no hay revisiones disponible en este momento.\n"
-"            </p>\n"
-"            "
+"                <p class=\"lead\">\n"
+"                    <i class=\"bi bi-info-circle me-2\"></i>\n"
+"                    Lo sentimos, no hay revisiones disponibles.\n"
+"                </p>\n"
+"                "
 
 #: .\trainingApp\templates\trainingApp\review_block.html:262
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "<p>If you want to return to the training page, press the back button</p>\n"
 msgid ""
 "\n"
-"        <p>If you want to return to the training page, press the back "
-"button</p>\n"
+"        <p>If you want to return to the training page, press the back button</p>\n"
 "        "
 msgstr ""
 "\n"
-"<p>si desea regresar a la página de entrenamientos disponibles, presione el "
-"botón Atrás</p>\n"
+"        <p>Si deseas volver a la página del entrenamiento, presiona el botón Atrás</p>\n"
 "        "
-#: .\trainingApp\templates\trainingApp\review_deploy.html:4
-msgid "Review Deploy"
-msgstr "Reseña de Despliegue"
-"        "
-#: .\trainingApp\templates\trainingApp\review_deploy.html:204
-msgid "No image available"
-msgstr "No hay imagen disponible"
 
 #: .\trainingApp\templates\trainingApp\review_deploy.html:221
 msgid "Review Answer"
@@ -1063,68 +1009,48 @@ msgid "Action"
 msgstr "Acción"
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:259
-#, fuzzy
-#| msgid "Exam Passed!"
 msgid "Exam Passed"
-msgstr "¡Examen Aprobado!"
+msgstr "Examen aprobado"
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:271
-#, fuzzy
-#| msgid "Failed"
 msgid "Exam Failed"
-msgstr "Fallido"
+msgstr "Examen no aprobado"
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:284
-#, fuzzy
-#| msgid "View Results"
 msgid "View Details"
-msgstr "Ver Resultados"
+msgstr "Ver detalles"
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:294
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                        <p class=\"mt-2\">\n"
-#| "                            Correct answer\n"
-#| "                        </p>\n"
-#| "                        "
 msgid ""
 "\n"
 "                    <p>\n"
 "                        <i class=\"bi bi-info-circle me-2\"></i>\n"
-"                        You haven't taken the final exam for this course "
-"yet.\n"
+"                        You haven't taken the final exam for this course yet.\n"
 "                    </p>\n"
 "                    "
 msgstr ""
 "\n"
-"                        <p class=\"mt-2\">\n"
-"                            Respuesta correcta\n"
-"                        </p>\n"
-"                        "
+"                    <p>\n"
+"                        <i class=\"bi bi-info-circle me-2\"></i>\n"
+"                        Todavía no rendiste el examen final de este curso.\n"
+"                    </p>\n"
+"                    "
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:301
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                        <p class=\"mt-2\">\n"
-#| "                            Correct answer\n"
-#| "                        </p>\n"
-#| "                        "
 msgid ""
 "\n"
 "                    <p>\n"
 "                        <i class=\"bi bi-info-circle me-2\"></i>\n"
-"                        You haven't completed any attempts for this training "
-"yet.\n"
+"                        You haven't completed any attempts for this training yet.\n"
 "                    </p>\n"
 "                "
 msgstr ""
 "\n"
-"                        <p class=\"mt-2\">\n"
-"                            Respuesta correcta\n"
-"                        </p>\n"
-"                        "
+"                    <p>\n"
+"                        <i class=\"bi bi-info-circle me-2\"></i>\n"
+"                        Todavía no completaste ningún intento de este entrenamiento.\n"
+"                    </p>\n"
+"                "
 
 #: .\trainingApp\templates\trainingApp\review_list_tt.html:356
 msgid "Back to Course"
@@ -1746,7 +1672,7 @@ msgstr "Necesitas ser un aprendiz para acceder a los entrenamientos."
 
 #: .\trainingApp\views.py:100 .\trainingApp\views.py:115
 msgid "Medium"
-msgstr ""
+msgstr "Intermedio"
 
 #: .\trainingApp\views.py:152 .\trainingApp\views.py:717 .\userApp\views.py:142
 #: .\userApp\views.py:163
@@ -1762,10 +1688,9 @@ msgid "You have already completed this block."
 msgstr "Ya completaste este bloque."
 
 #: .\trainingApp\views.py:669
-#, fuzzy, python-format
-#| msgid "Congratulations! You have passed the exam and completed the course."
+#, python-format
 msgid "Congratulations! You passed '%(training)s' with %(score)s%%"
-msgstr "¡Felicitaciones! Has aprobado el examen y completado el curso."
+msgstr "¡Felicitaciones! Aprobaste '%(training)s' con %(score)s%%"
 
 #: .\trainingApp\views.py:678
 #, python-format
@@ -1773,6 +1698,8 @@ msgid ""
 "You completed '%(training)s' with %(score)s%%. You need %(passing)s%% to "
 "pass. You can retry if attempts are available."
 msgstr ""
+"Completaste '%(training)s' con %(score)s%%. Necesitas %(passing)s%% para "
+"aprobar. Puedes reintentar si te quedan intentos."
 
 #: .\trainingApp\views.py:806
 msgid "This block has no answers to review."
@@ -1783,8 +1710,6 @@ msgid "error"
 msgstr "Error"
 
 #: .\userApp\forms.py:10
-#, fuzzy
-#| msgid "New Password"
 msgid "New password"
 msgstr "Nueva contraseña"
 
@@ -1793,22 +1718,16 @@ msgid "Enter new password"
 msgstr "Ingrese nueva contraseña"
 
 #: .\userApp\forms.py:19
-#, fuzzy
-#| msgid "Re-enter your password to confirm"
 msgid "New password confirmation"
-msgstr "Vuelve a ingresar tu contraseña para confirmar"
+msgstr "Confirmación de la nueva contraseña"
 
 #: .\userApp\forms.py:23
-#, fuzzy
-#| msgid "Confirm New Password"
 msgid "Confirm new password"
 msgstr "Confirmar nueva contraseña"
 
 #: .\userApp\forms.py:32
-#, fuzzy
-#| msgid "Enter a username of your choice"
 msgid "Enter your username"
-msgstr "Ingrese un nombre de usuario"
+msgstr "Ingresa tu nombre de usuario"
 
 #: .\userApp\forms.py:37 .\userApp\templates\userApp\profile.html:155
 #: .\userApp\templates\userApp\signin.html:50
@@ -1817,10 +1736,8 @@ msgid "Password"
 msgstr "Contraseña"
 
 #: .\userApp\forms.py:41
-#, fuzzy
-#| msgid "Enter new password"
 msgid "Enter your password"
-msgstr "Ingrese nueva contraseña"
+msgstr "Ingresa tu contraseña"
 
 #: .\userApp\forms.py:51 .\userApp\forms.py:185
 msgid "Enter your age"
@@ -1832,37 +1749,27 @@ msgstr "Ingrese su Ocupación"
 
 #: .\userApp\forms.py:75 .\userApp\forms.py:95
 msgid "Choose a username"
-msgstr ""
+msgstr "Elige un nombre de usuario"
 
 #: .\userApp\forms.py:79 .\userApp\forms.py:99 .\userApp\forms.py:125
-#, fuzzy
-#| msgid "first name"
 msgid "Enter your first name"
-msgstr "Nombre"
+msgstr "Ingresa tu nombre"
 
 #: .\userApp\forms.py:83 .\userApp\forms.py:103 .\userApp\forms.py:134
-#, fuzzy
-#| msgid "last name"
 msgid "Enter your last name"
-msgstr "Apellido"
+msgstr "Ingresa tu apellido"
 
 #: .\userApp\forms.py:87 .\userApp\forms.py:107 .\userApp\forms.py:142
-#, fuzzy
-#| msgid "Email Address"
 msgid "Enter your email address"
-msgstr "Dirección de correo electrónico"
+msgstr "Ingresa tu correo electrónico"
 
 #: .\userApp\forms.py:111
-#, fuzzy
-#| msgid "Repeat password"
 msgid "Create a password"
-msgstr "Repita la contraseña"
+msgstr "Crea una contraseña"
 
 #: .\userApp\forms.py:115
-#, fuzzy
-#| msgid "Confirm Password"
 msgid "Confirm your password"
-msgstr "Confirmar contraseña"
+msgstr "Confirma tu contraseña"
 
 #: .\userApp\forms.py:122 .\userApp\templates\userApp\signup.html:112
 msgid "First Name"
@@ -1957,22 +1864,20 @@ msgid "Change Password"
 msgstr "Cambiar contraseña"
 
 #: .\userApp\templates\userApp\passwordChange.html:109
-#, fuzzy
-#| msgid "Back to Home"
 msgid "Back to Login"
-msgstr "Volver al Inicio"
+msgstr "Volver a iniciar sesión"
 
 #: .\userApp\templates\userApp\passwordChange.html:126
-#, fuzzy
-#| msgid "Password reset sent"
 msgid "Password Security Tips"
-msgstr "Restablecimiento de contraseña enviado"
+msgstr "Consejos de seguridad para la contraseña"
 
 #: .\userApp\templates\userApp\passwordChange.html:128
 msgid ""
 "Use a strong password with a mix of letters, numbers, and symbols. Avoid "
 "using easily guessable information."
 msgstr ""
+"Usa una contraseña segura que combine letras, números y símbolos. Evita "
+"datos fáciles de adivinar."
 
 #: .\userApp\templates\userApp\password_change_done.html:18
 #: .\userApp\templates\userApp\password_reset_complete.html:19
@@ -2727,3 +2632,40 @@ msgstr "Restablecimiento de contraseña fallido"
 
 #~ msgid "Accessible for all users"
 #~ msgstr "Accesible para todos los usuarios"
+
+#: templates/base.html
+msgid "Skip to main content"
+msgstr "Saltar al contenido principal"
+
+#: templates/navbar.html
+msgid "Toggle navigation"
+msgstr "Mostrar u ocultar la navegación"
+
+#: templates/navbar.html
+msgid "opens in a new tab"
+msgstr "se abre en una pestaña nueva"
+
+#: templates/navbar.html
+msgid "Dark mode"
+msgstr "Modo oscuro"
+
+#: trainingApp/templates/trainingApp/block_deploy_list.html
+msgid "Blocks"
+msgstr "Bloques"
+
+#: trainingApp/templates/trainingApp/comment_form.html
+msgid "Survey"
+msgstr "Encuesta"
+
+#: trainingApp/templates/trainingApp/course_list.html
+msgid "Courses"
+msgstr "Cursos"
+
+#: trainingApp/templates/trainingApp/forms.html
+#, python-format
+msgid "Question %(number)s of %(total)s"
+msgstr "Pregunta %(number)s de %(total)s"
+
+#: trainingApp/templates/trainingApp/review_block.html
+msgid "Review"
+msgstr "Revisión"
