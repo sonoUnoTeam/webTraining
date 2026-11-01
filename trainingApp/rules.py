@@ -19,7 +19,7 @@ def active_blocks(training):
         TrainingBlock.objects
         .filter(training=training, state_block=TrainingBlock.StateBlock.Active, trainingquestion__isnull=False)
         .distinct()
-        .order_by('id')
+        .order_by('order', 'id')
     )
 
 

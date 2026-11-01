@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'adminsortable2',
     #Apps propias
     'trainingApp.apps.TrainingappConfig',
     'userApp.apps.UserappConfig',

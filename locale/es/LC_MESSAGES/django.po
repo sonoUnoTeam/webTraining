@@ -2669,3 +2669,256 @@ msgstr "Pregunta %(number)s de %(total)s"
 #: trainingApp/templates/trainingApp/review_block.html
 msgid "Review"
 msgstr "Revisión"
+
+msgid "Audio preview"
+msgstr "Vista previa del audio"
+
+msgid "Image preview"
+msgstr "Vista previa de la imagen"
+
+msgid "Defaults for new questions"
+msgstr "Valores por defecto para preguntas nuevas"
+
+msgid ""
+"New questions of this block start with this text and copy the options of "
+"this set. Then you only upload the sound and pick the correct option."
+msgstr ""
+"Las preguntas nuevas de este bloque empiezan con este texto y copian las "
+"opciones de este conjunto. Después solo subes el sonido y eliges la opción "
+"correcta."
+
+msgid "Copy options from set"
+msgstr "Copiar opciones de un conjunto"
+
+msgid ""
+"Creates this question's options from the set. Afterwards, mark the correct "
+"one."
+msgstr ""
+"Crea las opciones de esta pregunta a partir del conjunto. Después, marca la "
+"correcta."
+
+msgid "Options"
+msgstr "Opciones"
+
+msgid "Options copied from \"%(set)s\". Mark the correct option and save."
+msgstr "Opciones copiadas de \"%(set)s\". Marca la opción correcta y guarda."
+
+msgid "Blocks using it by default"
+msgstr "Bloques que lo usan por defecto"
+
+msgid "Correct option"
+msgstr "Opción correcta"
+
+msgid "Select the correct option."
+msgstr "Elige la opción correcta."
+
+msgid "A question needs at least two options."
+msgstr "Una pregunta necesita al menos dos opciones."
+
+msgid "Mark exactly one option as correct."
+msgstr "Marca exactamente una opción como correcta."
+
+msgid "The final exam cannot also be one of the course trainings."
+msgstr ""
+"El examen final no puede ser también uno de los entrenamientos del curso."
+
+msgid "Duplicate selected trainings (with blocks, questions and options)"
+msgstr ""
+"Duplicar los entrenamientos seleccionados (con bloques, preguntas y "
+"opciones)"
+
+msgid "Structure"
+msgstr "Estructura"
+
+msgid "View"
+msgstr "Ver"
+
+msgid "This question already has answers, so its options cannot be replaced."
+msgstr ""
+"Esta pregunta ya tiene respuestas, así que sus opciones no se pueden "
+"reemplazar."
+
+msgid "%(name)s (copy)"
+msgstr "%(name)s (copia)"
+
+msgid "No sound."
+msgstr "Sin sonido."
+
+msgid "Fewer than two options."
+msgstr "Menos de dos opciones."
+
+msgid "It must have exactly one correct option."
+msgstr "Debe tener exactamente una opción correcta."
+
+msgid "Question text missing in %(languages)s."
+msgstr "Falta el texto de la pregunta en %(languages)s."
+
+msgid "Options without text in %(languages)s."
+msgstr "Hay opciones sin texto en %(languages)s."
+
+msgid "Active block without questions: trainees skip it."
+msgstr "Bloque activo sin preguntas: los aprendices lo saltean."
+
+msgid "No active block with questions."
+msgstr "No hay ningún bloque activo con preguntas."
+
+msgid "The course has no trainings."
+msgstr "El curso no tiene entrenamientos."
+
+msgid "The final exam is also one of the course trainings."
+msgstr "El examen final también es uno de los entrenamientos del curso."
+
+msgid "\"%(training)s\" is inactive: trainees do not see it."
+msgstr "\"%(training)s\" está inactivo: los aprendices no lo ven."
+
+msgid "The course is inactive."
+msgstr "El curso está inactivo."
+
+msgid "No group assigned: no trainee can see the course."
+msgstr "No tiene grupos asignados: ningún aprendiz puede ver el curso."
+
+msgid "Structure of \"%(course)s\""
+msgstr "Estructura de \"%(course)s\""
+
+msgid "Sounds"
+msgstr "Sonidos"
+
+msgid "One question is created per sound (mp3 or wav), ordered by file name."
+msgstr ""
+"Se crea una pregunta por sonido (mp3 o wav), ordenadas por nombre de "
+"archivo."
+
+msgid "Images"
+msgstr "Imágenes"
+
+msgid ""
+"Optional. Each image is assigned to the sound with the same file name (x.mp3"
+" ↔ x.png)."
+msgstr ""
+"Opcional. Cada imagen se asigna al sonido con el mismo nombre de archivo "
+"(x.mp3 ↔ x.png)."
+
+msgid "Choice set"
+msgstr "Conjunto de opciones"
+
+msgid ""
+"Its options are copied to every question. Afterwards, mark the correct "
+"option of each one."
+msgstr ""
+"Sus opciones se copian a cada pregunta. Después, marca la opción correcta de"
+" cada una."
+
+msgid "Question text (%(language)s)"
+msgstr "Texto de la pregunta (%(language)s)"
+
+msgid "These images do not match any sound: %(names)s."
+msgstr "Estas imágenes no coinciden con ningún sonido: %(names)s."
+
+msgid "Upload questions to \"%(block)s\""
+msgstr "Subir preguntas a \"%(block)s\""
+
+msgid "Preview of \"%(training)s\""
+msgstr "Vista previa de \"%(training)s\""
+
+msgid "Error"
+msgstr "Error"
+
+msgid "Warning"
+msgstr "Advertencia"
+
+msgid "Errors must be fixed before trainees use the course."
+msgstr ""
+"Los errores deben corregirse antes de que los aprendices usen el curso."
+
+msgid "No problems found: the course is ready."
+msgstr "No se encontraron problemas: el curso está listo."
+
+msgid "Edit course"
+msgstr "Editar curso"
+
+msgid "Final exam"
+msgstr "Examen final"
+
+msgid "Edit training"
+msgstr "Editar entrenamiento"
+
+msgid "Preview"
+msgstr "Vista previa"
+
+msgid "Add block"
+msgstr "Agregar bloque"
+
+msgid "Block %(number)s: %(name)s"
+msgstr "Bloque %(number)s: %(name)s"
+
+msgid "Edit block"
+msgstr "Editar bloque"
+
+msgid "Upload questions"
+msgstr "Subir preguntas"
+
+msgid "Add question"
+msgstr "Agregar pregunta"
+
+msgid "Questions of %(name)s"
+msgstr "Preguntas de %(name)s"
+
+msgid "Sound"
+msgstr "Sonido"
+
+msgid "Problems"
+msgstr "Problemas"
+
+msgid "(no text)"
+msgstr "(sin texto)"
+
+msgid "correct"
+msgstr "correcta"
+
+msgid "This training has no blocks yet."
+msgstr "Este entrenamiento todavía no tiene bloques."
+
+msgid ""
+"Select several sounds at once: one question is created per sound, with the "
+"question text and the options of the chosen set. Then mark the correct "
+"option of each question on the block page."
+msgstr ""
+"Selecciona varios sonidos a la vez: se crea una pregunta por sonido, con el "
+"texto de la pregunta y las opciones del conjunto elegido. Después marca la "
+"opción correcta de cada pregunta en la página del bloque."
+
+msgid "Create questions"
+msgstr "Crear preguntas"
+
+msgid ""
+"This is how trainees see the training: active blocks with questions, in "
+"order. Nothing is recorded. The language follows the /en/ or /es/ prefix of "
+"the address."
+msgstr ""
+"Así ven los aprendices el entrenamiento: bloques activos con preguntas, en "
+"orden. No se registra nada. El idioma sigue el prefijo /en/ o /es/ de la "
+"dirección."
+
+msgid "Hide correct answers"
+msgstr "Ocultar respuestas correctas"
+
+msgid "Show correct answers"
+msgstr "Mostrar respuestas correctas"
+
+msgid "This training has no active blocks with questions."
+msgstr "Este entrenamiento no tiene bloques activos con preguntas."
+
+msgid "%(count)d training duplicated."
+msgid_plural "%(count)d trainings duplicated."
+msgstr[0] "%(count)d entrenamiento duplicado."
+msgstr[1] "%(count)d entrenamientos duplicados."
+
+msgid "%(counter)s error"
+msgid_plural "%(counter)s errors"
+msgstr[0] "%(counter)s error"
+msgstr[1] "%(counter)s errores"
+
+msgid "%(counter)s warning"
+msgid_plural "%(counter)s warnings"
+msgstr[0] "%(counter)s advertencia"
+msgstr[1] "%(counter)s advertencias"

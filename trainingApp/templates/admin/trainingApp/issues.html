@@ -1,0 +1,7 @@
+{% load i18n %}{% if issues %}
+<ul class="content-issues">
+  {% for issue in issues %}
+  <li class="issue-{{ issue.level }}">{% if issue.level == 'error' %}{% translate "Error" %}{% else %}{% translate "Warning" %}{% endif %}: {{ issue.message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}

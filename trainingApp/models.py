@@ -1,21 +1,66 @@
 import datetime
-from django.db import models
+from django.db import models, transaction
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from userApp.models import Trainee
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.db.models import Sum, Max
 from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from modeltranslation.settings import AVAILABLE_LANGUAGES
+
+
+class AutoOrderMixin(models.Model):
+    """
+    Campo `order` que se completa solo: al guardar sin orden (0) toma el último + 1 dentro
+    del padre indicado en `order_scope` (nombre del FK). El orden explícito se respeta.
+    """
+    order_scope = None
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if not self.order:
+            scope_id = getattr(self, f'{self.order_scope}_id')
+            siblings = type(self).objects.filter(**{f'{self.order_scope}_id': scope_id}).exclude(pk=self.pk)
+            self.order = (siblings.aggregate(Max('order'))['order__max'] or 0) + 1
+        super().save(*args, **kwargs)
+
 
 class TraineeGroup(models.Model):
     name_group = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
-    
+
     def __str__(self):
         return f"Group_Id: {self.id}, name_group: {self.name_group}"
-    
+
+
+class ChoiceSet(models.Model):
+    """
+    Conjunto reutilizable de opciones (p. ej. "Estrella / Galaxia"). Funciona como plantilla:
+    al aplicarlo a una pregunta se copian sus opciones como Choices de esa pregunta.
+    """
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class ChoiceSetOption(AutoOrderMixin):
+    order_scope = 'choice_set'
+    choice_set = models.ForeignKey(ChoiceSet, on_delete=models.CASCADE, related_name='options')
+    text = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.text
+
 class Training(models.Model):
     #Enumeracion para el tipo de entrenamiento
     class TrainingType(models.TextChoices):
@@ -45,13 +90,41 @@ class Training(models.Model):
     attempts_allowed = models.IntegerField(default=1)
     # Porcentaje mínimo requerido para aprobar este training (por defecto 70%)
     passing_score = models.DecimalField(max_digits=5, decimal_places=2, default=70.00)
-    groups = models.ManyToManyField(TraineeGroup)
-    
+
     def was_published_recently(self):
         return self.pub_date >=timezone.now() - datetime.timedelta(days=1)
     def __str__(self):
         return self.name_training
     
+    def duplicate(self):
+        """
+        Copia el training con sus bloques, preguntas y opciones en todos los idiomas. Los audios
+        e imágenes se reutilizan (misma ruta, sin volver a subirlos). No copia cursos ni intentos.
+        """
+        blocks = list(self.trainingblock_set.prefetch_related('trainingquestion_set__choice_set'))
+        with transaction.atomic():
+            copy = Training.objects.get(pk=self.pk)
+            copy.pk = None
+            copy._state.adding = True
+            for lang in AVAILABLE_LANGUAGES:
+                name = getattr(self, f'name_training_{lang}')
+                if name:
+                    with translation.override(lang):
+                        setattr(copy, f'name_training_{lang}', _('%(name)s (copy)') % {'name': name})
+            copy.save()
+            for block in blocks:
+                questions = list(block.trainingquestion_set.all())
+                block.pk, block._state.adding, block.training = None, True, copy
+                block.save()
+                for question in questions:
+                    choices = list(question.choice_set.all())
+                    question.pk, question._state.adding, question.block = None, True, block
+                    question.save()
+                    for choice in choices:
+                        choice.pk, choice._state.adding, choice.deploy = None, True, question
+                        choice.save()
+        return copy
+
     #Metodo que trae la cantidad de veces que se realizo un training por un trainee especifico
     def get_num_trainee_trainings(self, trainee_id):
         return TraineeTraining.objects.filter(training=self, trainee_id=trainee_id).count()
@@ -62,13 +135,14 @@ class Training(models.Model):
         """
         return self.trainingblock_set.aggregate(total_duration=Sum('estimed_duration_block'))['total_duration'] or 0
 
-class TrainingBlock(models.Model):
+class TrainingBlock(AutoOrderMixin):
     class StateBlock(models.TextChoices):
         Active = 'Active', _('Active')
         inactive = 'Inactive', _('Inactive')
-        
+
+    order_scope = 'training'
     name_block = models.CharField(max_length=100)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=500, blank=True)
     estimed_duration_block = models.IntegerField(default=0)
     state_block= models.CharField(
         max_length=20,
@@ -76,33 +150,73 @@ class TrainingBlock(models.Model):
         default=StateBlock.Active
     )
     training = models.ForeignKey(Training, on_delete=models.CASCADE)
-    
+    # Valores que heredan las preguntas nuevas del bloque (consigna y opciones)
+    default_question = models.CharField(max_length=255, blank=True)
+    default_choice_set = models.ForeignKey(ChoiceSet, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+
     def __str__(self):
         return f"BlockID: {self.id}, Name Block: {self.name_block}, Training: {self.training.name_training}"
-    
-    
-class TrainingQuestion(models.Model):
+
+
+class TrainingQuestion(AutoOrderMixin):
+    order_scope = 'block'
     block = models.ForeignKey(TrainingBlock, on_delete=models.CASCADE, null=True)
-    question = models.CharField(max_length=100, null=True)
+    question = models.CharField(max_length=255, null=True)
     deploy_image = models.ImageField(upload_to="trainingApp/images", blank=True)
     deploy_sound = models.FileField(
         upload_to="trainingApp/sound",
         blank=True,
         validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])]
     )
-    #Respuesta correcta
-    #correct_answer = models.CharField(max_length=100, null=True) 
+
+    class Meta:
+        ordering = ['order', 'id']
 
     def __str__(self):
         if self.question:
             return f"Deploy {self.id}: {self.question}"
         return f"Deploy {self.id}"
 
+    def fill_from_block_defaults(self):
+        """Completa con la consigna por defecto del bloque los idiomas en que la pregunta no tiene texto (no guarda)."""
+        if self.block is None:
+            return
+        for lang in AVAILABLE_LANGUAGES:
+            if not getattr(self, f'question_{lang}'):
+                setattr(self, f'question_{lang}', getattr(self.block, f'default_question_{lang}'))
 
-class Choice(models.Model):
+    def apply_choice_set(self, choice_set, correct_option=None):
+        """
+        Reemplaza las opciones de la pregunta por copias de las de `choice_set` (textos en cada
+        idioma y orden). `correct_option` es la ChoiceSetOption que queda marcada como correcta.
+        No se permite si la pregunta ya tiene respuestas: alteraría lo que eligieron los trainees.
+        """
+        if self.trainingquestionanswer_set.exists():
+            raise ValidationError(_('This question already has answers, so its options cannot be replaced.'))
+        with transaction.atomic():
+            self.choice_set.all().delete()
+            for option in choice_set.options.all():
+                texts = {f'choice_{lang}': getattr(option, f'text_{lang}') for lang in AVAILABLE_LANGUAGES}
+                Choice.objects.create(
+                    deploy=self,
+                    order=option.order,
+                    correctChoice=correct_option is not None and option.pk == correct_option.pk,
+                    **texts,
+                )
+
+
+class Choice(AutoOrderMixin):
+    order_scope = 'deploy'
     deploy = models.ForeignKey(TrainingQuestion, on_delete=models.CASCADE)
     choice = models.CharField(max_length=100, null=True)
     correctChoice = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['order', 'id']
+
     def __str__(self):
         # Mostrar una etiqueta concisa: id + texto de la opción (+ marcar si es correcta)
         text = self.choice or ''
@@ -257,7 +371,8 @@ class TrainingBlockAnswer(models.Model):
         default=StateBlockAnswer.in_progress
     )
     trainee_Training = models.ForeignKey(TraineeTraining, on_delete=models.CASCADE)
-    block = models.ForeignKey(TrainingBlock, on_delete=models.CASCADE)
+    # PROTECT: borrar contenido no puede borrar respuestas de los trainees
+    block = models.ForeignKey(TrainingBlock, on_delete=models.PROTECT)
     
     def __str__(self):
         return f"Block_Answer_Id: {self.id}, Name block: {self.block.name_block}"
@@ -268,16 +383,20 @@ class TrainingQuestionAnswer(models.Model):
     
     #foreing Key de B.A
     block_answer = models.ForeignKey(TrainingBlockAnswer, on_delete=models.CASCADE, null=True)
-    #foreing Key de deploy
-    deploy = models.ForeignKey(TrainingQuestion, on_delete=models.CASCADE)
-    #Respuesta a deploy
-    #user_response = models.CharField(max_length=50, null=True)
-    
+    #foreing Key de deploy (PROTECT: borrar contenido no puede borrar respuestas)
+    deploy = models.ForeignKey(TrainingQuestion, on_delete=models.PROTECT)
     #foreing Key de choice seleccionada
-    selectedChoice = models.ForeignKey(Choice, on_delete=models.CASCADE)
+    selectedChoice = models.ForeignKey(Choice, on_delete=models.PROTECT)
+    # Copia de selectedChoice.correctChoice al momento de responder: si después se corrige
+    # la opción correcta en el admin, queda registrado lo que valía cuando se respondió
+    is_correct = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
         return f"Deploy_Answer_Id: {self.id}"
+
+    def save(self, *args, **kwargs):
+        self.is_correct = self.selectedChoice.correctChoice
+        super().save(*args, **kwargs)
     
     
 class Comment(models.Model):
@@ -336,20 +455,16 @@ class Comment(models.Model):
 
 
 # Modelo para la tabla intermedia de Course y Training
-class CourseTraining(models.Model):
+class CourseTraining(AutoOrderMixin):
+    order_scope = 'course'  # order = orden del training en el curso
     course = models.ForeignKey('Course', on_delete=models.CASCADE)
     training = models.ForeignKey(Training, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()  # Orden del training en el curso
 
     class Meta:
-        unique_together = (('course', 'training'), ('course', 'order'))  # Un training no puede repetirse en el mismo curso, y order único por curso
+        # Un training no puede repetirse en el mismo curso. order no es único: reordenar
+        # intercambia posiciones y MariaDB no admite restricciones únicas diferidas
+        unique_together = (('course', 'training'),)
         ordering = ['order']
-
-    def save(self, *args, **kwargs):
-        if not self.order:
-            max_order = CourseTraining.objects.filter(course=self.course).exclude(pk=self.pk).aggregate(Max('order'))['order__max'] or 0
-            self.order = max_order + 1
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Order: {self.order}"

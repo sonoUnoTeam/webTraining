@@ -12,7 +12,7 @@ class QuestionForm(forms.ModelForm):
         super(QuestionForm, self).__init__(*args, **kwargs)
 
         # Obtener las opciones del deploy
-        choices = Choice.objects.filter(deploy_id=self.instance.id)
+        choices = Choice.objects.filter(deploy_id=self.instance.id).order_by('order', 'id')
 
         # Configuración del campo selectedChoice con las distintas opciones
         options = [(choice.id, choice.choice) for choice in choices]

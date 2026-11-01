@@ -1,0 +1,6 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% block object-tools-items %}
+  <li><a href="{% url 'admin:trainingApp_trainingblock_bulk_upload' original.pk %}">{% translate "Upload questions" %}</a></li>
+  {{ block.super }}
+{% endblock %}
