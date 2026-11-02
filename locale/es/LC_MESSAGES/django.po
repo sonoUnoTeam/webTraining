@@ -2600,9 +2600,6 @@ msgstr "Restablecimiento de contraseña fallido"
 #~ "                        </p>\n"
 #~ "                        "
 
-#~ msgid "Error"
-#~ msgstr "Error"
-
 #~ msgid "Spanish"
 #~ msgstr "Español"
 
