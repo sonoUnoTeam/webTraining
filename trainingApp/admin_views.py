@@ -14,8 +14,10 @@ from django.core.validators import FileExtensionValidator, validate_image_file_e
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _, gettext_lazy
 from modeltranslation.settings import AVAILABLE_LANGUAGES
+from unfold.widgets import UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget
 
 from . import content_checks, rules
 from .models import ChoiceSet, CourseTraining, Training, TrainingBlock, TrainingQuestion
@@ -39,15 +41,22 @@ def question_tree(question):
 def block_tree(block):
     return {
         'block': block,
+        'add_question_url': reverse('admin:trainingApp_trainingquestion_add') + f'?block={block.pk}',
         'issues': content_checks.block_issues(block),
         'questions': [question_tree(question) for question in block.trainingquestion_set.all()],
     }
+
+
+def add_block_url(training_id):
+    """Formulario de bloque nuevo con el entrenamiento ya elegido (al guardar vuelve al entrenamiento)."""
+    return reverse('admin:trainingApp_trainingblock_add') + f'?training={training_id}'
 
 
 def training_tree(training, is_final_exam=False):
     return {
         'training': training,
         'is_final_exam': is_final_exam,
+        'add_block_url': add_block_url(training.pk),
         'issues': content_checks.training_issues(training),
         'blocks': [block_tree(block) for block in training.trainingblock_set.all()],
     }
@@ -69,7 +78,7 @@ def course_structure(request, course_id, model_admin):
     course = get_object_or_404(model_admin.get_queryset(request), pk=course_id)
     if not model_admin.has_view_permission(request, course):
         raise PermissionDenied
-    course_trainings = list(CourseTraining.objects.filter(course=course).select_related('training').order_by('order'))
+    course_trainings = list(CourseTraining.objects.filter(course=course).select_related('training').order_by('order', 'id'))
     training_ids = [ct.training_id for ct in course_trainings] + ([course.final_exam_id] if course.final_exam_id else [])
     trainings = Training.objects.filter(pk__in=training_ids).prefetch_related('trainingblock_set__trainingquestion_set__choice_set')
     trainings_by_id = {training.pk: training for training in trainings}
@@ -93,7 +102,11 @@ def course_structure(request, course_id, model_admin):
 # --- Carga masiva de preguntas en un bloque ---
 
 class MultipleFileInput(forms.ClearableFileInput):
+    # Input visible (no el de Unfold, que muestra un solo nombre de archivo)
     allow_multiple_selected = True
+
+    def __init__(self, attrs=None):
+        super().__init__({'class': 'bulk-upload-files', **(attrs or {})})
 
 
 class MultipleFileField(forms.FileField):
@@ -131,6 +144,7 @@ class BulkUploadForm(forms.Form):
         label=gettext_lazy('Choice set'),
         queryset=ChoiceSet.objects.all(),
         required=False,
+        widget=UnfoldAdminSelectWidget,
         help_text=gettext_lazy('Its options are copied to every question. Afterwards, mark the correct option of each one.'),
     )
 
@@ -143,6 +157,7 @@ class BulkUploadForm(forms.Form):
                 max_length=255,
                 required=False,
                 initial=getattr(block, f'default_question_{lang}'),
+                widget=UnfoldAdminTextInputWidget,
             )
 
     def clean(self):

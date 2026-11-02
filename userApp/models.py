@@ -13,7 +13,7 @@ class Trainee(models.Model):
         Magister  = 'Magister', _('Magister')
         Doctor  = 'Doctor', _('Doctor')
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('user'))
     age =  models.IntegerField(default=18, verbose_name=_('Age'))
     educationalLevel = models.CharField(
         max_length=50,
@@ -22,7 +22,13 @@ class Trainee(models.Model):
         verbose_name=_('Educational Level')
     )
     occupation = models.CharField(max_length=50, verbose_name=_('Occupation'))
-    group =  models.ForeignKey('trainingApp.TraineeGroup', on_delete=models.SET_NULL, null=True, blank=True)
+    group =  models.ForeignKey(
+        'trainingApp.TraineeGroup', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('trainee group')
+    )
+
+    class Meta:
+        verbose_name = _('trainee')
+        verbose_name_plural = _('trainees')
 
     def __str__(self):
-        return f"Trainee_Id: {self.id}, Name Trainee: {self.user.first_name} {self.user.last_name}"
+        return self.user.get_full_name() or self.user.username

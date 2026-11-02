@@ -29,7 +29,7 @@ def course_trainings(course):
         CourseTraining.objects
         .filter(course=course, training__state_training=Training.StateTraining.Active)
         .select_related('training')
-        .order_by('order')
+        .order_by('order', 'id')
     )
 
 

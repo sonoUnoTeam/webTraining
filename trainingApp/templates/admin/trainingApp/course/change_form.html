@@ -1,6 +1,8 @@
 {% extends "admin/change_form.html" %}
 {% load i18n %}
 {% block object-tools-items %}
-  <li><a href="{% url 'admin:trainingApp_course_structure' original.pk %}">{% translate "Structure" %}</a></li>
+  {% url 'admin:trainingApp_course_structure' original.pk as page_url %}
+  {% translate "Structure" as page_title %}
+  {% include "unfold/helpers/tab_action.html" with title=page_title link=page_url icon="account_tree" %}
   {{ block.super }}
 {% endblock %}

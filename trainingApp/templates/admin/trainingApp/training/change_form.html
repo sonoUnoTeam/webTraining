@@ -1,6 +1,8 @@
 {% extends "admin/change_form.html" %}
 {% load i18n %}
 {% block object-tools-items %}
-  <li><a href="{% url 'admin:trainingApp_training_preview' original.pk %}">{% translate "Preview" %}</a></li>
+  {% url 'admin:trainingApp_training_preview' original.pk as page_url %}
+  {% translate "Preview" as page_title %}
+  {% include "unfold/helpers/tab_action.html" with title=page_title link=page_url icon="visibility" %}
   {{ block.super }}
 {% endblock %}

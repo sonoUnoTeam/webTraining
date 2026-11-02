@@ -10,6 +10,7 @@ from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import translation
 
 from trainingApp.models import Choice, TraineeTraining, Training, TrainingQuestion
 from trainingApp.tests.factories import (
@@ -104,6 +105,16 @@ class AdminPagesTests(ContentAdminTestCase):
         self.assertContains(index, admin_url('choiceset', 'changelist'))
         self.assertEqual(self.client.get(admin_url('choice', 'changelist')).status_code, 200)
 
+    def test_orderable_inlines_load_script_that_keeps_add_button_last(self):
+        # El arrastre es JS (verificado en navegador); acá se comprueba que cada página con inlines ordenables lo carga
+        course = make_course('C', [self.training], groups=[self.group])
+        question = self.block.trainingquestion_set.first()
+        for url in (admin_url('course', 'change', course.pk), admin_url('training', 'change', self.training.pk),
+                    admin_url('trainingblock', 'change', self.block.pk), admin_url('trainingquestion', 'change', question.pk),
+                    admin_url('choiceset', 'change', self.choice_set.pk)):
+            with self.subTest(url=url):
+                self.assertContains(self.client.get(url), 'trainingApp/admin/inline_ordering.js')
+
     def test_inlines_show_both_languages(self):
         response = self.client.get(admin_url('trainingblock', 'change', self.block.pk))
         self.assertContains(response, 'trainingquestion_set-0-question_en')
@@ -132,8 +143,9 @@ class BlockQuestionsInlineTests(ContentAdminTestCase):
     def test_new_question_copies_block_options_with_correct_one(self):
         data = form_data(self.client.get(self.url))
         galaxy = self.choice_set.options.get(text_en='Galaxy')
+        # La fila nueva llega con order=0 (valor inicial del campo oculto): el modelo la ubica al final
         add_inline_form(data, 'trainingquestion_set', {
-            'question_en': 'Star or galaxy?', 'question_es': '¿Estrella o galaxia?', 'correct_option': str(galaxy.pk),
+            'question_en': 'Star or galaxy?', 'question_es': '¿Estrella o galaxia?', 'correct_option': str(galaxy.pk), 'order': '0',
         })
         self.assert_saved(self.client.post(self.url, data))
         question = self.block.trainingquestion_set.last()
@@ -143,7 +155,7 @@ class BlockQuestionsInlineTests(ContentAdminTestCase):
 
     def test_new_question_requires_correct_option(self):
         data = form_data(self.client.get(self.url))
-        add_inline_form(data, 'trainingquestion_set', {'question_en': 'Other text', 'question_es': ''})
+        add_inline_form(data, 'trainingquestion_set', {'question_en': 'Other text', 'question_es': '', 'order': '0'})
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.block.trainingquestion_set.count(), 2)
@@ -243,6 +255,12 @@ class ContentEditorRoleTests(TestCase):
             with self.subTest(model=model):
                 self.assertEqual(self.client.get(admin_url(model, 'add')).status_code, 200)
 
+    def test_editor_menu_only_shows_content(self):
+        response = self.client.get(reverse('admin:index'))
+        self.assertContains(response, admin_url('course', 'changelist'))
+        self.assertNotContains(response, admin_url('traineetraining', 'changelist'))
+        self.assertNotContains(response, reverse('admin:auth_user_changelist'))
+
     def test_editor_cannot_see_results_or_users(self):
         for url in (admin_url('traineetraining', 'changelist'), admin_url('trainingquestionanswer', 'changelist'),
                     reverse('admin:auth_user_changelist')):
@@ -280,7 +298,10 @@ class CourseStructureTests(ContentAdminTestCase):
     def test_structure_linked_from_course_pages(self):
         course = make_course('C', [self.training], groups=[self.group])
         structure_url = admin_url('course', 'structure', course.pk)
-        self.assertContains(self.client.get(admin_url('course', 'changelist')), structure_url)
+        changelist = self.client.get(admin_url('course', 'changelist'))
+        self.assertContains(changelist, structure_url)
+        self.assertContains(changelist, 'View structure')
+        self.assertEqual(changelist.context['cl'].list_display[-1], 'view_structure')
         self.assertContains(self.client.get(admin_url('course', 'change', course.pk)), structure_url)
 
 
@@ -348,3 +369,91 @@ class TrainingPreviewAndDuplicateTests(ContentAdminTestCase):
         copy = Training.objects.exclude(pk=self.training.pk).get()
         self.assertEqual(copy.name_training, 'T (copy)')
         self.assertEqual(TrainingQuestion.objects.filter(block__training=copy).count(), 2)
+
+
+class NavigationAndNamesTests(ContentAdminTestCase):
+
+    def test_sidebar_groups_models_in_sections_with_descriptive_names(self):
+        response = self.client.get(reverse('admin:index'))
+        for text in ('Course content', 'Trainees and results', 'Users and permissions',
+                     'Option sets', 'Training attempts', 'Answered blocks', 'Feedback surveys', 'Admin roles'):
+            with self.subTest(text=text):
+                self.assertContains(response, text)
+
+    def test_spanish_admin_uses_translated_names(self):
+        # La petición deja activo el español en el hilo: se restaura para los tests siguientes
+        self.addCleanup(translation.deactivate)
+        response = self.client.get(reverse('admin:index').replace('/en/', '/es/'))
+        self.assertContains(response, 'Contenido de los cursos')
+        self.assertContains(response, 'Bloques respondidos')
+
+    def test_export_keeps_deploy_column_format(self):
+        from trainingApp.admin import TrainingQuestionAnswerResource
+        from trainingApp.tests.factories import make_attempt, make_trainee, record_answer
+        question = self.block.trainingquestion_set.first()
+        trainee = make_trainee('ana', self.group)
+        record_answer(make_attempt(trainee, make_course('C', [self.training]), self.training), question, True)
+        dataset = TrainingQuestionAnswerResource().export()
+        self.assertEqual(dataset.dict[0]['deploy'], f'Deploy {question.id}: {question.question}')
+        self.assertEqual(str(dataset.dict[0]['is_correct']), '1')
+
+
+class TrainingBlocksTests(ContentAdminTestCase):
+
+    def block_add_data(self, **extra):
+        return {
+            'training': self.training.pk, 'name_block_en': 'Waves', 'name_block_es': 'Ondas', 'description_en': '',
+            'description_es': '', 'state_block': 'Active', 'estimed_duration_block': '5',
+            'default_question_en': '', 'default_question_es': '', 'default_choice_set': '',
+            'trainingquestion_set-TOTAL_FORMS': '0', 'trainingquestion_set-INITIAL_FORMS': '0',
+            'trainingquestion_set-MIN_NUM_FORMS': '0', 'trainingquestion_set-MAX_NUM_FORMS': '1000', **extra,
+        }
+
+    def test_training_page_lists_blocks_without_inline_editing_or_adding(self):
+        response = self.client.get(admin_url('training', 'change', self.training.pk))
+        self.assertNotContains(response, 'trainingblock_set-0-name_block_en')
+        blocks = next(f for f in response.context['inline_admin_formsets'] if f.formset.prefix == 'trainingblock_set')
+        self.assertFalse(blocks.has_add_permission)
+        self.assertContains(response, admin_url('trainingblock', 'add') + f'?training={self.training.pk}')
+
+    def test_block_created_from_training_returns_to_it(self):
+        url = admin_url('trainingblock', 'add') + f'?training={self.training.pk}'
+        self.assertEqual(self.client.get(url).context['adminform'].form['training'].value(), str(self.training.pk))
+        response = self.client.post(url, self.block_add_data(_save='1'))
+        self.assertRedirects(response, admin_url('training', 'change', self.training.pk), fetch_redirect_response=False)
+        self.assertTrue(self.training.trainingblock_set.filter(name_block_es='Ondas').exists())
+        response = self.client.post(url, self.block_add_data(_addanother='1', name_block_en='More'))
+        self.assertRedirects(response, url, fetch_redirect_response=False)
+
+    def test_blocks_reordered_from_training_page(self):
+        second = add_block(self.training, 'Second', questions=0)
+        first = self.training.trainingblock_set.exclude(pk=second.pk).get()
+        url = admin_url('training', 'change', self.training.pk)
+        data = form_data(self.client.get(url))
+        data['name_training_en'] = 'T'
+        data['trainingblock_set-0-order'] = '1'
+        data['trainingblock_set-1-order'] = '0'
+        self.assert_saved(self.client.post(url, data))
+        self.assertEqual(list(self.training.trainingblock_set.all()), [second, first])
+
+
+class ChoiceLanguageColumnsTests(ContentAdminTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.question = self.block.trainingquestion_set.first()
+        self.url = admin_url('trainingquestion', 'change', self.question.pk)
+
+    def test_columns_per_language(self):
+        response = self.client.get(self.url)
+        self.assertContains(response, 'Text (EN)')
+        self.assertContains(response, 'Text (ES)')
+
+    def test_new_option_row_requires_default_language_text(self):
+        data = form_data(self.client.get(self.url))
+        add_inline_form(data, 'choice_set', {'choice_en': '', 'choice_es': 'Tal vez', 'order': '0'})
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        data['choice_set-2-choice_en'] = 'Maybe'
+        self.assert_saved(self.client.post(self.url, data))
+        self.assertEqual(self.question.choice_set.last().choice_es, 'Tal vez')

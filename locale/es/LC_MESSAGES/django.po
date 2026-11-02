@@ -2922,3 +2922,328 @@ msgid "%(counter)s warning"
 msgid_plural "%(counter)s warnings"
 msgstr[0] "%(counter)s advertencia"
 msgstr[1] "%(counter)s advertencias"
+
+msgid "order"
+msgstr "orden"
+
+msgid "name"
+msgstr "nombre"
+
+msgid "description"
+msgstr "descripción"
+
+msgid "trainee group"
+msgstr "grupo de aprendices"
+
+msgid "trainee groups"
+msgstr "grupos de aprendices"
+
+msgid "option set"
+msgstr "conjunto de opciones"
+
+msgid "option sets"
+msgstr "conjuntos de opciones"
+
+msgid "text"
+msgstr "texto"
+
+msgid "set option"
+msgstr "opción del conjunto"
+
+msgid "set options"
+msgstr "opciones del conjunto"
+
+msgid "created"
+msgstr "creado"
+
+msgid "modified"
+msgstr "modificado"
+
+msgid "difficulty"
+msgstr "dificultad"
+
+msgid "estimated duration (minutes)"
+msgstr "duración estimada (minutos)"
+
+msgid "status"
+msgstr "estado"
+
+msgid "attempts allowed"
+msgstr "intentos permitidos"
+
+msgid "passing score (%)"
+msgstr "puntaje para aprobar (%)"
+
+msgid "training"
+msgstr "entrenamiento"
+
+msgid "trainings"
+msgstr "entrenamientos"
+
+msgid "default question text"
+msgstr "texto de pregunta por defecto"
+
+msgid "block"
+msgstr "bloque"
+
+msgid "blocks"
+msgstr "bloques"
+
+msgid "question text"
+msgstr "texto de la pregunta"
+
+msgid "image"
+msgstr "imagen"
+
+msgid "sound"
+msgstr "sonido"
+
+msgid "question"
+msgstr "pregunta"
+
+msgid "questions"
+msgstr "preguntas"
+
+msgid "option"
+msgstr "opción"
+
+msgid "options"
+msgstr "opciones"
+
+msgid "started"
+msgstr "inicio"
+
+msgid "result"
+msgstr "resultado"
+
+msgid "time spent"
+msgstr "tiempo empleado"
+
+msgid "final exam attempt"
+msgstr "intento de examen final"
+
+msgid "score (%)"
+msgstr "puntaje (%)"
+
+msgid "best score (%)"
+msgstr "mejor puntaje (%)"
+
+msgid "correct answers"
+msgstr "respuestas correctas"
+
+msgid "incorrect answers"
+msgstr "respuestas incorrectas"
+
+msgid "training attempt"
+msgstr "intento de entrenamiento"
+
+msgid "training attempts"
+msgstr "intentos de entrenamiento"
+
+msgid "answered block"
+msgstr "bloque respondido"
+
+msgid "answered blocks"
+msgstr "bloques respondidos"
+
+msgid "answer"
+msgstr "respuesta"
+
+msgid "answers"
+msgstr "respuestas"
+
+msgid "course rating"
+msgstr "valoración del curso"
+
+msgid "training method"
+msgstr "método de entrenamiento"
+
+msgid "explanations"
+msgstr "explicaciones"
+
+msgid "stars"
+msgstr "estrellas"
+
+msgid "date"
+msgstr "fecha"
+
+msgid "feedback survey"
+msgstr "encuesta de opinión"
+
+msgid "feedback surveys"
+msgstr "encuestas de opinión"
+
+msgid "training of the course"
+msgstr "entrenamiento del curso"
+
+msgid "trainings of the course"
+msgstr "entrenamientos del curso"
+
+msgid "average required for the final exam (%)"
+msgstr "promedio requerido para el examen final (%)"
+
+msgid "final exam passing score (%)"
+msgstr "puntaje para aprobar el examen final (%)"
+
+msgid "course"
+msgstr "curso"
+
+msgid "courses"
+msgstr "cursos"
+
+msgid "current training (position)"
+msgstr "entrenamiento actual (posición)"
+
+msgid "final exam passed"
+msgstr "examen final aprobado"
+
+msgid "completed on"
+msgstr "completado el"
+
+msgid "progress in a course"
+msgstr "progreso en un curso"
+
+msgid "progress in courses"
+msgstr "progreso en cursos"
+
+msgid "default option set"
+msgstr "conjunto de opciones por defecto"
+
+msgid "progress in the course"
+msgstr "progreso en el curso"
+
+msgid "trainee"
+msgstr "aprendiz"
+
+msgid "attempt"
+msgstr "intento"
+
+msgid "selected option"
+msgstr "opción elegida"
+
+msgid "Only trainees in these groups see the course."
+msgstr "Solo los aprendices de estos grupos ven el curso."
+
+msgid "final exam"
+msgstr "examen final"
+
+msgid ""
+"Optional. It is unlocked after completing all the trainings of the course."
+msgstr ""
+"Opcional. Se habilita al completar todos los entrenamientos del curso."
+
+msgid ""
+"Minimum average of the best scores in the course trainings to unlock the "
+"final exam."
+msgstr ""
+"Promedio mínimo de los mejores puntajes en los entrenamientos del curso para"
+" habilitar el examen final."
+
+msgid "Minimum score to pass the final exam."
+msgstr "Puntaje mínimo para aprobar el examen final."
+
+msgid "Question %(id)s"
+msgstr "Pregunta %(id)s"
+
+msgid "%(text)s (correct)"
+msgstr "%(text)s (correcta)"
+
+msgid "course where it is used"
+msgstr "curso donde se usa"
+
+msgid "courses where it is used"
+msgstr "cursos donde se usa"
+
+msgid "Listen"
+msgstr "Escuchar"
+
+msgid "Questions"
+msgstr "Preguntas"
+
+msgid "Trainee"
+msgstr "Aprendiz"
+
+msgid "General information"
+msgstr "Información general"
+
+msgid "Position"
+msgstr "Posición"
+
+msgid "Position in the course"
+msgstr "Posición en el curso"
+
+msgid ""
+"Configure the final exam, the minimum average to unlock it and the score to "
+"pass it."
+msgstr ""
+"Configura el examen final, el promedio mínimo para habilitarlo y el puntaje "
+"para aprobarlo."
+
+msgid "%(count)d questions created. Mark the correct option of each one."
+msgstr "Se crearon %(count)d preguntas. Marca la opción correcta de cada una."
+
+msgid "Courses and results"
+msgstr "Cursos y resultados"
+
+msgid "trainees"
+msgstr "aprendices"
+
+msgid "user"
+msgstr "usuario"
+
+msgid "Trainees"
+msgstr "Aprendices"
+
+msgid "Administration"
+msgstr "Administración"
+
+msgid "Course content"
+msgstr "Contenido de los cursos"
+
+msgid "Trainees and results"
+msgstr "Aprendices y resultados"
+
+msgid "Users and permissions"
+msgstr "Usuarios y permisos"
+
+msgid "Option sets"
+msgstr "Conjuntos de opciones"
+
+msgid "Trainee groups"
+msgstr "Grupos de aprendices"
+
+msgid "Progress in courses"
+msgstr "Progreso en cursos"
+
+msgid "Training attempts"
+msgstr "Intentos de entrenamiento"
+
+msgid "Answered blocks"
+msgstr "Bloques respondidos"
+
+msgid "Answers"
+msgstr "Respuestas"
+
+msgid "Feedback surveys"
+msgstr "Encuestas de opinión"
+
+msgid "Users"
+msgstr "Usuarios"
+
+msgid "Admin roles"
+msgstr "Roles del admin"
+
+msgid "Summary"
+msgstr "Resumen"
+
+msgid "Final exam: %(name)s"
+msgstr "Examen final: %(name)s"
+
+msgid "%(number)s. %(name)s"
+msgstr "%(number)s. %(name)s"
+
+msgid "Save the training to add blocks."
+msgstr "Guarda el entrenamiento para agregar bloques."
+
+msgid "View structure"
+msgstr "Ver estructura"

@@ -1,100 +1,98 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n unfold %}
 
 {% block extrastyle %}{{ block.super }}{% include "admin/trainingApp/content_styles.html" %}{% endblock %}
 
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-  <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
-  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
-  &rsaquo; <a href="{% url 'admin:trainingApp_course_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
-  &rsaquo; <a href="{% url 'admin:trainingApp_course_change' course.pk %}">{{ course }}</a>
-  &rsaquo; {% translate "Structure" %}
-</div>
-{% endblock %}
-
 {% block content %}
-<div id="content-main">
-  <p class="content-summary">
-    {% if error_count or warning_count %}
-      {% blocktranslate count counter=error_count %}{{ counter }} error{% plural %}{{ counter }} errors{% endblocktranslate %},
-      {% blocktranslate count counter=warning_count %}{{ counter }} warning{% plural %}{{ counter }} warnings{% endblocktranslate %}.
-      {% translate "Errors must be fixed before trainees use the course." %}
-    {% else %}
-      {% translate "No problems found: the course is ready." %}
-    {% endif %}
-  </p>
-  {% include "admin/trainingApp/issues.html" with issues=course_issues %}
-  <div class="content-actions">
-    <a class="button" href="{% url 'admin:trainingApp_course_change' course.pk %}">{% translate "Edit course" %}</a>
-  </div>
+{% url 'admin:trainingApp_course_change' course.pk as course_url %}
+<div class="content-stack">
+  <h1 class="content-title text-font-important-light dark:text-font-important-dark">{{ title }}</h1>
+  {% translate "Summary" as summary_title %}
+  {% component "unfold/components/card.html" with title=summary_title %}
+    <p class="text-sm">
+      {% if error_count or warning_count %}
+        {% blocktranslate count counter=error_count %}{{ counter }} error{% plural %}{{ counter }} errors{% endblocktranslate %},
+        {% blocktranslate count counter=warning_count %}{{ counter }} warning{% plural %}{{ counter }} warnings{% endblocktranslate %}.
+        {% translate "Errors must be fixed before trainees use the course." %}
+      {% else %}
+        {% translate "No problems found: the course is ready." %}
+      {% endif %}
+    </p>
+    {% include "admin/trainingApp/issues.html" with issues=course_issues %}
+    <div class="content-actions">
+      {% component "unfold/components/button.html" with href=course_url variant="default" %}{% translate "Edit course" %}{% endcomponent %}
+    </div>
+  {% endcomponent %}
 
   {% for node in trainings %}
-  <section class="module" aria-labelledby="training-{{ node.training.pk }}">
-    <h2 id="training-{{ node.training.pk }}">
-      {% if node.is_final_exam %}{% translate "Final exam" %}:{% else %}{{ forloop.counter }}.{% endif %}
-      {{ node.training }}
-      {% if node.training.state_training != 'Active' %}<span class="status-badge">{{ node.training.get_state_training_display }}</span>{% endif %}
-    </h2>
-    <div style="padding: 0 1rem;">
-      {% include "admin/trainingApp/issues.html" with issues=node.issues %}
-      <div class="content-actions">
-        <a class="button" href="{% url 'admin:trainingApp_training_change' node.training.pk %}">{% translate "Edit training" %}</a>
-        <a class="button" href="{% url 'admin:trainingApp_training_preview' node.training.pk %}">{% translate "Preview" %}</a>
-        <a class="button" href="{% url 'admin:trainingApp_trainingblock_add' %}?training={{ node.training.pk }}">{% translate "Add block" %}</a>
-      </div>
-
-      {% for block_node in node.blocks %}
-      <div class="content-block">
-        <h3>
-          {% blocktranslate with number=forloop.counter name=block_node.block.name_block %}Block {{ number }}: {{ name }}{% endblocktranslate %}
-          {% if block_node.block.state_block != 'Active' %}<span class="status-badge">{{ block_node.block.get_state_block_display }}</span>{% endif %}
-        </h3>
-        {% include "admin/trainingApp/issues.html" with issues=block_node.issues %}
-        <div class="content-actions">
-          <a class="button" href="{% url 'admin:trainingApp_trainingblock_change' block_node.block.pk %}">{% translate "Edit block" %}</a>
-          <a class="button" href="{% url 'admin:trainingApp_trainingblock_bulk_upload' block_node.block.pk %}">{% translate "Upload questions" %}</a>
-          <a class="button" href="{% url 'admin:trainingApp_trainingquestion_add' %}?block={{ block_node.block.pk }}">{% translate "Add question" %}</a>
-        </div>
-        {% if block_node.questions %}
-        <table>
-          <caption class="visually-hidden">{% blocktranslate with name=block_node.block.name_block %}Questions of {{ name }}{% endblocktranslate %}</caption>
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">{% translate "Question" %}</th>
-              <th scope="col">{% translate "Sound" %}</th>
-              <th scope="col">{% translate "Options" %}</th>
-              <th scope="col">{% translate "Problems" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for question_node in block_node.questions %}
-            {% with question=question_node.question %}
-            <tr>
-              <td>{{ forloop.counter }}</td>
-              <td><a href="{% url 'admin:trainingApp_trainingquestion_change' question.pk %}">{{ question.question|default:_("(no text)") }}</a></td>
-              <td>{% if question.deploy_sound %}<audio controls preload="none"><source src="{{ question.deploy_sound.url }}"></audio>{% else %}-{% endif %}</td>
-              <td>
-                <ul class="content-options">
-                  {% for choice in question_node.choices %}
-                  <li{% if choice.correctChoice %} class="correct-option"{% endif %}>{{ choice.choice }}{% if choice.correctChoice %} ({% translate "correct" %}){% endif %}</li>
-                  {% endfor %}
-                </ul>
-              </td>
-              <td>{% include "admin/trainingApp/issues.html" with issues=question_node.issues %}</td>
-            </tr>
-            {% endwith %}
-            {% endfor %}
-          </tbody>
-        </table>
-        {% endif %}
-      </div>
-      {% empty %}
-      <p>{% translate "This training has no blocks yet." %}</p>
-      {% endfor %}
+  {% url 'admin:trainingApp_training_change' node.training.pk as training_url %}
+  {% url 'admin:trainingApp_training_preview' node.training.pk as preview_url %}
+  {% if node.is_final_exam %}
+    {% blocktranslate with name=node.training asvar training_title %}Final exam: {{ name }}{% endblocktranslate %}
+  {% else %}
+    {% blocktranslate with number=forloop.counter name=node.training asvar training_title %}{{ number }}. {{ name }}{% endblocktranslate %}
+  {% endif %}
+  {% component "unfold/components/card.html" with title=training_title %}
+    {% if node.training.state_training != 'Active' %}{% include "unfold/helpers/label.html" with type="danger" text=node.training.get_state_training_display %}{% endif %}
+    {% include "admin/trainingApp/issues.html" with issues=node.issues %}
+    <div class="content-actions">
+      {% component "unfold/components/button.html" with href=training_url variant="default" %}{% translate "Edit training" %}{% endcomponent %}
+      {% component "unfold/components/button.html" with href=preview_url variant="default" %}{% translate "Preview" %}{% endcomponent %}
+      {% component "unfold/components/button.html" with href=node.add_block_url variant="default" %}{% translate "Add block" %}{% endcomponent %}
     </div>
-  </section>
+
+    {% for block_node in node.blocks %}
+    {% url 'admin:trainingApp_trainingblock_change' block_node.block.pk as block_url %}
+    {% url 'admin:trainingApp_trainingblock_bulk_upload' block_node.block.pk as bulk_url %}
+    <section class="content-block" aria-labelledby="block-{{ block_node.block.pk }}">
+      <h3 id="block-{{ block_node.block.pk }}">
+        {% blocktranslate with number=forloop.counter name=block_node.block.name_block %}Block {{ number }}: {{ name }}{% endblocktranslate %}
+        {% if block_node.block.state_block != 'Active' %}{% include "unfold/helpers/label.html" with type="danger" text=block_node.block.get_state_block_display %}{% endif %}
+      </h3>
+      {% include "admin/trainingApp/issues.html" with issues=block_node.issues %}
+      <div class="content-actions">
+        {% component "unfold/components/button.html" with href=block_url variant="default" %}{% translate "Edit block" %}{% endcomponent %}
+        {% component "unfold/components/button.html" with href=bulk_url variant="default" %}{% translate "Upload questions" %}{% endcomponent %}
+        {% component "unfold/components/button.html" with href=block_node.add_question_url variant="default" %}{% translate "Add question" %}{% endcomponent %}
+      </div>
+      {% if block_node.questions %}
+      <table class="content-table">
+        <caption class="sr-only">{% blocktranslate with name=block_node.block.name_block %}Questions of {{ name }}{% endblocktranslate %}</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">{% translate "Question" %}</th>
+            <th scope="col">{% translate "Sound" %}</th>
+            <th scope="col">{% translate "Options" %}</th>
+            <th scope="col">{% translate "Problems" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for question_node in block_node.questions %}
+          {% with question=question_node.question %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a class="text-primary-600 dark:text-primary-500" href="{% url 'admin:trainingApp_trainingquestion_change' question.pk %}">{{ question.question|default:_("(no text)") }}</a></td>
+            <td>{% if question.deploy_sound %}<audio controls preload="none"><source src="{{ question.deploy_sound.url }}"></audio>{% else %}-{% endif %}</td>
+            <td>
+              <ul class="content-options">
+                {% for choice in question_node.choices %}
+                <li{% if choice.correctChoice %} class="correct-option"{% endif %}>{{ choice.choice }}{% if choice.correctChoice %} ({% translate "correct" %}){% endif %}</li>
+                {% endfor %}
+              </ul>
+            </td>
+            <td>{% include "admin/trainingApp/issues.html" with issues=question_node.issues %}</td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </section>
+    {% empty %}
+    <p class="text-sm">{% translate "This training has no blocks yet." %}</p>
+    {% endfor %}
+  {% endcomponent %}
   {% endfor %}
 </div>
 {% endblock %}

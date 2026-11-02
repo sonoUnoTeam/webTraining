@@ -1,58 +1,48 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n unfold %}
 
 {% block extrastyle %}{{ block.super }}{% include "admin/trainingApp/content_styles.html" %}{% endblock %}
 
-{% block breadcrumbs %}
-<div class="breadcrumbs">
-  <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
-  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
-  &rsaquo; <a href="{% url 'admin:trainingApp_training_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
-  &rsaquo; <a href="{% url 'admin:trainingApp_training_change' training.pk %}">{{ training }}</a>
-  &rsaquo; {% translate "Preview" %}
-</div>
-{% endblock %}
-
 {% block content %}
-<div id="content-main">
-  <p>{% translate "This is how trainees see the training: active blocks with questions, in order. Nothing is recorded. The language follows the /en/ or /es/ prefix of the address." %}</p>
-  <div class="content-actions">
-    {% if show_correct %}
-    <a class="button" href="?">{% translate "Hide correct answers" %}</a>
-    {% else %}
-    <a class="button" href="?show_correct=1">{% translate "Show correct answers" %}</a>
-    {% endif %}
+<div class="content-stack">
+  <h1 class="content-title text-font-important-light dark:text-font-important-dark">{{ title }}</h1>
+  <div>
+    <p class="text-sm">{% translate "This is how trainees see the training: active blocks with questions, in order. Nothing is recorded. The language follows the /en/ or /es/ prefix of the address." %}</p>
+    <div class="content-actions">
+      {% if show_correct %}
+        {% component "unfold/components/button.html" with href="?" variant="default" %}{% translate "Hide correct answers" %}{% endcomponent %}
+      {% else %}
+        {% component "unfold/components/button.html" with href="?show_correct=1" variant="default" %}{% translate "Show correct answers" %}{% endcomponent %}
+      {% endif %}
+    </div>
   </div>
 
   {% for training_block in blocks %}
-  <section class="module" aria-labelledby="block-{{ training_block.pk }}">
-    <h2 id="block-{{ training_block.pk }}">{{ training_block.name_block }}</h2>
-    <div style="padding: 0 1rem;">
-      {% if training_block.description %}<p>{{ training_block.description }}</p>{% endif %}
-      {% with questions=training_block.trainingquestion_set.all %}
-      {% for question in questions %}
-      <div class="preview-question">
-        <h3>{% blocktranslate with number=forloop.counter total=questions|length %}Question {{ number }} of {{ total }}{% endblocktranslate %}</h3>
-        {% if question.deploy_image %}<img src="{{ question.deploy_image.url }}" alt="{{ question.question }}">{% endif %}
-        {% if question.deploy_sound %}<audio controls preload="none"><source src="{{ question.deploy_sound.url }}"></audio>{% endif %}
-        <fieldset>
-          <legend>{{ question.question }}</legend>
-          <ul>
-            {% for choice in question.choice_set.all %}
-            <li{% if show_correct and choice.correctChoice %} class="correct-option"{% endif %}>
-              <label><input type="radio" name="preview-{{ question.pk }}"> {{ choice.choice }}</label>
-              {% if show_correct and choice.correctChoice %}({% translate "correct" %}){% endif %}
-            </li>
-            {% endfor %}
-          </ul>
-        </fieldset>
-      </div>
-      {% endfor %}
-      {% endwith %}
+  {% component "unfold/components/card.html" with title=training_block.name_block %}
+    {% if training_block.description %}<p class="text-sm">{{ training_block.description }}</p>{% endif %}
+    {% with questions=training_block.trainingquestion_set.all %}
+    {% for question in questions %}
+    <div class="preview-question">
+      <h3>{% blocktranslate with number=forloop.counter total=questions|length %}Question {{ number }} of {{ total }}{% endblocktranslate %}</h3>
+      {% if question.deploy_image %}<img src="{{ question.deploy_image.url }}" alt="{{ question.question }}">{% endif %}
+      {% if question.deploy_sound %}<audio controls preload="none"><source src="{{ question.deploy_sound.url }}"></audio>{% endif %}
+      <fieldset>
+        <legend>{{ question.question }}</legend>
+        <ul>
+          {% for choice in question.choice_set.all %}
+          <li{% if show_correct and choice.correctChoice %} class="correct-option"{% endif %}>
+            <label><input type="radio" name="preview-{{ question.pk }}"> {{ choice.choice }}</label>
+            {% if show_correct and choice.correctChoice %}({% translate "correct" %}){% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </fieldset>
     </div>
-  </section>
+    {% endfor %}
+    {% endwith %}
+  {% endcomponent %}
   {% empty %}
-  <p>{% translate "This training has no active blocks with questions." %}</p>
+  <p class="text-sm">{% translate "This training has no active blocks with questions." %}</p>
   {% endfor %}
 </div>
 {% endblock %}
