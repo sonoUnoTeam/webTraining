@@ -2,17 +2,26 @@
 Admin de contenido: páginas, inlines con opciones, validaciones, orden, rol "Content editor"
 y páginas propias (estructura del curso, carga masiva, vista previa, duplicar).
 """
+import io
 import shutil
 import tempfile
 
 from django import forms
+from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import translation
+from PIL import Image
 
-from trainingApp.models import Choice, TraineeTraining, Training, TrainingQuestion
+from trainingApp.models import (
+    Choice,
+    TraineeTraining,
+    Training,
+    TrainingQuestion,
+    TrainingQuestionAnswer,
+)
 from trainingApp.tests.factories import (
     PASSWORD,
     add_block,
@@ -214,6 +223,16 @@ class QuestionAdminTests(ContentAdminTestCase):
         self.assertEqual(list(question.choice_set.values_list('choice_en', flat=True)), ['Star', 'Galaxy'])
         self.assertNotContains(self.client.get(url), 'name="apply_choice_set"')
 
+    def test_question_image_is_validated_with_pillow(self):
+        # El campo del formulario abre el archivo con Pillow: una imagen real pasa y un archivo que no lo es se rechaza
+        image = io.BytesIO()
+        Image.new('RGB', (4, 3), 'white').save(image, 'PNG')
+        field = TrainingQuestion._meta.get_field('deploy_image').formfield()
+        uploaded = field.clean(SimpleUploadedFile('graph.png', image.getvalue(), content_type='image/png'))
+        self.assertEqual((uploaded.image.format, uploaded.image.size), ('PNG', (4, 3)))
+        with self.assertRaises(forms.ValidationError):
+            field.clean(SimpleUploadedFile('fake.png', b'not an image', content_type='image/png'))
+
 
 class CourseAdminTests(ContentAdminTestCase):
 
@@ -396,6 +415,12 @@ class NavigationAndNamesTests(ContentAdminTestCase):
         dataset = TrainingQuestionAnswerResource().export()
         self.assertEqual(dataset.dict[0]['deploy'], f'Deploy {question.id}: {question.question}')
         self.assertEqual(str(dataset.dict[0]['is_correct']), '1')
+
+    def test_export_offers_only_csv_xlsx_and_tsv(self):
+        # Sin HTML: tablib 3.5.0 no escapa el contenido exportado y el username lo escribe el trainee
+        model_admin = admin.site._registry[TrainingQuestionAnswer]
+        extensions = [file_format().get_extension() for file_format in model_admin.get_export_formats()]
+        self.assertEqual(extensions, ['csv', 'xlsx', 'tsv'])
 
 
 class TrainingBlocksTests(ContentAdminTestCase):

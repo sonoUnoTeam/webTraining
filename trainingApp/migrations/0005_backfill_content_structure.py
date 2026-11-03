@@ -127,7 +127,9 @@ def backfill(apps, schema_editor):
                 setattr(block, field, texts.pop())
                 changed = True
         if changed:
-            block.default_question = getattr(block, f'default_question_{DEFAULT_LANGUAGE}')
+            # La columna base es NOT NULL y la del idioma por defecto queda NULL si sus preguntas no
+            # comparten consigna en ese idioma (p. ej. el bloque solo recibió el conjunto de opciones)
+            block.default_question = getattr(block, f'default_question_{DEFAULT_LANGUAGE}') or ''
             block.save()
             updated_blocks += 1
     if updated_blocks:

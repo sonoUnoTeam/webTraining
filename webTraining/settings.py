@@ -15,6 +15,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
+from import_export.formats.base_formats import CSV, TSV, XLSX
 import logging
 import sys
 
@@ -329,6 +330,11 @@ STORAGES = {
 #Config para archivos de audio e imagenes de la base de datos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Formatos de exportación del admin (django-import-export). Sin esta lista se ofrecen todos los de tablib,
+# incluido HTML, que en tablib < 3.10 no escapa el contenido exportado (XSS con textos que escribe el
+# trainee, como el username). tablib queda fijo en 3.5.0 mientras se use django-import-export 3.x.
+EXPORT_FORMATS = [CSV, XLSX, TSV]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

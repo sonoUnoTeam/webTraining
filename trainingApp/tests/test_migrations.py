@@ -47,6 +47,10 @@ class BackfillContentStructureTests(TransactionTestCase):
         # Bloque cuyas preguntas comparten consigna y opciones
         self.shared_block_id = TrainingBlock.objects.create(name_block='Shared', description='', training=training).id
         self.mixed_block_id = TrainingBlock.objects.create(name_block='Mixed', description='', training=training).id
+        # Comparten opciones pero no consigna: reciben el conjunto sin consigna por defecto
+        self.same_options_block_id = TrainingBlock.objects.create(name_block='Same options', description='', training=training).id
+        # Consigna común solo en español (sin texto en inglés)
+        self.spanish_only_block_id = TrainingBlock.objects.create(name_block='Spanish only', description='', training=training).id
 
         def add_question(block_id, texts, options, correct_index):
             question = TrainingQuestion.objects.create(block_id=block_id, question_en=texts[0], question_es=texts[1])
@@ -62,6 +66,10 @@ class BackfillContentStructureTests(TransactionTestCase):
         add_question(self.mixed_block_id, ('Function?', '¿Función?'), [('Sine', 'Seno'), ('Square', 'Cuadrada')], 0)
         add_question(self.mixed_block_id, ('Tones?', '¿Tonos?'), [('4', '4'), ('', '')], 0)
         add_question(self.mixed_block_id, ('Tones?', '¿Tonos?'), [('4', '4'), ('', '')], 0)
+        add_question(self.same_options_block_id, ('Is it a star?', '¿Es una estrella?'), STAR_GALAXY, 0)
+        add_question(self.same_options_block_id, ('Is it a galaxy?', '¿Es una galaxia?'), STAR_GALAXY, 1)
+        add_question(self.spanish_only_block_id, (None, '¿Cuántos tonos?'), [('1', '1'), ('2', '2')], 0)
+        add_question(self.spanish_only_block_id, (None, '¿Cuántos tonos?'), [('3', '3'), ('4', '4')], 0)
 
         self.correct_answer_id, self.incorrect_answer_id = self.build_old_answers(apps, training)
 
@@ -98,7 +106,7 @@ class BackfillContentStructureTests(TransactionTestCase):
         TrainingBlock = self.model('TrainingBlock')
         TrainingQuestion = self.model('TrainingQuestion')
         Choice = self.model('Choice')
-        self.assertEqual(list(TrainingBlock.objects.order_by('id').values_list('order', flat=True)), [1, 2])
+        self.assertEqual(list(TrainingBlock.objects.order_by('id').values_list('order', flat=True)), [1, 2, 3, 4])
         orders = TrainingQuestion.objects.filter(block_id=self.shared_block_id).order_by('id').values_list('order', flat=True)
         self.assertEqual(list(orders), [1, 2, 3])
         choice_orders = Choice.objects.filter(deploy_id=self.shared_questions[0].id).order_by('id').values_list('order', flat=True)
@@ -125,6 +133,19 @@ class BackfillContentStructureTests(TransactionTestCase):
         mixed = TrainingBlock.objects.get(id=self.mixed_block_id)
         self.assertIsNone(mixed.default_choice_set_id)
         self.assertFalse(mixed.default_question_en)
+
+    def test_block_defaults_without_shared_default_language_text(self):
+        # La columna base default_question es NOT NULL: queda vacía cuando no hay consigna común en inglés
+        TrainingBlock = self.model('TrainingBlock')
+        same_options = TrainingBlock.objects.get(id=self.same_options_block_id)
+        self.assertEqual(same_options.default_choice_set.name_en, 'Star / Galaxy')
+        self.assertEqual(same_options.default_question, '')
+        self.assertFalse(same_options.default_question_en)
+        self.assertFalse(same_options.default_question_es)
+        spanish_only = TrainingBlock.objects.get(id=self.spanish_only_block_id)
+        self.assertIsNone(spanish_only.default_choice_set_id)
+        self.assertEqual((spanish_only.default_question, spanish_only.default_question_es), ('', '¿Cuántos tonos?'))
+        self.assertFalse(spanish_only.default_question_en)
 
     def test_backfill_is_idempotent(self):
         with contextlib.redirect_stdout(io.StringIO()) as output:
