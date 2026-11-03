@@ -1,9 +1,29 @@
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UserChangeForm, SetPasswordForm
+from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from .models import Trainee
+
+
+class PasswordResetForm(DjangoPasswordResetForm):
+    """
+    Desde Django 5.0.9 / 5.2 `send_mail()` registra y descarta los errores de envío. Acá se
+    envía igual pero dejando pasar el error, para que CustomPasswordResetView lo registre y
+    avise al usuario que contacte al administrador.
+    """
+
+    def send_mail(self, subject_template_name, email_template_name, context, from_email, to_email,
+                  html_email_template_name=None):
+        subject = ''.join(loader.render_to_string(subject_template_name, context).splitlines())
+        body = loader.render_to_string(email_template_name, context)
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name is not None:
+            email_message.attach_alternative(loader.render_to_string(html_email_template_name, context), 'text/html')
+        email_message.send()
 
 class CustomSetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(

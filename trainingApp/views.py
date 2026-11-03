@@ -534,7 +534,7 @@ class DeployDetailView(View):
             messages.info(request, _("You have already completed this block."))
             return redirect('trainingApp:block_deploy_list', course_id=course_id, training_id=training_id)
 
-        self.deploys = list(TrainingQuestion.objects.filter(block=self.block).order_by('id'))
+        self.deploys = list(TrainingQuestion.objects.filter(block=self.block).order_by('order', 'id'))
         self.index_key = f'current_deploy_index_{course_id}_{training_id}_{self.block.id}'
         self.block_answer_key = f'current_block_answer_id_{course_id}_{training_id}_{self.block.id}'
         self.block_answer = self.get_block_answer(request)
@@ -778,7 +778,7 @@ class ReviewBlock(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return TrainingBlockAnswer.objects.filter(trainee_Training=self.trainee_training).order_by('id')
+        return TrainingBlockAnswer.objects.filter(trainee_Training=self.trainee_training).order_by('block__order', 'id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -802,7 +802,7 @@ class ReviewDeploy(View):
             TrainingQuestionAnswer.objects
             .filter(block_answer=self.block_answer)
             .select_related('deploy', 'selectedChoice')
-            .order_by('id')
+            .order_by('deploy__order', 'id')
         )
         if not self.deploys_answer:
             messages.info(request, _("This block has no answers to review."))
@@ -818,7 +818,7 @@ class ReviewDeploy(View):
         index = self.current_index(request)
         current_deploy_answer = self.deploys_answer[index]
         current_deploy_review = current_deploy_answer.deploy
-        choices = Choice.objects.filter(deploy_id=current_deploy_review.id)
+        choices = Choice.objects.filter(deploy_id=current_deploy_review.id).order_by('order', 'id')
         return render(request, self.template_name, {
             'deploy': current_deploy_review,
             'choices': choices,

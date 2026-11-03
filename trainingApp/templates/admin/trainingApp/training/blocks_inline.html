@@ -1,0 +1,18 @@
+{% load i18n unfold %}
+{% comment %}
+  Bloques del entrenamiento: la tabla de Unfold (solo para ordenar, abrir o borrar) y debajo el botón que
+  abre el formulario completo del bloque con el entrenamiento ya elegido (solo con permiso de crear bloques).
+{% endcomment %}
+{% include "admin/edit_inline/tabular.html" %}
+{% if perms.trainingApp.add_trainingblock %}
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; margin: -0.75rem 0 1.5rem;">
+  {% if original.pk %}
+    {% url 'admin:trainingApp_trainingblock_add' as block_add_url %}
+    {% with training_id=original.pk|stringformat:"s" %}
+      {% component "unfold/components/button.html" with href=block_add_url|add:"?training="|add:training_id variant="default" %}{% translate "Add block" %}{% endcomponent %}
+    {% endwith %}
+  {% else %}
+    <p class="text-sm">{% translate "Save the training to add blocks." %}</p>
+  {% endif %}
+</div>
+{% endif %}

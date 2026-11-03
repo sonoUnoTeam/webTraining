@@ -11,6 +11,8 @@ from django.urls import reverse
 from userApp.models import Trainee
 from trainingApp.models import (
     Choice,
+    ChoiceSet,
+    ChoiceSetOption,
     Course,
     CourseTraining,
     TraineeCourse,
@@ -61,6 +63,15 @@ def add_block(training, name, *, questions=2, state='Active'):
     return block
 
 
+def make_choice_set(name, options):
+    """Conjunto de opciones; `options` son textos o tuplas (texto_en, texto_es)."""
+    choice_set = ChoiceSet.objects.create(name_en=name, name_es=name)
+    for option in options:
+        text_en, text_es = option if isinstance(option, tuple) else (option, option)
+        ChoiceSetOption.objects.create(choice_set=choice_set, text_en=text_en, text_es=text_es)
+    return choice_set
+
+
 def make_course(name, trainings, *, groups=(), final_exam=None, required_average_score=70, final_exam_passing_score=70):
     course = Course.objects.create(
         name_course=name,
@@ -80,7 +91,7 @@ def questions_of(training):
     return list(
         TrainingQuestion.objects
         .filter(block__training=training, block__state_block='Active')
-        .order_by('block_id', 'id')
+        .order_by('block__order', 'block_id', 'order', 'id')
     )
 
 

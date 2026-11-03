@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
+from import_export.formats.base_formats import CSV, TSV, XLSX
 import logging
 import sys
 
@@ -85,6 +88,7 @@ SESSION_COOKIE_AGE = 1800
 
 # Application definition
 INSTALLED_APPS = [
+    'unfold',  # antes de django.contrib.admin: reemplaza sus plantillas
     'modeltranslation',
     'django.contrib.admin', 
     'django.contrib.auth',
@@ -217,6 +221,91 @@ MODELTRANSLATION_AUTO_POPULATE = 'required'
 MODELTRANSLATION_FALLBACK_LANGUAGES = {
     'default': ('en', 'es'),  # Define los idiomas de fallback
 }
+# jQuery UI para las pestañas EN/ES del admin (TabbedTranslationAdmin usa el jQuery de Django)
+JQUERY_UI_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js'
+
+
+# Admin con django-unfold: marca, colores y menú lateral por secciones
+def _admin_permission(app_label, model):
+    """
+    Muestra un ítem del menú solo a quien puede ver el modelo (p. ej. el rol "Content editor" no ve
+    resultados). Como en el admin de Django, el permiso de cambiar también permite ver.
+    """
+    return lambda request: (
+        request.user.has_perm(f'{app_label}.view_{model}') or request.user.has_perm(f'{app_label}.change_{model}')
+    )
+
+
+def _admin_item(title, icon, model):
+    app_label = 'userApp' if model == 'trainee' else ('auth' if model in ('user', 'group') else 'trainingApp')
+    return {
+        'title': title,
+        'icon': icon,
+        'link': reverse_lazy(f'admin:{app_label}_{model}_changelist'),
+        'permission': _admin_permission(app_label, model),
+    }
+
+
+UNFOLD = {
+    'SITE_TITLE': 'sonoTrainings',
+    'SITE_HEADER': 'sonoTrainings',
+    'SITE_SUBHEADER': _('Administration'),
+    'SITE_SYMBOL': 'graphic_eq',
+    'SITE_URL': '/',
+    'SHOW_LANGUAGES': True,
+    'SHOW_HISTORY': True,
+    # Paleta a partir del celeste de la marca (#6eb5d4 ≈ primary-400); 600 es el de los botones (contraste ~5.5:1 con blanco)
+    'COLORS': {
+        'primary': {
+            '50': 'oklch(97.5% .012 225)',
+            '100': 'oklch(95% .025 225)',
+            '200': 'oklch(90% .045 225)',
+            '300': 'oklch(83% .07 225)',
+            '400': 'oklch(74% .085 225)',
+            '500': 'oklch(63% .095 228)',
+            '600': 'oklch(52% .095 230)',
+            '700': 'oklch(45% .085 232)',
+            '800': 'oklch(38% .07 234)',
+            '900': 'oklch(31% .055 236)',
+            '950': 'oklch(23% .04 238)',
+        },
+    },
+    'SIDEBAR': {
+        'show_search': True,
+        'show_all_applications': False,
+        'navigation': [
+            {
+                'title': _('Course content'),
+                'items': [
+                    _admin_item(_('Courses'), 'school', 'course'),
+                    _admin_item(_('Trainings'), 'model_training', 'training'),
+                    _admin_item(_('Blocks'), 'view_agenda', 'trainingblock'),
+                    _admin_item(_('Questions'), 'quiz', 'trainingquestion'),
+                    _admin_item(_('Option sets'), 'checklist', 'choiceset'),
+                ],
+            },
+            {
+                'title': _('Trainees and results'),
+                'items': [
+                    _admin_item(_('Trainee groups'), 'groups', 'traineegroup'),
+                    _admin_item(_('Trainees'), 'person', 'trainee'),
+                    _admin_item(_('Progress in courses'), 'trending_up', 'traineecourse'),
+                    _admin_item(_('Training attempts'), 'assignment_turned_in', 'traineetraining'),
+                    _admin_item(_('Answered blocks'), 'fact_check', 'trainingblockanswer'),
+                    _admin_item(_('Answers'), 'rule', 'trainingquestionanswer'),
+                    _admin_item(_('Feedback surveys'), 'reviews', 'comment'),
+                ],
+            },
+            {
+                'title': _('Users and permissions'),
+                'items': [
+                    _admin_item(_('Users'), 'manage_accounts', 'user'),
+                    _admin_item(_('Admin roles'), 'admin_panel_settings', 'group'),
+                ],
+            },
+        ],
+    },
+}
 
 
 # Static files (CSS, JavaScript, Images)
@@ -241,6 +330,11 @@ STORAGES = {
 #Config para archivos de audio e imagenes de la base de datos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Formatos de exportación del admin (django-import-export). Sin esta lista se ofrecen todos los de tablib,
+# incluido HTML, que en tablib < 3.10 no escapa el contenido exportado (XSS con textos que escribe el
+# trainee, como el username). tablib queda fijo en 3.5.0 mientras se use django-import-export 3.x.
+EXPORT_FORMATS = [CSV, XLSX, TSV]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

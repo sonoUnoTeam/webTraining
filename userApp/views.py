@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm,SigninForm,CustomSetPasswordForm
+from .forms import SignupForm,UserUpdateForm,TraineeUpdateForm,SigninForm,CustomSetPasswordForm,PasswordResetForm
 from django.contrib import messages
 from .models import Trainee
 from django.db import transaction
@@ -26,7 +26,6 @@ import smtplib
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth.forms import PasswordResetForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.utils.translation import gettext_lazy as _

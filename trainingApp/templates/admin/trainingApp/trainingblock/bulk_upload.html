@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% load i18n unfold %}
+
+{% block extrastyle %}{{ block.super }}{% include "admin/trainingApp/content_styles.html" %}{% endblock %}
+
+{% block content %}
+{% url 'admin:trainingApp_trainingblock_change' training_block.pk as block_url %}
+<div class="content-stack">
+  <h1 class="content-title text-font-important-light dark:text-font-important-dark">{{ title }}</h1>
+  {% component "unfold/components/card.html" with title=training_block.name_block %}
+    <p class="text-sm mb-4">{% translate "Select several sounds at once: one question is created per sound, with the question text and the options of the chosen set. Then mark the correct option of each question on the block page." %}</p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        {% include "unfold/helpers/form_errors.html" with errors=form.non_field_errors %}
+      {% endif %}
+      {% for field in form %}
+        {% include "unfold/helpers/field.html" with field=field %}
+      {% endfor %}
+      <div class="content-actions">
+        {% component "unfold/components/button.html" with submit=1 %}{% translate "Create questions" %}{% endcomponent %}
+        {% component "unfold/components/button.html" with href=block_url variant="default" %}{% translate "Cancel" %}{% endcomponent %}
+      </div>
+    </form>
+  {% endcomponent %}
+</div>
+{% endblock %}
