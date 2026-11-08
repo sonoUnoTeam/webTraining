@@ -110,6 +110,39 @@ jobs:
             sudo -u "$DEPLOY_USER" env CNF="$1" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" shell -c "$code" | sed -n 's/^DBINFO //p'
           }
           new_cnf() { sudo -u "$DEPLOY_USER" mktemp; }
+
+          # Tablas de la base que no están en el backup: las crearon migraciones posteriores al dump.
+          # Uso: tables_not_in_backup <cnf> <db_name> <backup.sql.gz> → una tabla por línea
+          tables_not_in_backup() {
+            local cnf="$1" name="$2" backup="$3" dumped
+            dumped=$(sudo -u "$DEPLOY_USER" zcat "$backup" | sed -n 's/^CREATE TABLE `\([^`]*\)`.*/\1/p' | LC_ALL=C sort)
+            # Sin tablas en el backup no hay contra qué comparar: todas parecerían nuevas
+            [ -n "$dumped" ] || return 1
+            sudo -u "$DEPLOY_USER" mysql --defaults-extra-file="$cnf" -N -B "$name" \
+                -e "SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'" | cut -f1 | LC_ALL=C sort \
+              | LC_ALL=C comm -23 - <(printf '%s\n' "$dumped")
+          }
+
+          # Restaura un dump de MariaDB/MySQL y deja la base como estaba al hacer el backup. El dump solo
+          # recrea las tablas que contiene: las que creó una migración fallida quedarían huérfanas y el
+          # próximo deploy fallaría con "Table ... already exists", así que se borran después de restaurar.
+          # Un backup incompleto no se usa y la base no se toca.
+          # Uso: restore_mysql <cnf> <db_name> <backup.sql.gz>
+          restore_mysql() {
+            local cnf="$1" name="$2" backup="$3" orphans
+            if ! sudo -u "$DEPLOY_USER" gzip -t "$backup" \
+                || ! sudo -u "$DEPLOY_USER" bash -c "zcat '$backup' | tail -n 1 | grep -q '^-- Dump completed'"; then
+              echo "::error::Backup $backup is incomplete; the database was not restored"
+              return 1
+            fi
+            sudo -u "$DEPLOY_USER" bash -c "set -o pipefail; gunzip -c '$backup' | mysql --defaults-extra-file='$cnf' '$name'"
+            orphans=$(tables_not_in_backup "$cnf" "$name" "$backup")
+            if [ -n "$orphans" ]; then
+              echo "::warning::Dropping tables created by the failed migration:" $orphans
+              { echo 'SET FOREIGN_KEY_CHECKS=0;'; printf 'DROP TABLE IF EXISTS `%s`;\n' $orphans; } \
+                | sudo -u "$DEPLOY_USER" mysql --defaults-extra-file="$cnf" "$name"
+            fi
+          }
           LIB
 
       - name: Backup database
@@ -223,7 +256,7 @@ jobs:
             trap 'sudo -u "$DEPLOY_USER" rm -f "$cnf"' EXIT
             read -r engine name < <(db_info "$cnf")
             if [ "$engine" = "mysql" ]; then
-              sudo -u "$DEPLOY_USER" bash -c "set -o pipefail; gunzip -c '$backup' | mysql --defaults-extra-file='$cnf' '$name'"
+              restore_mysql "$cnf" "$name" "$backup"
             else
               sudo -u "$DEPLOY_USER" cp "$backup" "$name"
             fi
@@ -233,8 +266,21 @@ jobs:
       - name: Manual rollback instructions
         if: failure() && steps.restart.outcome == 'success'
         run: |
+          backup="${{ steps.backup.outputs.file }}"
           echo "::error::Deployment failed after reloading the application. To roll back on the server:"
           echo "  sudo -u $DEPLOY_USER git -C $DEPLOY_PATH reset --hard ${{ steps.precheck.outputs.prev_sha }}"
           echo "  # only if migrations changed data (MariaDB):"
-          echo "  gunzip -c ${{ steps.backup.outputs.file }} | mysql -u <DB_USER> -p <DB_NAME>"
+          echo "  gunzip -c $backup | mysql -u <DB_USER> -p <DB_NAME>"
+          # El dump no borra las tablas que crearon las migraciones de este deploy: se listan para borrarlas a mano
+          source "$RUNNER_TEMP/deploy-db.sh"
+          cnf=$(new_cnf)
+          trap 'sudo -u "$DEPLOY_USER" rm -f "$cnf"' EXIT
+          read -r engine name < <(db_info "$cnf")
+          if [ "$engine" = "mysql" ] && [ -n "$backup" ]; then
+            tables=$(tables_not_in_backup "$cnf" "$name" "$backup" | paste -sd, - || true)
+            if [ -n "$tables" ]; then
+              echo "  # then drop the tables created by this deploy's migrations (the backup does not contain them):"
+              echo "  mysql -u <DB_USER> -p <DB_NAME> -e 'SET FOREIGN_KEY_CHECKS=0; DROP TABLE IF EXISTS $tables;'"
+            fi
+          fi
           echo "  sudo -u $DEPLOY_USER touch $DEPLOY_PATH/webTraining/wsgi.py"
