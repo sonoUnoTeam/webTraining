@@ -23,7 +23,7 @@ class CourseList(ListView):
     model = Course 
     template_name = "trainingApp/course_list.html"
     context_object_name = "course_list"
-    paginate_by = 5
+    paginate_by = None
     
     def get_queryset(self):
         try:
@@ -456,7 +456,7 @@ class TrainingBlockDeployList(ListView):
     model = TrainingBlock
     template_name = "trainingApp/block_deploy_list.html"
     context_object_name = "block_list"
-    paginate_by = 5
+    paginate_by = None #mostrar todos los bloques sin paginación
 
     def dispatch(self, request, *args, **kwargs):
         course_id = self.kwargs['course_id']
@@ -469,7 +469,8 @@ class TrainingBlockDeployList(ListView):
         trainee = get_trainee(request)
         if trainee is None:
             return redirect('home')
-
+        # Guardamos el trainee como atributo de la clase para usarlo luego
+        self.trainee = trainee
         # Grupo, estado, secuencia, bloqueos y límite de intentos
         error = rules.check_can_attempt(trainee, self.course, self.training)
         if error:
@@ -480,26 +481,57 @@ class TrainingBlockDeployList(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return rules.active_blocks(self.training)
+        #Anotar cada bloque con la cantidad de preguntas que tiene (para mostrar en la lista)
+        return rules.active_blocks(self.training).annotate(
+            question_count=models.Count('trainingquestion', distinct=True)
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         states_blocks_answers = {}
+        answered_counts = {}
+        total_training_answered = 0
+
         for block in context['block_list']:
+            # Obtener el último intento de respuesta para este bloque específico
             block_answer = (
                 TrainingBlockAnswer.objects
                 .filter(trainee_Training=self.trainee_training, block=block)
                 .order_by('-id')
                 .first()
             )
+            
             if block_answer:
                 states_blocks_answers[f'{block.id}'] = block_answer.state_block
+                # Contar preguntas respondidas únicas pero limitadas al total real del bloque
+                real_answered = (
+                    TrainingQuestionAnswer.objects
+                    .filter(block_answer=block_answer)
+                    .values('deploy_id')
+                    .distinct()
+                    .count()
+                )
+                # Nos aseguramos de que no supere el total de preguntas del bloque
+                answered_count = min(real_answered, block.question_count)
             else:
                 states_blocks_answers[f'{block.id}'] = _('not started')
+                answered_count = 0
 
+            answered_counts[block.id] = answered_count
+            total_training_answered += answered_count
+
+        context['answered_counts'] = answered_counts
         context['states_blocks_answers'] = states_blocks_answers
         context['TrainingBlockAnswer'] = TrainingBlockAnswer
+        
+        finished_attempts_count = rules.finished_attempts(self.trainee, self.course, self.training).count()
+        current_attempt_num = finished_attempts_count + 1 if self.trainee_training.state == TraineeTraining.StateTraineeTraining.IN_PROGRESS else finished_attempts_count
+        
+        context['current_attempt'] = current_attempt_num
+        context['max_attempts'] = self.training.attempts_allowed
+        context['total_training_answered'] = total_training_answered
+        context['training_duration'] = getattr(self.training, 'estimatedDuration', 0)
         context['course_id'] = self.course.id
         context['training_id'] = self.training.id
         context['training'] = self.training
@@ -568,6 +600,24 @@ class DeployDetailView(View):
         return index
 
     def render_question(self, request, deploy, form, index):
+        #Obtener las preguntas respondidas de este bloque para pasarlas al indicador de pasos
+        answered_deploy_ids = set(
+            TrainingQuestionAnswer.objects.filter(block_answer=self.block_answer)
+            .values_list('deploy_id', flat=True)
+        )
+        
+        steps_info = []
+        for i, d in enumerate(self.deploys):
+            is_answered = d.id in answered_deploy_ids
+            is_current = (i == index)
+            steps_info.append({
+                'index': i,
+                'question_number': i + 1,
+                'is_answered': is_answered,
+                'is_current': is_current,
+                # Se permite navegar si ya está respondida o es la actual o la primera pendiente accesible
+                'accessible': is_answered or is_current
+            })
         return render(request, self.template_name, {
             'deploy': deploy,
             'form': form,
@@ -576,9 +626,26 @@ class DeployDetailView(View):
             'training_id': self.training.id,
             'current_deploy_index': index,
             'deploys_count': len(self.deploys),
+            'steps_info': steps_info,
         })
 
     def get(self, request, course_id, training_id, block_id):
+        #Soporte para parámetro ?q=<n> (de 1 a N) para navegar a preguntas ya respondidas
+        q_param = request.GET.get('q')
+        if q_param and q_param.isdigit():
+            target_idx = int(q_param) - 1
+            if 0 <= target_idx < len(self.deploys):
+                target_deploy = self.deploys[target_idx]
+                # Verificar si ya está respondida o si es una pregunta válida permitida
+                answered_deploy_ids = set(
+                    TrainingQuestionAnswer.objects.filter(block_answer=self.block_answer)
+                    .values_list('deploy_id', flat=True)
+                )
+                current_idx_session = self.current_index(request)
+                
+                # Permitir saltar si está respondida o si el usuario intenta ir a una ya visitada/actual
+                if target_deploy.id in answered_deploy_ids or target_idx <= current_idx_session:
+                    request.session[self.index_key] = target_idx
         index = self.current_index(request)
         request.session[self.index_key] = index
         current_deploy = self.deploys[index]

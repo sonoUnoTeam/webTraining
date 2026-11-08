@@ -430,11 +430,33 @@
                
 
                 <div class="form-question">
-                <!-- Texto y barra de progreso -->
+                    <!-- Indicador de pasos -->
+                    {% if steps_info %}
+                    <nav aria-label="{% trans 'Questions of the block' %}" class="mb-3">
+                        <ol class="pagination pagination-sm mb-2 flex-wrap" style="list-style: none; padding-left: 0; gap: 4px;">
+                            {% for step in steps_info %}
+                                <li class="page-item {% if step.is_current %}active{% endif %}">
+                                    {% if step.accessible %}
+                                        <a href="?q={{ step.question_number }}" class="page-link" {% if step.is_current %}aria-current="step"{% endif %}>
+                                            {{ step.question_number }} 
+                                            {% if step.is_answered %}<span class="visually-hidden">({% trans "answered" %})</span>✓{% endif %}
+                                        </a>
+                                    {% else %}
+                                        <span class="page-link text-muted" aria-disabled="true">
+                                            {{ step.question_number }}
+                                        </span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </nav>
+                    {% endif %}
+
+                    <!-- Texto y barra de progreso -->
                     <div class="progress-indicator mb-2 border-0 bg-transparent p-0">
                     <span id="progreso-texto">{% trans "Question" %} {{ current_deploy_index|add:1 }} {% trans "of" %} {{ deploys_count }}</span>
-                    <progress value="{{ current_deploy_index|add:1 }}" max="{{ deploys_count }}" aria-labelledby="progreso-texto" class="ms-2"></progress>
-                    </div>
+                    <!--<progress value="{{ current_deploy_index|add:1 }}" max="{{ deploys_count }}" aria-labelledby="progreso-texto" class="ms-2"></progress>
+                    </div>-->
     
                  <!-- La pregunta ahora es un h1 con id y tabindex -->
                 <h1 id="pregunta" tabindex="-1" class="h5 m-0">{{ form.instance.question}}</h1>
