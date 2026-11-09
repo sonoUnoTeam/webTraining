@@ -23,12 +23,12 @@ class Trainee(models.Model):
         verbose_name=_("Educational Level"),
     )
     occupation = models.CharField(max_length=50, verbose_name=_("Occupation"))
-    group = models.ForeignKey(
+    # Ve la unión de los cursos activos de todos sus grupos (trainingApp.rules.visible_courses)
+    groups = models.ManyToManyField(
         "trainingApp.TraineeGroup",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name=_("trainee group"),
+        related_name="members",
+        verbose_name=_("trainee groups"),
+        help_text=_("The trainee sees the active courses of all these groups."),
     )
 
     class Meta:

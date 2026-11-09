@@ -121,7 +121,7 @@ def course_structure(request, course_id, model_admin):
         request,
         _('Structure of "%(course)s"') % {"course": course},
         course=course,
-        course_groups=course.groups.annotate(member_count=Count("trainee")),
+        course_groups=course.groups.annotate(member_count=Count("members")),
         course_issues=course_issues,
         trainings=trees,
         error_count=count_issues(trees, content_checks.ERROR)
@@ -148,20 +148,44 @@ def course_access(course):
     }
 
 
-def group_access_html(group):
+def access_html(courses, empty_message):
     """
-    Resumen legible de qué ve un grupo: cada curso asignado con su secuencia de trainings.
+    Resumen legible de lo que se ve: cada curso asignado con su secuencia de trainings.
     Los cursos inactivos se listan marcados porque siguen asignados aunque no se vean.
     """
-    courses = []
-    if group is not None and group.pk:
-        courses = [
-            course_access(course)
-            for course in group.courses.select_related("final_exam").order_by("id")
-        ]
     return render_to_string(
         "admin/trainingApp/traineegroup/access_summary.html",
-        {"group": group, "courses": courses},
+        {
+            "courses": [course_access(course) for course in courses],
+            "empty_message": empty_message,
+        },
+    )
+
+
+def group_access_html(group):
+    """Qué ve un grupo: sus cursos asignados."""
+    courses = (
+        group.courses.select_related("final_exam").order_by("id")
+        if group.pk
+        else Course.objects.none()
+    )
+    return access_html(courses, _("This group does not see any course yet."))
+
+
+def trainee_access_html(trainee):
+    """Qué ve un trainee: la unión de los cursos asignados a todos sus grupos."""
+    courses = (
+        Course.objects.filter(groups__members=trainee)
+        .select_related("final_exam")
+        .distinct()
+        .order_by("id")
+    )
+    if not trainee.groups.exists():
+        return access_html(
+            courses, _("Without a group the trainee does not see any course.")
+        )
+    return access_html(
+        courses, _("The groups of this trainee do not see any course yet.")
     )
 
 

@@ -1,6 +1,7 @@
 """
-Grupos de trainees: qué cursos ve cada trainee, el grupo por defecto y cómo se asignan
-cursos y trainees desde el admin (página del grupo, acción "Mover a grupo", columnas).
+Grupos de trainees: un trainee puede estar en varios grupos y ve la unión de sus cursos;
+grupo por defecto; asignación de cursos y trainees desde el admin (página del grupo,
+acciones "Agregar a grupo" / "Quitar de grupo", columnas).
 """
 
 from django.contrib.auth.models import Group, User
@@ -10,7 +11,6 @@ from django.urls import reverse
 
 from trainingApp import rules
 from trainingApp.models import Course, TraineeGroup
-from userApp.models import Trainee
 
 from .factories import (
     PASSWORD,
@@ -28,6 +28,10 @@ def make_default_group(name="Default"):
     group.is_default = True
     group.save()
     return group
+
+
+def groups_of(trainee):
+    return set(trainee.groups.all())
 
 
 class DefaultGroupTests(TestCase):
@@ -52,15 +56,16 @@ class DefaultGroupTests(TestCase):
         with self.assertRaises(ValidationError):
             group.full_clean()
 
-    def test_deleting_a_group_moves_its_trainees_to_the_default_group(self):
+    def test_deleting_a_group_sends_trainees_without_other_group_to_the_default(self):
         default = make_default_group()
-        workshop = make_group("Workshop")
-        trainee = make_trainee("ana", workshop)
+        workshop, school = make_group("Workshop"), make_group("School")
+        only_workshop = make_trainee("ana", workshop)
+        also_school = make_trainee("bob", [workshop, school])
 
         workshop.delete()
 
-        trainee.refresh_from_db()
-        self.assertEqual(trainee.group, default)
+        self.assertEqual(groups_of(only_workshop), {default})
+        self.assertEqual(groups_of(also_school), {school})
 
 
 class VisibleCoursesTests(TestCase):
@@ -78,26 +83,31 @@ class VisibleCoursesTests(TestCase):
 
         self.assertEqual(list(rules.visible_courses(self.trainee)), [visible])
 
-    def test_without_group_no_course_is_visible(self):
-        # Un curso sin grupos no debe aparecerle a un trainee sin grupo
+    def test_union_of_the_courses_of_all_their_groups(self):
+        other = make_group("B")
+        mine = make_course("Mine", [self.training], groups=[self.group])
+        from_other = make_course("From B", [self.training], groups=[other])
+        shared = make_course("Shared", [self.training], groups=[self.group, other])
+        self.trainee.groups.add(other)
+
+        self.assertEqual(
+            list(rules.visible_courses(self.trainee)), [mine, from_other, shared]
+        )
+        self.assertTrue(rules.can_view_course(self.trainee, from_other))
+
+    def test_without_groups_no_course_is_visible(self):
+        # Un curso sin grupos no debe aparecerle a un trainee sin grupos
         make_course("No groups", [self.training])
         trainee = make_trainee("nogroup", None)
 
         self.assertEqual(list(rules.visible_courses(trainee)), [])
-
-    def test_a_course_with_several_groups_is_listed_once(self):
-        course = make_course(
-            "Shared", [self.training], groups=[self.group, make_group("B")]
-        )
-
-        self.assertEqual(list(rules.visible_courses(self.trainee)), [course])
 
 
 @simple_static_storage
 class CourseVisibilityViewsTests(TestCase):
     def setUp(self):
         self.group = make_group("A")
-        make_trainee("ana", self.group)
+        self.trainee = make_trainee("ana", self.group)
         self.course = make_course(
             "Sonification 101", [make_training("T")], groups=[self.group]
         )
@@ -117,15 +127,15 @@ class CourseVisibilityViewsTests(TestCase):
             fetch_redirect_response=False,
         )
 
-    def test_moving_a_trainee_changes_the_courses_they_see(self):
+    def test_a_second_group_adds_its_courses_to_the_list(self):
         other = make_group("B")
         make_course("Advanced", [make_training("T2")], groups=[other])
-        Trainee.objects.filter(user__username="ana").update(group=other)
+        self.trainee.groups.add(other)
 
         response = self.client.get(reverse("trainingApp:course_list"))
 
         self.assertContains(response, "Advanced")
-        self.assertNotContains(response, "Sonification 101")
+        self.assertContains(response, "Sonification 101")
 
 
 @simple_static_storage
@@ -144,6 +154,12 @@ class TraineeGroupAdminTests(TestCase):
 
     def change_url(self, group):
         return reverse("admin:trainingApp_traineegroup_change", args=[group.pk])
+
+    def run_action(self, action, trainees, group=None):
+        data = {"action": action, "_selected_action": [str(t.pk) for t in trainees]}
+        if group is not None:
+            data["group"] = str(group.pk)
+        return self.client.post(reverse("admin:userApp_trainee_changelist"), data)
 
     def test_pages_render_with_courses_members_and_access_summary(self):
         self.course.groups.add(self.group)
@@ -173,20 +189,21 @@ class TraineeGroupAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(list(self.course.groups.all()), [self.group])
-        self.ana.refresh_from_db()
-        self.assertEqual(self.ana.group, self.group)
+        # Agregarla al taller no la saca del grupo por defecto
+        self.assertEqual(groups_of(self.ana), {self.default, self.group})
 
-    def test_trainees_removed_from_a_group_go_to_the_default_group(self):
+    def test_trainees_left_without_groups_go_to_the_default_group(self):
+        self.ana.groups.add(self.group)
         url = self.change_url(self.group)
         data = form_data(self.client.get(url))
         data["members"] = []
 
         self.assertEqual(self.client.post(url, data).status_code, 302)
 
-        self.bob.refresh_from_db()
-        self.assertEqual(self.bob.group, self.default)
+        self.assertEqual(groups_of(self.bob), {self.default})
+        self.assertEqual(groups_of(self.ana), {self.default})
 
-    def test_trainees_cannot_be_removed_from_the_default_group(self):
+    def test_trainees_without_other_group_cannot_leave_the_default_group(self):
         url = self.change_url(self.default)
         data = form_data(self.client.get(url))
         data["members"] = []
@@ -195,8 +212,18 @@ class TraineeGroupAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("members", response.context["adminform"].form.errors)
-        self.ana.refresh_from_db()
-        self.assertEqual(self.ana.group, self.default)
+
+    def test_trainees_with_another_group_can_leave_the_default_group(self):
+        self.ana.groups.add(self.group)
+        url = self.change_url(self.default)
+        data = form_data(self.client.get(url))
+        data["members"] = [
+            pk for pk in data["members"] if pk != str(self.ana.pk)
+        ]  # el admin (superusuario) se queda
+
+        self.assertEqual(self.client.post(url, data).status_code, 302)
+
+        self.assertEqual(groups_of(self.ana), {self.group})
 
     def test_the_default_group_cannot_be_deleted(self):
         response = self.client.get(
@@ -205,40 +232,54 @@ class TraineeGroupAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 403)
 
-    def test_move_selected_trainees_to_a_group(self):
-        response = self.client.post(
-            reverse("admin:userApp_trainee_changelist"),
-            {
-                "action": "move_to_group",
-                "_selected_action": [str(self.ana.pk)],
-                "group": str(self.group.pk),
-            },
-        )
+    def test_add_selected_trainees_to_a_group(self):
+        response = self.run_action("add_to_group", [self.ana], self.group)
 
         self.assertEqual(response.status_code, 302)
-        self.ana.refresh_from_db()
-        self.assertEqual(self.ana.group, self.group)
+        self.assertEqual(groups_of(self.ana), {self.default, self.group})
 
-    def test_move_to_group_without_choosing_a_group_changes_nothing(self):
-        self.client.post(
-            reverse("admin:userApp_trainee_changelist"),
-            {"action": "move_to_group", "_selected_action": [str(self.ana.pk)]},
-        )
+    def test_remove_selected_trainees_from_a_group(self):
+        self.ana.groups.add(self.group)
 
-        self.ana.refresh_from_db()
-        self.assertEqual(self.ana.group, self.default)
+        self.run_action("remove_from_group", [self.ana, self.bob], self.group)
 
-    def test_course_list_links_to_the_trainees_with_access(self):
+        self.assertEqual(groups_of(self.ana), {self.default})
+        # Bob no tenía otro grupo: vuelve al grupo por defecto
+        self.assertEqual(groups_of(self.bob), {self.default})
+
+    def test_remove_from_the_default_group_keeps_trainees_without_other_group(self):
+        self.run_action("remove_from_group", [self.ana], self.default)
+
+        self.assertEqual(groups_of(self.ana), {self.default})
+
+    def test_group_action_without_choosing_a_group_changes_nothing(self):
+        self.run_action("add_to_group", [self.ana])
+
+        self.assertEqual(groups_of(self.ana), {self.default})
+
+    def test_course_list_links_to_the_trainees_of_its_groups(self):
         self.course.groups.add(self.group)
 
         response = self.client.get(reverse("admin:trainingApp_course_changelist"))
         trainees = self.client.get(
             reverse("admin:userApp_trainee_changelist")
-            + f"?group__id__in={self.group.pk}"
+            + f"?groups__id__in={self.group.pk}"
         )
 
         self.assertContains(response, "Workshop")
         self.assertEqual(list(trainees.context["cl"].result_list), [self.bob])
+
+    def test_trainee_page_shows_courses_of_all_their_groups(self):
+        self.course.groups.add(self.group)
+        make_course("Default course", [self.training], groups=[self.default])
+        self.ana.groups.add(self.group)
+
+        page = self.client.get(
+            reverse("admin:userApp_trainee_change", args=[self.ana.pk])
+        )
+
+        self.assertContains(page, "Sonification 101")
+        self.assertContains(page, "Default course")
 
 
 @simple_static_storage

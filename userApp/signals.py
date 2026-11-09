@@ -29,13 +29,11 @@ def create_trainee_for_superuser(sender, instance, created, **kwargs):
         # Import diferido: trainingApp.models importa userApp.models
         from trainingApp.models import TraineeGroup
 
-        Trainee.objects.get_or_create(
-            user=instance,
-            defaults={
-                "occupation": "Administrator",
-                "group": TraineeGroup.get_default(),
-            },
+        trainee, created = Trainee.objects.get_or_create(
+            user=instance, defaults={"occupation": "Administrator"}
         )
+        if created:
+            trainee.groups.add(TraineeGroup.get_default())
     except Exception:
         # Log but don't break the user creation flow
         logger.exception("Failed creating Trainee for superuser %s", instance)
