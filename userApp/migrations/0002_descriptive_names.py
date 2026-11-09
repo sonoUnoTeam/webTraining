@@ -8,24 +8,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trainingApp', '0007_descriptive_names'),
-        ('userApp', '0001_initial'),
+        ("trainingApp", "0007_descriptive_names"),
+        ("userApp", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='trainee',
-            options={'verbose_name': 'trainee', 'verbose_name_plural': 'trainees'},
+            name="trainee",
+            options={"verbose_name": "trainee", "verbose_name_plural": "trainees"},
         ),
         migrations.AlterField(
-            model_name='trainee',
-            name='group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainingApp.traineegroup', verbose_name='trainee group'),
+            model_name="trainee",
+            name="group",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="trainingApp.traineegroup",
+                verbose_name="trainee group",
+            ),
         ),
         migrations.AlterField(
-            model_name='trainee',
-            name='user',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='user'),
+            model_name="trainee",
+            name="user",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="user",
+            ),
         ),
     ]

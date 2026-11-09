@@ -3244,3 +3244,47 @@ msgstr "Guarda el entrenamiento para agregar bloques."
 
 msgid "View structure"
 msgstr "Ver estructura"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "Block"
+msgstr "Bloque"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "Progress"
+msgstr "Progreso"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "Continue"
+msgstr "Continuar"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "min"
+msgstr "min"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+#: .\trainingApp\templates\trainingApp\forms.html
+msgid "of"
+msgstr "de"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+msgid "List of training blocks and progress tracking"
+msgstr "Lista de bloques del entrenamiento y seguimiento del progreso"
+
+#: .\trainingApp\templates\trainingApp\block_deploy_list.html
+#, python-format
+msgid ""
+"Attempt %(attempt)s of %(max)s. %(blocks_count)s blocks. "
+"%(questions_count)s questions answered. Estimated duration: %(duration)s "
+"min."
+msgstr ""
+"Intento %(attempt)s de %(max)s. %(blocks_count)s bloques. "
+"%(questions_count)s preguntas respondidas. Duración estimada: %(duration)s "
+"min."
+
+#: .\trainingApp\templates\trainingApp\forms.html
+msgid "Questions of the block"
+msgstr "Preguntas del bloque"
+
+#: .\trainingApp\templates\trainingApp\forms.html
+msgid "answered"
+msgstr "respondida"

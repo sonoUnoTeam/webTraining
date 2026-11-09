@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load custom_filters %}
 {% block title %}{% trans "Blocks" %} · {{ training.name_training }}{% endblock %}
 {% block content %}
 <style>
@@ -103,20 +102,17 @@
     }
 </style>
 
-<!-- Se carga un filtro para obtener la clave de un diccionario -->
-{% load custom_filters %}
-<section class="mt-5"  id="contenido">
-<!-- Encabezado principal del training-->
+<section class="mt-5" id="contenido">
+    <!-- Encabezado principal del training -->
     <h1 class="h2">{{ training.name_training }}</h1>
-   <!-- Resumen accesible: Intento, bloques, preguntas y duración-->
+    <!-- Resumen accesible: intento, bloques, preguntas y duración -->
     <p class="lead text-muted mb-4">
-        {% blocktrans with attempt=current_attempt max=max_attempts blocks_count=block_list|length questions_count=total_training_answered duration=training_duration %}
+        {% blocktrans trimmed with attempt=current_attempt max=max_attempts blocks_count=block_list|length questions_count=total_training_answered duration=training_duration %}
         Attempt {{ attempt }} of {{ max }}. {{ blocks_count }} blocks. {{ questions_count }} questions answered. Estimated duration: {{ duration }} min.
         {% endblocktrans %}
     </p>
 
-
-   <div class="card my-3 border border-3">
+    <div class="card my-3 border border-3">
         <div class="card-header">
             {% trans "Note" %}
         </div>
@@ -146,37 +142,33 @@
                 </thead>
                 <tbody>
                     {% for block in block_list %}
-                    {% with answered=answered_counts|get_value:block.id|default:0 %}
                         <tr>
-                                                       
                             <td><strong>{{ block.name_block }}</strong></td>
                             <td>{{ block.question_count }}</td>
                             <td>
-                                <!-- Progreso con texto y barra <progress> accesible-->
-                                <span id="progress-desc-{{ block.id }}">{{ answered }} {% trans "of" %} {{ block.question_count }}</span>
-                                <progress value="{{ answered }}" max="{{ block.question_count }}" aria-describedby="progress-desc-{{ block.id }}" class="d-block w-100 mt-1"></progress>
+                                <!-- Progreso con texto y barra <progress> accesible -->
+                                <span id="progress-desc-{{ block.id }}">{{ block.answered_count }} {% trans "of" %} {{ block.question_count }}</span>
+                                <progress value="{{ block.answered_count }}" max="{{ block.question_count }}" aria-describedby="progress-desc-{{ block.id }}" class="d-block w-100 mt-1"></progress>
                             </td>
                             <td>{{ block.estimed_duration_block }} {% trans "min" %}</td>
                             <td>
-                            {% if states_blocks_answers|get_state:block.id == TrainingBlockAnswer.StateBlockAnswer.Completed %}
-                                <span class="text-success fw-bold">
-                                        <i class="bi bi-check-circle-fill"></i> {% trans "Completed" %}
+                                {% if block.is_completed %}
+                                    <span class="text-success fw-bold">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill me-1" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg>{% trans "Completed" %}
                                     </span>
-                            {% else %} 
-                                {% if answered > 0 %}
-                                        <a href="{% url 'trainingApp:forms' course_id block.training.id block.id %}" class="btn btn-info btn-sm" aria-label="{% trans 'Continue' %} {{ block.name_block }}">
-                                            {% trans "Continue" %}
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'trainingApp:forms' course_id block.training.id block.id %}" class="btn btn-primary btn-sm" aria-label="{% trans 'Start' %} {{ block.name_block }}">
-                                            {% trans "Start" %}
-                                        </a>
-                                    {% endif %}
+                                {% elif block.answered_count %}
+                                    <a href="{% url 'trainingApp:forms' course_id block.training.id block.id %}" class="btn btn-info btn-sm" aria-label="{% trans 'Continue' %} {{ block.name_block }}">
+                                        {% trans "Continue" %}
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'trainingApp:forms' course_id block.training.id block.id %}" class="btn btn-primary btn-sm" aria-label="{% trans 'Start' %} {{ block.name_block }}">
+                                        {% trans "Start" %}
+                                    </a>
                                 {% endif %}
                             </td>
-
                         </tr>
-                        {% endwith %}
                     {% endfor %}
                 </tbody>
             </table>

@@ -1,7 +1,8 @@
+import logging
+
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth import get_user_model
-import logging
 
 from .models import Trainee
 
@@ -40,6 +41,6 @@ def create_trainee_for_superuser(sender, instance, created, **kwargs):
                 "group": group,
             },
         )
-    except Exception as e:
+    except Exception:
         # Log but don't break the user creation flow
-        logger.exception("Failed creating Trainee for superuser %s: %s", instance, e)
+        logger.exception("Failed creating Trainee for superuser %s", instance)

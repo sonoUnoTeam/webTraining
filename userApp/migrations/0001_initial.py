@@ -10,20 +10,61 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('trainingApp', '0001_initial'),
+        ("trainingApp", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Trainee',
+            name="Trainee",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('age', models.IntegerField(default=18, verbose_name='Age')),
-                ('educationalLevel', models.CharField(choices=[('Primary School', 'Primary School'), ('High School', 'High School'), ('Associate', 'Associate'), ('University', 'University'), ('Doctoral Student', 'Doctoral Student'), ('Magister', 'Magister'), ('Doctor', 'Doctor')], default='High School', max_length=50, verbose_name='Educational Level')),
-                ('occupation', models.CharField(max_length=50, verbose_name='Occupation')),
-                ('group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='trainingApp.traineegroup')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("age", models.IntegerField(default=18, verbose_name="Age")),
+                (
+                    "educationalLevel",
+                    models.CharField(
+                        choices=[
+                            ("Primary School", "Primary School"),
+                            ("High School", "High School"),
+                            ("Associate", "Associate"),
+                            ("University", "University"),
+                            ("Doctoral Student", "Doctoral Student"),
+                            ("Magister", "Magister"),
+                            ("Doctor", "Doctor"),
+                        ],
+                        default="High School",
+                        max_length=50,
+                        verbose_name="Educational Level",
+                    ),
+                ),
+                (
+                    "occupation",
+                    models.CharField(max_length=50, verbose_name="Occupation"),
+                ),
+                (
+                    "group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="trainingApp.traineegroup",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

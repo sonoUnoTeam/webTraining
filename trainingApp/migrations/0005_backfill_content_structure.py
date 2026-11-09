@@ -11,8 +11,8 @@
 
 from django.db import migrations
 
-LANGUAGES = ('en', 'es')
-DEFAULT_LANGUAGE = 'en'
+LANGUAGES = ("en", "es")
+DEFAULT_LANGUAGE = "en"
 NAME_MAX_LENGTH = 200
 
 
@@ -21,27 +21,35 @@ def fill_order(model, scope_field):
     updated = 0
     scope_ids = model.objects.order_by().values_list(scope_field, flat=True).distinct()
     for scope_id in scope_ids:
-        siblings = model.objects.filter(**{scope_field: scope_id}).order_by('id')
+        siblings = model.objects.filter(**{scope_field: scope_id}).order_by("id")
         if siblings.exclude(order=0).exists():
             continue
-        for position, pk in enumerate(siblings.values_list('pk', flat=True), 1):
+        for position, pk in enumerate(siblings.values_list("pk", flat=True), 1):
             model.objects.filter(pk=pk).update(order=position)
             updated += 1
     return updated
 
 
 def choices_signature(choices):
-    return tuple(tuple(getattr(choice, f'choice_{lang}') or '' for lang in LANGUAGES) for choice in choices)
+    return tuple(
+        tuple(getattr(choice, f"choice_{lang}") or "" for lang in LANGUAGES)
+        for choice in choices
+    )
 
 
 def options_signature(options):
-    return tuple(tuple(getattr(option, f'text_{lang}') or '' for lang in LANGUAGES) for option in options)
+    return tuple(
+        tuple(getattr(option, f"text_{lang}") or "" for lang in LANGUAGES)
+        for option in options
+    )
 
 
 def set_name(signature, lang_index):
     # Si una opción no tiene texto en ese idioma se usa el primero que tenga, como el fallback de modeltranslation
-    name = ' / '.join(texts[lang_index] or next(text for text in texts if text) for texts in signature)
-    return name if len(name) <= NAME_MAX_LENGTH else name[:NAME_MAX_LENGTH - 1] + '…'
+    name = " / ".join(
+        texts[lang_index] or next(text for text in texts if text) for texts in signature
+    )
+    return name if len(name) <= NAME_MAX_LENGTH else name[: NAME_MAX_LENGTH - 1] + "…"
 
 
 def has_empty_option(signature):
@@ -49,30 +57,40 @@ def has_empty_option(signature):
 
 
 def backfill(apps, schema_editor):
-    TrainingBlock = apps.get_model('trainingApp', 'TrainingBlock')
-    TrainingQuestion = apps.get_model('trainingApp', 'TrainingQuestion')
-    Choice = apps.get_model('trainingApp', 'Choice')
-    TrainingQuestionAnswer = apps.get_model('trainingApp', 'TrainingQuestionAnswer')
-    ChoiceSet = apps.get_model('trainingApp', 'ChoiceSet')
-    ChoiceSetOption = apps.get_model('trainingApp', 'ChoiceSetOption')
+    TrainingBlock = apps.get_model("trainingApp", "TrainingBlock")
+    TrainingQuestion = apps.get_model("trainingApp", "TrainingQuestion")
+    Choice = apps.get_model("trainingApp", "Choice")
+    TrainingQuestionAnswer = apps.get_model("trainingApp", "TrainingQuestionAnswer")
+    ChoiceSet = apps.get_model("trainingApp", "ChoiceSet")
+    ChoiceSetOption = apps.get_model("trainingApp", "ChoiceSetOption")
 
     # 1. Orden
-    for model, scope_field in ((TrainingBlock, 'training_id'), (TrainingQuestion, 'block_id'), (Choice, 'deploy_id')):
+    for model, scope_field in (
+        (TrainingBlock, "training_id"),
+        (TrainingQuestion, "block_id"),
+        (Choice, "deploy_id"),
+    ):
         updated = fill_order(model, scope_field)
         if updated:
-            print(f'  {model.__name__}.order: {updated}')
+            print(f"  {model.__name__}.order: {updated}")
 
     # 2. is_correct
     pending = TrainingQuestionAnswer.objects.filter(is_correct__isnull=True)
     correct = pending.filter(selectedChoice__correctChoice=True).update(is_correct=True)
-    incorrect = pending.filter(selectedChoice__correctChoice=False).update(is_correct=False)
+    incorrect = pending.filter(selectedChoice__correctChoice=False).update(
+        is_correct=False
+    )
     if correct or incorrect:
-        print(f'  TrainingQuestionAnswer.is_correct: {correct} correct, {incorrect} incorrect')
+        print(
+            f"  TrainingQuestionAnswer.is_correct: {correct} correct, {incorrect} incorrect"
+        )
 
     # 3. ChoiceSets
     signature_by_question = {}
-    for question in TrainingQuestion.objects.prefetch_related('choice_set'):
-        choices = sorted(question.choice_set.all(), key=lambda choice: (choice.order, choice.id))
+    for question in TrainingQuestion.objects.prefetch_related("choice_set"):
+        choices = sorted(
+            question.choice_set.all(), key=lambda choice: (choice.order, choice.id)
+        )
         if len(choices) >= 2:
             signature_by_question[question.id] = choices_signature(choices)
 
@@ -81,28 +99,36 @@ def backfill(apps, schema_editor):
         usages[signature] = usages.get(signature, 0) + 1
 
     set_by_signature = {}
-    for choice_set in ChoiceSet.objects.prefetch_related('options'):
-        options = sorted(choice_set.options.all(), key=lambda option: (option.order, option.id))
+    for choice_set in ChoiceSet.objects.prefetch_related("options"):
+        options = sorted(
+            choice_set.options.all(), key=lambda option: (option.order, option.id)
+        )
         set_by_signature.setdefault(options_signature(options), choice_set)
 
     created_sets = 0
     for signature, count in usages.items():
         if count < 2 or signature in set_by_signature or has_empty_option(signature):
             continue
-        names = {f'name_{lang}': set_name(signature, i) for i, lang in enumerate(LANGUAGES)}
-        choice_set = ChoiceSet.objects.create(name=names[f'name_{DEFAULT_LANGUAGE}'], **names)
+        names = {
+            f"name_{lang}": set_name(signature, i) for i, lang in enumerate(LANGUAGES)
+        }
+        choice_set = ChoiceSet.objects.create(
+            name=names[f"name_{DEFAULT_LANGUAGE}"], **names
+        )
         for position, texts in enumerate(signature, 1):
-            option_texts = {f'text_{lang}': texts[i] for i, lang in enumerate(LANGUAGES)}
+            option_texts = {
+                f"text_{lang}": texts[i] for i, lang in enumerate(LANGUAGES)
+            }
             ChoiceSetOption.objects.create(
                 choice_set=choice_set,
                 order=position,
-                text=option_texts[f'text_{DEFAULT_LANGUAGE}'],
+                text=option_texts[f"text_{DEFAULT_LANGUAGE}"],
                 **option_texts,
             )
         set_by_signature[signature] = choice_set
         created_sets += 1
     if created_sets:
-        print(f'  ChoiceSet: {created_sets} created')
+        print(f"  ChoiceSet: {created_sets} created")
 
     # 4. Defaults de cada bloque
     updated_blocks = 0
@@ -113,7 +139,9 @@ def backfill(apps, schema_editor):
         changed = False
 
         if block.default_choice_set_id is None:
-            signatures = {signature_by_question.get(question.id) for question in questions}
+            signatures = {
+                signature_by_question.get(question.id) for question in questions
+            }
             if len(signatures) == 1:
                 choice_set = set_by_signature.get(signatures.pop())
                 if choice_set is not None:
@@ -121,25 +149,29 @@ def backfill(apps, schema_editor):
                     changed = True
 
         for lang in LANGUAGES:
-            field = f'default_question_{lang}'
-            texts = {getattr(question, f'question_{lang}') or '' for question in questions}
-            if not getattr(block, field) and len(texts) == 1 and '' not in texts:
+            field = f"default_question_{lang}"
+            texts = {
+                getattr(question, f"question_{lang}") or "" for question in questions
+            }
+            if not getattr(block, field) and len(texts) == 1 and "" not in texts:
                 setattr(block, field, texts.pop())
                 changed = True
         if changed:
             # La columna base es NOT NULL y la del idioma por defecto queda NULL si sus preguntas no
             # comparten consigna en ese idioma (p. ej. el bloque solo recibió el conjunto de opciones)
-            block.default_question = getattr(block, f'default_question_{DEFAULT_LANGUAGE}') or ''
+            block.default_question = (
+                getattr(block, f"default_question_{DEFAULT_LANGUAGE}") or ""
+            )
             block.save()
             updated_blocks += 1
     if updated_blocks:
-        print(f'  TrainingBlock defaults: {updated_blocks} blocks')
+        print(f"  TrainingBlock defaults: {updated_blocks} blocks")
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trainingApp', '0004_content_structure'),
+        ("trainingApp", "0004_content_structure"),
     ]
 
     operations = [
