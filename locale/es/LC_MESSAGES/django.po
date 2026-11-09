@@ -3288,3 +3288,126 @@ msgstr "Preguntas del bloque"
 #: .\trainingApp\templates\trainingApp\forms.html
 msgid "answered"
 msgstr "respondida"
+
+msgid "default group"
+msgstr "grupo por defecto"
+
+msgid "New trainees join this group when they sign up. Only one group can be the default."
+msgstr "Los aprendices nuevos entran a este grupo al registrarse. Solo un grupo puede ser el grupo por defecto."
+
+msgid "To change the default group, mark another group as the default."
+msgstr "Para cambiar el grupo por defecto, marcá otro grupo como grupo por defecto."
+
+msgid "Only trainees in these groups see the course. Leave it empty while you prepare the course: nobody will see it."
+msgstr "Solo los aprendices de estos grupos ven el curso. Dejalo vacío mientras preparás el curso: nadie lo verá."
+
+msgid "no group"
+msgstr "sin grupo"
+
+msgid "The trainees of this group see these courses (only the active ones)."
+msgstr "Los aprendices de este grupo ven estos cursos (solo los activos)."
+
+msgid "Type to search. A trainee belongs to only one group: adding them here moves them out of their current group. Trainees removed from this group go to the default group."
+msgstr "Escribí para buscar. Un aprendiz pertenece a un solo grupo: agregarlo acá lo saca de su grupo actual. Los aprendices que quites de este grupo pasan al grupo por defecto."
+
+msgid "Trainees cannot be removed from the default group: add them to another group instead."
+msgstr "No se pueden quitar aprendices del grupo por defecto: agregalos a otro grupo."
+
+msgid "What the group sees"
+msgstr "Qué ve el grupo"
+
+msgid "Trainees only see the active courses assigned to their group, and inside each course its active trainings in order."
+msgstr "Los aprendices solo ven los cursos activos asignados a su grupo y, dentro de cada curso, sus entrenamientos activos en orden."
+
+msgid "Who is in the group"
+msgstr "Quiénes están en el grupo"
+
+msgid "None: sees no course"
+msgstr "Ninguno: no ve cursos"
+
+msgid "%(course)s (inactive)"
+msgstr "%(course)s (inactivo)"
+
+msgid "Courses and trainings they see"
+msgstr "Cursos y entrenamientos que ve"
+
+msgid "Who sees the course"
+msgstr "Quién ve el curso"
+
+msgid "Trainees see the course if it is active and their group is in this list. You can also assign courses from each trainee group."
+msgstr "Los aprendices ven el curso si está activo y su grupo está en esta lista. También podés asignar cursos desde cada grupo de aprendices."
+
+msgid "Groups"
+msgstr "Grupos"
+
+msgid "None: nobody sees it"
+msgstr "Ninguno: nadie lo ve"
+
+msgid "Trainees in its groups"
+msgstr "Aprendices en sus grupos"
+
+msgid "Choose the group…"
+msgstr "Elegí el grupo…"
+
+msgid "Group to move the trainees to"
+msgstr "Grupo al que mover los aprendices"
+
+msgid "Access to courses"
+msgstr "Acceso a los cursos"
+
+msgid "The group decides which courses the trainee sees. To move several trainees at once, select them in the list and use \"Move to group\", or edit the trainee group."
+msgstr "El grupo decide qué cursos ve el aprendiz. Para mover varios aprendices a la vez, seleccionalos en la lista y usá \"Mover a grupo\", o editá el grupo de aprendices."
+
+msgid "Courses they see"
+msgstr "Cursos que ve"
+
+msgid "None: no group"
+msgstr "Ninguno: sin grupo"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Move to group"
+msgstr "Mover a grupo"
+
+msgid "Choose the group to move the trainees to."
+msgstr "Elegí el grupo al que mover los aprendices."
+
+msgid "Without a group the trainee does not see any course."
+msgstr "Sin grupo el aprendiz no ve ningún curso."
+
+msgid "This group does not see any course yet."
+msgstr "Este grupo todavía no ve ningún curso."
+
+msgid "Inactive: trainees do not see it"
+msgstr "Inactivo: los aprendices no lo ven"
+
+msgid "Order of the trainings of %(name)s"
+msgstr "Orden de los entrenamientos de %(name)s"
+
+msgid "No active trainings"
+msgstr "Sin entrenamientos activos"
+
+msgid "Trainees in these groups see the course:"
+msgstr "Los aprendices de estos grupos ven el curso:"
+
+msgid "These groups are assigned, but nobody sees the course while it is inactive:"
+msgstr "Estos grupos están asignados, pero nadie ve el curso mientras esté inactivo:"
+
+msgid "No group is assigned: nobody sees the course."
+msgstr "No hay grupos asignados: nadie ve el curso."
+
+msgid "%(count)d trainee moved to the default group \"%(group)s\"."
+msgid_plural "%(count)d trainees moved to the default group \"%(group)s\"."
+msgstr[0] "%(count)d aprendiz pasó al grupo por defecto \"%(group)s\"."
+msgstr[1] "%(count)d aprendices pasaron al grupo por defecto \"%(group)s\"."
+
+msgid "%(count)d trainee moved to \"%(group)s\"."
+msgid_plural "%(count)d trainees moved to \"%(group)s\"."
+msgstr[0] "%(count)d aprendiz movido a \"%(group)s\"."
+msgstr[1] "%(count)d aprendices movidos a \"%(group)s\"."
+
+msgid "%(counter)s trainee"
+msgid_plural "%(counter)s trainees"
+msgstr[0] "%(counter)s aprendiz"
+msgstr[1] "%(counter)s aprendices"

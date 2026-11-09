@@ -53,8 +53,17 @@ class SignupTests(TestCase):
             (trainee.age, trainee.educationalLevel, trainee.occupation),
             (30, "University", "Astronomer"),
         )
-        self.assertEqual(trainee.group.name_group, "Group Defect")
+        self.assertTrue(trainee.group.is_default)
         self.assertEqual(int(self.client.session["_auth_user_id"]), trainee.user.id)
+
+    def test_signup_uses_the_default_group_even_if_renamed(self):
+        default = make_group("Renamed default")
+        default.is_default = True
+        default.save()
+
+        self.client.post(reverse("userApp:signup"), self.payload())
+
+        self.assertEqual(Trainee.objects.get(user__username="newbie").group, default)
 
     def test_signup_rejects_an_email_already_registered(self):
         make_trainee("existing", make_group())
@@ -288,7 +297,7 @@ class SuperuserSignalTests(TestCase):
         user = User.objects.create_superuser("root", "root@example.com", PASSWORD)
 
         trainee = Trainee.objects.get(user=user)
-        self.assertEqual(trainee.group.name_group, "Group Defect")
+        self.assertTrue(trainee.group.is_default)
         self.assertEqual(trainee.occupation, "Administrator")
 
     def test_regular_users_do_not_get_a_trainee_automatically(self):

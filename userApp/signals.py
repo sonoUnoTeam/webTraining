@@ -29,16 +29,11 @@ def create_trainee_for_superuser(sender, instance, created, **kwargs):
         # Import diferido: trainingApp.models importa userApp.models
         from trainingApp.models import TraineeGroup
 
-        group, _ = TraineeGroup.objects.get_or_create(
-            name_group="Group Defect",
-            defaults={"description": "Default group for superusers"},
-        )
-
         Trainee.objects.get_or_create(
             user=instance,
             defaults={
                 "occupation": "Administrator",
-                "group": group,
+                "group": TraineeGroup.get_default(),
             },
         )
     except Exception:

@@ -18,7 +18,9 @@ from modeltranslation.admin import TabbedTranslationAdmin, TranslationStackedInl
 from modeltranslation.settings import AVAILABLE_LANGUAGES, DEFAULT_LANGUAGE
 from unfold.admin import ModelAdmin, StackedInline, TabularInline
 from unfold.decorators import display
-from unfold.widgets import UnfoldAdminSelectWidget
+from unfold.widgets import UnfoldAdminSelect2MultipleWidget, UnfoldAdminSelectWidget
+
+from userApp.models import Trainee
 
 from . import admin_views
 from .models import (
@@ -547,9 +549,217 @@ class TrainingBlockAnswerAdmin(ModelAdmin):
     search_fields = ("trainee_Training__trainee__user__username", "block__name_block")
 
 
+def trainee_label(trainee):
+    """ "Ana Pérez (ana) · Grupo A": el grupo actual avisa que agregarlo lo saca de ese grupo."""
+    full_name = trainee.user.get_full_name()
+    name = (
+        f"{full_name} ({trainee.user.username})" if full_name else trainee.user.username
+    )
+    return f"{name} · {trainee.group or _('no group')}"
+
+
+class TraineeMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return trainee_label(obj)
+
+
+class TraineeGroupAdminForm(forms.ModelForm):
+    """
+    El grupo se arma desde su propia página: qué cursos ve y qué trainees lo integran.
+    Los cursos son la relación `Course.groups` vista desde el grupo; los miembros, los
+    `Trainee.group` que apuntan a él. Ambos se guardan en `TraineeGroupAdmin.save_related`.
+    """
+
+    courses = forms.ModelMultipleChoiceField(
+        queryset=Course.objects.order_by("name_course"),
+        required=False,
+        label=_("Courses"),
+        help_text=_(
+            "The trainees of this group see these courses (only the active ones)."
+        ),
+        widget=UnfoldAdminSelect2MultipleWidget,
+    )
+    members = TraineeMultipleChoiceField(
+        queryset=Trainee.objects.select_related("user", "group").order_by(
+            "user__username"
+        ),
+        required=False,
+        label=_("Trainees"),
+        help_text=_(
+            "Type to search. A trainee belongs to only one group: adding them here moves them "
+            "out of their current group. Trainees removed from this group go to the default group."
+        ),
+        widget=UnfoldAdminSelect2MultipleWidget,
+    )
+
+    class Meta:
+        model = TraineeGroup
+        fields = ("name_group", "description", "is_default")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Los campos pueden faltar si el usuario no tiene permiso para editarlos (get_form)
+        if self.instance.pk and "courses" in self.fields:
+            self.fields["courses"].initial = self.instance.courses.all()
+        if self.instance.pk and "members" in self.fields:
+            self.fields["members"].initial = self.instance.trainee_set.all()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        members = cleaned_data.get("members")
+        # self.instance todavía tiene los valores guardados: se copian del form después de clean()
+        if self.instance.pk and self.instance.is_default and members is not None:
+            kept = {trainee.pk for trainee in members}
+            if self.instance.trainee_set.exclude(pk__in=kept).exists():
+                self.add_error(
+                    "members",
+                    _(
+                        "Trainees cannot be removed from the default group: "
+                        "add them to another group instead."
+                    ),
+                )
+        return cleaned_data
+
+
 class TraineeGroupAdmin(ModelAdmin):
-    list_display = ("name_group", "description")
-    search_fields = ("name_group",)
+    form = TraineeGroupAdminForm
+    list_display = (
+        "name_group",
+        "is_default",
+        "view_members",
+        "courses_summary",
+        "description",
+    )
+    list_display_links = ("name_group",)
+    search_fields = ("name_group", "description")
+    readonly_fields = ("access_summary", "courses_display", "members_display")
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(member_count=Count("trainee", distinct=True))
+            .prefetch_related("courses")
+        )
+
+    def can_edit_courses(self, request, obj):
+        return self.has_change_permission(request, obj) and request.user.has_perm(
+            "trainingApp.change_course"
+        )
+
+    def can_edit_members(self, request, obj):
+        return self.has_change_permission(request, obj) and request.user.has_perm(
+            "userApp.change_trainee"
+        )
+
+    def get_fieldsets(self, request, obj=None):
+        # Sin permiso para cambiarlos, cursos y trainees se muestran como texto; sin permiso para
+        # ver trainees (rol "Content editor") la sección de miembros no aparece
+        courses_field = (
+            "courses" if self.can_edit_courses(request, obj) else "courses_display"
+        )
+        access_fields = (courses_field, "access_summary") if obj else (courses_field,)
+        if self.can_edit_members(request, obj):
+            members_fields = ("members",)
+        elif request.user.has_perm("userApp.view_trainee"):
+            members_fields = ("members_display",)
+        else:
+            members_fields = ()
+        fieldsets = (
+            (None, {"fields": ("name_group", "description", "is_default")}),
+            (
+                _("What the group sees"),
+                {
+                    "fields": access_fields,
+                    "description": _(
+                        "Trainees only see the active courses assigned to their group, "
+                        "and inside each course its active trainings in order."
+                    ),
+                },
+            ),
+        )
+        if members_fields:
+            fieldsets += ((_("Who is in the group"), {"fields": members_fields}),)
+        return fieldsets
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        # Los campos que no están en los fieldsets (sin permiso) no se validan ni se guardan
+        form = super().get_form(request, obj, change, **kwargs)
+        if not self.can_edit_courses(request, obj):
+            form.base_fields.pop("courses", None)
+        if not self.can_edit_members(request, obj):
+            form.base_fields.pop("members", None)
+        return form
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        group = form.instance
+        if "courses" in form.cleaned_data:
+            group.courses.set(form.cleaned_data["courses"])
+        if "members" in form.cleaned_data:
+            self.save_members(request, group, form.cleaned_data["members"])
+
+    def save_members(self, request, group, members):
+        selected = {trainee.pk for trainee in members}
+        current = set(group.trainee_set.values_list("pk", flat=True))
+        added, removed = selected - current, current - selected
+        if added:
+            Trainee.objects.filter(pk__in=added).update(group=group)
+        if removed:
+            default_group = TraineeGroup.get_default()
+            Trainee.objects.filter(pk__in=removed).update(group=default_group)
+            messages.info(
+                request,
+                ngettext(
+                    '%(count)d trainee moved to the default group "%(group)s".',
+                    '%(count)d trainees moved to the default group "%(group)s".',
+                    len(removed),
+                )
+                % {"count": len(removed), "group": default_group},
+            )
+
+    def has_delete_permission(self, request, obj=None):
+        # El grupo por defecto recibe a los usuarios nuevos y a los de los grupos borrados
+        if obj is not None and obj.is_default:
+            return False
+        return super().has_delete_permission(request, obj)
+
+    @admin.display(description=_("Trainees"), ordering="member_count")
+    def view_members(self, obj):
+        url = (
+            reverse("admin:userApp_trainee_changelist") + f"?group__id__exact={obj.id}"
+        )
+        return format_html('<a href="{}">{}</a>', url, obj.member_count)
+
+    @admin.display(description=_("Courses"))
+    def courses_summary(self, obj):
+        courses = list(obj.courses.all())
+        if not courses:
+            return _("None: sees no course")
+        return ", ".join(
+            (
+                str(course)
+                if course.state_course == Course.StateCourse.Active
+                else _("%(course)s (inactive)") % {"course": course}
+            )
+            for course in courses
+        )
+
+    @admin.display(description=_("Courses"))
+    def courses_display(self, obj):
+        return self.courses_summary(obj) if obj and obj.pk else "-"
+
+    @admin.display(description=_("Trainees"))
+    def members_display(self, obj):
+        if not obj or not obj.pk:
+            return "-"
+        trainees = obj.trainee_set.select_related("user").order_by("user__username")
+        return ", ".join(str(trainee) for trainee in trainees) or "-"
+
+    @admin.display(description=_("Courses and trainings they see"))
+    def access_summary(self, obj):
+        # render_to_string devuelve HTML seguro (plantilla con autoescape)
+        return admin_views.group_access_html(obj)
 
 
 def final_position(obj):
@@ -572,7 +782,8 @@ class CourseAdmin(TranslatedModelAdmin):
     list_display = (
         "name_course",
         "view_trainings",
-        "required_average_score",
+        "groups_summary",
+        "view_trainees",
         "status",
         "pub_date",
         "view_structure",
@@ -581,11 +792,22 @@ class CourseAdmin(TranslatedModelAdmin):
     list_display_links = ("name_course",)
     search_fields = ("name_course", "description")
     ordering = ("-pub_date",)
+    autocomplete_fields = ("groups",)
 
     fieldsets = (
         (
             _("General information"),
-            {"fields": ("name_course", "description", "state_course", "groups")},
+            {"fields": ("name_course", "description", "state_course")},
+        ),
+        (
+            _("Who sees the course"),
+            {
+                "fields": ("groups",),
+                "description": _(
+                    "Trainees see the course if it is active and their group is in this list. "
+                    "You can also assign courses from each trainee group."
+                ),
+            },
         ),
         (
             _("Final exam"),
@@ -607,12 +829,32 @@ class CourseAdmin(TranslatedModelAdmin):
         return (
             super()
             .get_queryset(request)
-            .annotate(training_count=Count("trainings", distinct=True))
+            .annotate(
+                training_count=Count("trainings", distinct=True),
+                trainee_count=Count("groups__trainee", distinct=True),
+            )
+            .prefetch_related("groups")
         )
 
     @display(description=_("Status"), label=STATUS_LABELS, ordering="state_course")
     def status(self, obj):
         return obj.state_course, obj.get_state_course_display()
+
+    @admin.display(description=_("Groups"))
+    def groups_summary(self, obj):
+        groups = obj.groups.all()
+        return ", ".join(str(group) for group in groups) or _("None: nobody sees it")
+
+    @admin.display(description=_("Trainees in its groups"), ordering="trainee_count")
+    def view_trainees(self, obj):
+        # Trainees de los grupos del curso (lo ven solo si además el curso está activo)
+        if not obj.trainee_count:
+            return 0
+        group_ids = ",".join(str(group.pk) for group in obj.groups.all())
+        url = (
+            reverse("admin:userApp_trainee_changelist") + f"?group__id__in={group_ids}"
+        )
+        return format_html('<a href="{}">{}</a>', url, obj.trainee_count)
 
     @admin.display(description=_("Trainings"))
     def view_trainings(self, obj):

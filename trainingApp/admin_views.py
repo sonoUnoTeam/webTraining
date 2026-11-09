@@ -13,7 +13,9 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.validators import FileExtensionValidator, validate_image_file_extension
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _, gettext_lazy
@@ -21,7 +23,14 @@ from modeltranslation.settings import AVAILABLE_LANGUAGES
 from unfold.widgets import UnfoldAdminSelectWidget, UnfoldAdminTextInputWidget
 
 from . import content_checks, rules
-from .models import ChoiceSet, CourseTraining, Training, TrainingBlock, TrainingQuestion
+from .models import (
+    ChoiceSet,
+    Course,
+    CourseTraining,
+    Training,
+    TrainingBlock,
+    TrainingQuestion,
+)
 
 
 def admin_context(model_admin, request, title, **extra):
@@ -112,6 +121,7 @@ def course_structure(request, course_id, model_admin):
         request,
         _('Structure of "%(course)s"') % {"course": course},
         course=course,
+        course_groups=course.groups.annotate(member_count=Count("trainee")),
         course_issues=course_issues,
         trainings=trees,
         error_count=count_issues(trees, content_checks.ERROR)
@@ -120,6 +130,39 @@ def course_structure(request, course_id, model_admin):
         + sum(i.level == content_checks.WARNING for i in course_issues),
     )
     return TemplateResponse(request, "admin/trainingApp/course/structure.html", context)
+
+
+# --- Acceso de los grupos ---
+
+
+def course_access(course):
+    """Lo que ve un trainee del curso: si está activo, sus trainings activos en orden y el examen final."""
+    final_exam = course.final_exam
+    if final_exam and final_exam.state_training != Training.StateTraining.Active:
+        final_exam = None
+    return {
+        "course": course,
+        "active": course.state_course == Course.StateCourse.Active,
+        "trainings": [ct.training for ct in rules.course_trainings(course)],
+        "final_exam": final_exam,
+    }
+
+
+def group_access_html(group):
+    """
+    Resumen legible de qué ve un grupo: cada curso asignado con su secuencia de trainings.
+    Los cursos inactivos se listan marcados porque siguen asignados aunque no se vean.
+    """
+    courses = []
+    if group is not None and group.pk:
+        courses = [
+            course_access(course)
+            for course in group.courses.select_related("final_exam").order_by("id")
+        ]
+    return render_to_string(
+        "admin/trainingApp/traineegroup/access_summary.html",
+        {"group": group, "courses": courses},
+    )
 
 
 # --- Carga masiva de preguntas en un bloque ---

@@ -46,11 +46,7 @@ class CourseList(ListView):
                 self.request, _("You need to be a trainee to access trainings.")
             )
             return Course.objects.none()
-        queryset = Course.objects.filter(
-            state_course="Active", groups__in=[trainee.group]
-        ).order_by("id")
-
-        return queryset
+        return rules.visible_courses(trainee)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -182,7 +178,8 @@ class CourseDetailView(ListView):
         try:
             trainee = Trainee.objects.get(user_id=user.id)
             course = Course.objects.get(id=course_id)
-            if not rules.can_view_course(trainee, course):
+            # Mismo criterio que la lista: un curso inactivo no se abre aunque sea del grupo
+            if not rules.visible_courses(trainee).filter(pk=course.pk).exists():
                 messages.error(request, _("You do not have access to this course."))
                 return redirect("trainingApp:course_list")
             TraineeCourse.objects.get_or_create(

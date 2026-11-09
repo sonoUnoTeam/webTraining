@@ -72,15 +72,12 @@ def signup(request):
 
             user = form.save()
             # Crear el objeto Trainee y se relaciona con el usuario y al grupo por defecto
-            group_defect, _created = TraineeGroup.objects.get_or_create(
-                name_group="Group Defect"
-            )
             trainee = Trainee(
                 user=user,
                 age=form.cleaned_data["age"],
                 educationalLevel=form.cleaned_data["educationalLevel"],
                 occupation=form.cleaned_data["occupation"],
-                group=group_defect,
+                group=TraineeGroup.get_default(),
             )
             trainee.save()
             login(request, user)

@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models, transaction
 from django.db.models import Max, Sum
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
@@ -39,15 +39,72 @@ class AutoOrderMixin(models.Model):
 
 
 class TraineeGroup(models.Model):
+    """
+    Grupo de trainees: decide qué cursos ve cada uno. Un trainee pertenece a un solo grupo
+    (`Trainee.group`) y ve los cursos activos que tienen asignado ese grupo (`Course.groups`).
+    El grupo por defecto (`is_default`) recibe a los usuarios nuevos y a los miembros de un
+    grupo borrado; se identifica por el campo, no por el nombre, así se puede renombrar.
+    """
+
+    # Nombre con que se crea el grupo por defecto si todavía no hay ninguno
+    DEFAULT_NAME = "Default group"
+
     name_group = models.CharField(_("name"), max_length=100)
-    description = models.CharField(_("description"), max_length=300)
+    description = models.CharField(_("description"), max_length=300, blank=True)
+    is_default = models.BooleanField(
+        _("default group"),
+        default=False,
+        help_text=_(
+            "New trainees join this group when they sign up. Only one group can be the default."
+        ),
+    )
 
     class Meta:
+        ordering = ["name_group", "id"]
         verbose_name = _("trainee group")
         verbose_name_plural = _("trainee groups")
 
     def __str__(self):
         return self.name_group
+
+    def clean(self):
+        # Sin grupo por defecto los usuarios nuevos no tendrían a dónde ir: se cambia marcando otro
+        if self.pk and not self.is_default:
+            was_default = TraineeGroup.objects.filter(
+                pk=self.pk, is_default=True
+            ).exists()
+            if was_default:
+                raise ValidationError(
+                    {
+                        "is_default": _(
+                            "To change the default group, mark another group as the default."
+                        )
+                    }
+                )
+
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            super().save(*args, **kwargs)
+            if self.is_default:
+                TraineeGroup.objects.filter(is_default=True).exclude(pk=self.pk).update(
+                    is_default=False
+                )
+
+    @classmethod
+    def get_default(cls):
+        """Grupo por defecto; si no hay ninguno lo crea."""
+        group = cls.objects.filter(is_default=True).order_by("id").first()
+        if group is None:
+            group = cls.objects.create(name_group=cls.DEFAULT_NAME, is_default=True)
+        return group
+
+
+@receiver(pre_delete, sender=TraineeGroup)
+def move_members_to_default_group(sender, instance, **kwargs):
+    """Al borrar un grupo sus trainees pasan al grupo por defecto en lugar de quedar sin cursos."""
+    if instance.is_default:
+        return
+    Trainee.objects.filter(group=instance).update(group=TraineeGroup.get_default())
 
 
 class ChoiceSet(models.Model):
@@ -649,11 +706,16 @@ class Course(models.Model):
         choices=StateCourse.choices,
         default=StateCourse.Active,
     )
-    # Grupos que pueden acceder al curso
+    # Grupos que pueden acceder al curso (vacío = nadie lo ve, p. ej. mientras se prepara)
     groups = models.ManyToManyField(
         TraineeGroup,
+        blank=True,
+        related_name="courses",
         verbose_name=_("trainee groups"),
-        help_text=_("Only trainees in these groups see the course."),
+        help_text=_(
+            "Only trainees in these groups see the course. "
+            "Leave it empty while you prepare the course: nobody will see it."
+        ),
     )
     trainings = models.ManyToManyField(
         Training,
