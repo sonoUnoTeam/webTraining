@@ -57,9 +57,11 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+          # El runner solo puede usar sudo como DEPLOY_USER (no root): los CSV se leen como ese usuario
           mkdir -p "$RUNNER_TEMP/media-report"
-          sudo cp "$csv_dir"/*.csv "$RUNNER_TEMP/media-report/"
-          sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/media-report"
+          for name in media_files.csv media_missing.csv; do
+            sudo -u "$DEPLOY_USER" cat "$csv_dir/$name" > "$RUNNER_TEMP/media-report/$name"
+          done
 
       - name: Upload CSV detail
         if: inputs.upload_csv
