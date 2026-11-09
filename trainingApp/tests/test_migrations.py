@@ -1,5 +1,5 @@
 """
-Migración de datos 0009_trainee_group_default: el grupo "Group Defect", que el signup usaba
+Migraciones de datos de grupos. trainingApp 0009_trainee_group_default: el grupo "Group Defect", que el signup usaba
 para los usuarios nuevos, queda marcado como grupo por defecto.
 """
 
@@ -49,3 +49,39 @@ class TraineeGroupDefaultMigrationTests(TransactionTestCase):
         TraineeGroup = new_apps.get_model("trainingApp", "TraineeGroup")
 
         self.assertFalse(TraineeGroup.objects.filter(is_default=True).exists())
+
+
+class TraineeGroupsMigrationTests(TransactionTestCase):
+    """userApp 0003_trainee_groups: el grupo único de cada trainee pasa a la relación múltiple."""
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        with contextlib.redirect_stdout(io.StringIO()):
+            executor.migrate(executor.loader.graph.leaf_nodes())
+
+    def test_each_trainee_keeps_its_group(self):
+        # trainingApp queda en 0009 (no depende de userApp 0003): el estado incluye is_default
+        old_apps = migrate([("userApp", "0002_descriptive_names"), MIGRATE_TO[0]])
+        OldGroup = old_apps.get_model("trainingApp", "TraineeGroup")
+        OldTrainee = old_apps.get_model("userApp", "Trainee")
+        User = old_apps.get_model("auth", "User")
+        group = OldGroup.objects.create(name_group="Workshop", description="")
+        with_group = OldTrainee.objects.create(
+            user=User.objects.create(username="ana"), occupation="", group=group
+        )
+        without_group = OldTrainee.objects.create(
+            user=User.objects.create(username="bob"), occupation=""
+        )
+
+        new_apps = migrate([("userApp", "0003_trainee_groups")])
+        Trainee = new_apps.get_model("userApp", "Trainee")
+
+        self.assertEqual(
+            list(
+                Trainee.objects.get(pk=with_group.pk).groups.values_list(
+                    "pk", flat=True
+                )
+            ),
+            [group.pk],
+        )
+        self.assertFalse(Trainee.objects.get(pk=without_group.pk).groups.exists())

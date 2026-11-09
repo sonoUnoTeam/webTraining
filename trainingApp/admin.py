@@ -550,12 +550,11 @@ class TrainingBlockAnswerAdmin(ModelAdmin):
 
 
 def trainee_label(trainee):
-    """ "Ana Pérez (ana) · Grupo A": el grupo actual avisa que agregarlo lo saca de ese grupo."""
+    """ "Ana Pérez (ana)", o solo el usuario si no cargó nombre."""
     full_name = trainee.user.get_full_name()
-    name = (
+    return (
         f"{full_name} ({trainee.user.username})" if full_name else trainee.user.username
     )
-    return f"{name} · {trainee.group or _('no group')}"
 
 
 class TraineeMultipleChoiceField(forms.ModelMultipleChoiceField):
@@ -566,8 +565,8 @@ class TraineeMultipleChoiceField(forms.ModelMultipleChoiceField):
 class TraineeGroupAdminForm(forms.ModelForm):
     """
     El grupo se arma desde su propia página: qué cursos ve y qué trainees lo integran.
-    Los cursos son la relación `Course.groups` vista desde el grupo; los miembros, los
-    `Trainee.group` que apuntan a él. Ambos se guardan en `TraineeGroupAdmin.save_related`.
+    Los cursos son la relación `Course.groups` vista desde el grupo y los miembros la relación
+    `Trainee.groups`. Ambos se guardan en `TraineeGroupAdmin.save_related`.
     """
 
     courses = forms.ModelMultipleChoiceField(
@@ -580,14 +579,12 @@ class TraineeGroupAdminForm(forms.ModelForm):
         widget=UnfoldAdminSelect2MultipleWidget,
     )
     members = TraineeMultipleChoiceField(
-        queryset=Trainee.objects.select_related("user", "group").order_by(
-            "user__username"
-        ),
+        queryset=Trainee.objects.select_related("user").order_by("user__username"),
         required=False,
         label=_("Trainees"),
         help_text=_(
-            "Type to search. A trainee belongs to only one group: adding them here moves them "
-            "out of their current group. Trainees removed from this group go to the default group."
+            "Type to search. A trainee can be in several groups and sees the courses of all of "
+            "them. Trainees removed from this group who have no other group go to the default group."
         ),
         widget=UnfoldAdminSelect2MultipleWidget,
     )
@@ -602,7 +599,7 @@ class TraineeGroupAdminForm(forms.ModelForm):
         if self.instance.pk and "courses" in self.fields:
             self.fields["courses"].initial = self.instance.courses.all()
         if self.instance.pk and "members" in self.fields:
-            self.fields["members"].initial = self.instance.trainee_set.all()
+            self.fields["members"].initial = self.instance.members.all()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -610,12 +607,16 @@ class TraineeGroupAdminForm(forms.ModelForm):
         # self.instance todavía tiene los valores guardados: se copian del form después de clean()
         if self.instance.pk and self.instance.is_default and members is not None:
             kept = {trainee.pk for trainee in members}
-            if self.instance.trainee_set.exclude(pk__in=kept).exists():
+            removed = set(
+                self.instance.members.exclude(pk__in=kept).values_list("pk", flat=True)
+            )
+            # Sacarlos del grupo por defecto los dejaría sin grupos (y volverían a él)
+            if self.instance.members_without_other_group(removed):
                 self.add_error(
                     "members",
                     _(
-                        "Trainees cannot be removed from the default group: "
-                        "add them to another group instead."
+                        "Some trainees have no other group: add them to another group "
+                        "before removing them from the default group."
                     ),
                 )
         return cleaned_data
@@ -638,7 +639,7 @@ class TraineeGroupAdmin(ModelAdmin):
         return (
             super()
             .get_queryset(request)
-            .annotate(member_count=Count("trainee", distinct=True))
+            .annotate(member_count=Count("members", distinct=True))
             .prefetch_related("courses")
         )
 
@@ -672,7 +673,7 @@ class TraineeGroupAdmin(ModelAdmin):
                 {
                     "fields": access_fields,
                     "description": _(
-                        "Trainees only see the active courses assigned to their group, "
+                        "Trainees see the active courses assigned to any of their groups, "
                         "and inside each course its active trainings in order."
                     ),
                 },
@@ -700,26 +701,26 @@ class TraineeGroupAdmin(ModelAdmin):
             self.save_members(request, group, form.cleaned_data["members"])
 
     def save_members(self, request, group, members):
-        selected = {trainee.pk for trainee in members}
-        current = set(group.trainee_set.values_list("pk", flat=True))
-        added, removed = selected - current, current - selected
-        if added:
-            Trainee.objects.filter(pk__in=added).update(group=group)
-        if removed:
-            default_group = TraineeGroup.get_default()
-            Trainee.objects.filter(pk__in=removed).update(group=default_group)
+        removed = set(
+            group.members.exclude(pk__in=[t.pk for t in members]).values_list(
+                "pk", flat=True
+            )
+        )
+        group.members.set(members)
+        moved = TraineeGroup.add_default_to_groupless(removed)
+        if moved:
             messages.info(
                 request,
                 ngettext(
-                    '%(count)d trainee moved to the default group "%(group)s".',
-                    '%(count)d trainees moved to the default group "%(group)s".',
-                    len(removed),
+                    '%(count)d trainee had no other group and went to the default group "%(group)s".',
+                    '%(count)d trainees had no other group and went to the default group "%(group)s".',
+                    len(moved),
                 )
-                % {"count": len(removed), "group": default_group},
+                % {"count": len(moved), "group": TraineeGroup.get_default()},
             )
 
     def has_delete_permission(self, request, obj=None):
-        # El grupo por defecto recibe a los usuarios nuevos y a los de los grupos borrados
+        # El grupo por defecto recibe a los usuarios nuevos y a los que se quedan sin grupos
         if obj is not None and obj.is_default:
             return False
         return super().has_delete_permission(request, obj)
@@ -727,7 +728,7 @@ class TraineeGroupAdmin(ModelAdmin):
     @admin.display(description=_("Trainees"), ordering="member_count")
     def view_members(self, obj):
         url = (
-            reverse("admin:userApp_trainee_changelist") + f"?group__id__exact={obj.id}"
+            reverse("admin:userApp_trainee_changelist") + f"?groups__id__exact={obj.id}"
         )
         return format_html('<a href="{}">{}</a>', url, obj.member_count)
 
@@ -753,7 +754,7 @@ class TraineeGroupAdmin(ModelAdmin):
     def members_display(self, obj):
         if not obj or not obj.pk:
             return "-"
-        trainees = obj.trainee_set.select_related("user").order_by("user__username")
+        trainees = obj.members.select_related("user").order_by("user__username")
         return ", ".join(str(trainee) for trainee in trainees) or "-"
 
     @admin.display(description=_("Courses and trainings they see"))
@@ -831,7 +832,7 @@ class CourseAdmin(TranslatedModelAdmin):
             .get_queryset(request)
             .annotate(
                 training_count=Count("trainings", distinct=True),
-                trainee_count=Count("groups__trainee", distinct=True),
+                trainee_count=Count("groups__members", distinct=True),
             )
             .prefetch_related("groups")
         )
@@ -852,7 +853,7 @@ class CourseAdmin(TranslatedModelAdmin):
             return 0
         group_ids = ",".join(str(group.pk) for group in obj.groups.all())
         url = (
-            reverse("admin:userApp_trainee_changelist") + f"?group__id__in={group_ids}"
+            reverse("admin:userApp_trainee_changelist") + f"?groups__id__in={group_ids}"
         )
         return format_html('<a href="{}">{}</a>', url, obj.trainee_count)
 

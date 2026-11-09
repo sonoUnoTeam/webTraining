@@ -46,30 +46,35 @@ def course_trainings(course):
     )
 
 
-def group_courses(group_id):
-    """Cursos activos que ve un grupo, en el orden de la lista de cursos."""
-    if group_id is None:
-        # filter(groups=None) devolvería los cursos sin grupos
+def courses_of_groups(group_ids):
+    """Cursos activos asignados a alguno de los grupos, sin repetir, en el orden de la lista de cursos."""
+    group_ids = list(group_ids)
+    if not group_ids:
+        # Sin grupos no se ve nada (filtrar por una lista vacía no alcanza para expresarlo con groups=None)
         return Course.objects.none()
-    return Course.objects.filter(
-        state_course=Course.StateCourse.Active, groups=group_id
-    ).order_by("id")
+    return (
+        Course.objects.filter(
+            state_course=Course.StateCourse.Active, groups__in=group_ids
+        )
+        .distinct()
+        .order_by("id")
+    )
 
 
 def visible_courses(trainee):
-    """Cursos que el trainee ve en la lista y puede abrir: activos y asignados a su grupo."""
-    return group_courses(trainee.group_id)
+    """
+    Cursos que el trainee ve en la lista y puede abrir: activos y asignados a alguno de sus
+    grupos (la unión de lo que ve cada grupo).
+    """
+    return courses_of_groups(trainee.groups.values_list("id", flat=True))
 
 
 def can_view_course(trainee, course):
     """
-    El curso está asignado al grupo del trainee, esté activo o no: permite revisar intentos
-    de un curso ya desactivado. Para listar o abrir un curso usar `visible_courses`.
+    El curso está asignado a alguno de los grupos del trainee, esté activo o no: permite revisar
+    intentos de un curso ya desactivado. Para listar o abrir un curso usar `visible_courses`.
     """
-    return (
-        trainee.group_id is not None
-        and course.groups.filter(id=trainee.group_id).exists()
-    )
+    return course.groups.filter(members=trainee).exists()
 
 
 def training_in_course(course, training_id):

@@ -40,10 +40,10 @@ class AutoOrderMixin(models.Model):
 
 class TraineeGroup(models.Model):
     """
-    Grupo de trainees: decide qué cursos ve cada uno. Un trainee pertenece a un solo grupo
-    (`Trainee.group`) y ve los cursos activos que tienen asignado ese grupo (`Course.groups`).
-    El grupo por defecto (`is_default`) recibe a los usuarios nuevos y a los miembros de un
-    grupo borrado; se identifica por el campo, no por el nombre, así se puede renombrar.
+    Grupo de trainees: decide qué cursos ve cada uno. Un trainee puede estar en varios grupos
+    (`Trainee.groups`, reversa `members`) y ve la unión de los cursos activos asignados a ellos
+    (`Course.groups`). El grupo por defecto (`is_default`) recibe a los usuarios nuevos y a los
+    trainees que se quedan sin grupos; se identifica por el campo, no por el nombre.
     """
 
     # Nombre con que se crea el grupo por defecto si todavía no hay ninguno
@@ -98,13 +98,46 @@ class TraineeGroup(models.Model):
             group = cls.objects.create(name_group=cls.DEFAULT_NAME, is_default=True)
         return group
 
+    def members_without_other_group(self, trainee_ids=None):
+        """
+        Ids de los miembros (de `trainee_ids`, o todos) cuyo único grupo es este. El conteo se
+        hace sobre Trainee y no sobre `self.members`: ahí el join ya está filtrado por este
+        grupo y siempre contaría 1.
+        """
+        member_ids = self.members.values_list("pk", flat=True)
+        if trainee_ids is not None:
+            member_ids = member_ids.filter(pk__in=trainee_ids)
+        return set(
+            Trainee.objects.filter(pk__in=list(member_ids))
+            .annotate(group_count=models.Count("groups"))
+            .filter(group_count=1)
+            .values_list("pk", flat=True)
+        )
+
+    @classmethod
+    def add_default_to_groupless(cls, trainee_ids):
+        """Los trainees de `trainee_ids` que quedaron sin grupos vuelven al grupo por defecto."""
+        groupless = list(
+            Trainee.objects.filter(pk__in=trainee_ids, groups=None).values_list(
+                "pk", flat=True
+            )
+        )
+        if groupless:
+            cls.get_default().members.add(*groupless)
+        return groupless
+
 
 @receiver(pre_delete, sender=TraineeGroup)
-def move_members_to_default_group(sender, instance, **kwargs):
-    """Al borrar un grupo sus trainees pasan al grupo por defecto en lugar de quedar sin cursos."""
+def move_groupless_members_to_default(sender, instance, **kwargs):
+    """
+    Al borrar un grupo, sus trainees que no tienen otro grupo pasan al grupo por defecto en
+    lugar de quedar sin cursos. Se calcula antes del borrado (después ya no hay miembros).
+    """
     if instance.is_default:
         return
-    Trainee.objects.filter(group=instance).update(group=TraineeGroup.get_default())
+    only_here = instance.members_without_other_group()
+    if only_here:
+        TraineeGroup.get_default().members.add(*only_here)
 
 
 class ChoiceSet(models.Model):

@@ -77,9 +77,9 @@ def signup(request):
                 age=form.cleaned_data["age"],
                 educationalLevel=form.cleaned_data["educationalLevel"],
                 occupation=form.cleaned_data["occupation"],
-                group=TraineeGroup.get_default(),
             )
             trainee.save()
+            trainee.groups.add(TraineeGroup.get_default())
             login(request, user)
             messages.success(request, _("User created successfully"))
             return redirect("home")

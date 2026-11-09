@@ -3289,6 +3289,7 @@ msgstr "Preguntas del bloque"
 msgid "answered"
 msgstr "respondida"
 
+
 msgid "default group"
 msgstr "grupo por defecto"
 
@@ -3301,23 +3302,23 @@ msgstr "Para cambiar el grupo por defecto, marcá otro grupo como grupo por defe
 msgid "Only trainees in these groups see the course. Leave it empty while you prepare the course: nobody will see it."
 msgstr "Solo los aprendices de estos grupos ven el curso. Dejalo vacío mientras preparás el curso: nadie lo verá."
 
-msgid "no group"
-msgstr "sin grupo"
+msgid "The trainee sees the active courses of all these groups."
+msgstr "El aprendiz ve los cursos activos de todos estos grupos."
 
 msgid "The trainees of this group see these courses (only the active ones)."
 msgstr "Los aprendices de este grupo ven estos cursos (solo los activos)."
 
-msgid "Type to search. A trainee belongs to only one group: adding them here moves them out of their current group. Trainees removed from this group go to the default group."
-msgstr "Escribí para buscar. Un aprendiz pertenece a un solo grupo: agregarlo acá lo saca de su grupo actual. Los aprendices que quites de este grupo pasan al grupo por defecto."
+msgid "Type to search. A trainee can be in several groups and sees the courses of all of them. Trainees removed from this group who have no other group go to the default group."
+msgstr "Escribí para buscar. Un aprendiz puede estar en varios grupos y ve los cursos de todos. Los aprendices que quites de este grupo y no tengan otro pasan al grupo por defecto."
 
-msgid "Trainees cannot be removed from the default group: add them to another group instead."
-msgstr "No se pueden quitar aprendices del grupo por defecto: agregalos a otro grupo."
+msgid "Some trainees have no other group: add them to another group before removing them from the default group."
+msgstr "Algunos aprendices no tienen otro grupo: agregalos a otro grupo antes de quitarlos del grupo por defecto."
 
 msgid "What the group sees"
 msgstr "Qué ve el grupo"
 
-msgid "Trainees only see the active courses assigned to their group, and inside each course its active trainings in order."
-msgstr "Los aprendices solo ven los cursos activos asignados a su grupo y, dentro de cada curso, sus entrenamientos activos en orden."
+msgid "Trainees see the active courses assigned to any of their groups, and inside each course its active trainings in order."
+msgstr "Los aprendices ven los cursos activos asignados a cualquiera de sus grupos y, dentro de cada curso, sus entrenamientos activos en orden."
 
 msgid "Who is in the group"
 msgstr "Quiénes están en el grupo"
@@ -3335,7 +3336,7 @@ msgid "Who sees the course"
 msgstr "Quién ve el curso"
 
 msgid "Trainees see the course if it is active and their group is in this list. You can also assign courses from each trainee group."
-msgstr "Los aprendices ven el curso si está activo y su grupo está en esta lista. También podés asignar cursos desde cada grupo de aprendices."
+msgstr "Los aprendices ven el curso si está activo y alguno de sus grupos está en esta lista. También podés asignar cursos desde cada grupo de aprendices."
 
 msgid "Groups"
 msgstr "Grupos"
@@ -3349,14 +3350,14 @@ msgstr "Aprendices en sus grupos"
 msgid "Choose the group…"
 msgstr "Elegí el grupo…"
 
-msgid "Group to move the trainees to"
-msgstr "Grupo al que mover los aprendices"
+msgid "Trainee group for the action"
+msgstr "Grupo de aprendices para la acción"
 
 msgid "Access to courses"
 msgstr "Acceso a los cursos"
 
-msgid "The group decides which courses the trainee sees. To move several trainees at once, select them in the list and use \"Move to group\", or edit the trainee group."
-msgstr "El grupo decide qué cursos ve el aprendiz. Para mover varios aprendices a la vez, seleccionalos en la lista y usá \"Mover a grupo\", o editá el grupo de aprendices."
+msgid "The trainee sees the courses of all their groups. To change the groups of several trainees at once, select them in the list and use \"Add to group\" or \"Remove from group\", or edit the trainee group."
+msgstr "El aprendiz ve los cursos de todos sus grupos. Para cambiar los grupos de varios aprendices a la vez, seleccionalos en la lista y usá \"Agregar a grupo\" o \"Quitar de grupo\", o editá el grupo de aprendices."
 
 msgid "Courses they see"
 msgstr "Cursos que ve"
@@ -3367,14 +3368,20 @@ msgstr "Ninguno: sin grupo"
 msgid "None"
 msgstr "Ninguno"
 
-msgid "Move to group"
-msgstr "Mover a grupo"
+msgid "Choose the trainee group for the action."
+msgstr "Elegí el grupo de aprendices para la acción."
 
-msgid "Choose the group to move the trainees to."
-msgstr "Elegí el grupo al que mover los aprendices."
+msgid "Add to group"
+msgstr "Agregar a grupo"
+
+msgid "Remove from group"
+msgstr "Quitar de grupo"
 
 msgid "Without a group the trainee does not see any course."
 msgstr "Sin grupo el aprendiz no ve ningún curso."
+
+msgid "The groups of this trainee do not see any course yet."
+msgstr "Los grupos de este aprendiz todavía no ven ningún curso."
 
 msgid "This group does not see any course yet."
 msgstr "Este grupo todavía no ve ningún curso."
@@ -3397,15 +3404,25 @@ msgstr "Estos grupos están asignados, pero nadie ve el curso mientras esté ina
 msgid "No group is assigned: nobody sees the course."
 msgstr "No hay grupos asignados: nadie ve el curso."
 
-msgid "%(count)d trainee moved to the default group \"%(group)s\"."
-msgid_plural "%(count)d trainees moved to the default group \"%(group)s\"."
-msgstr[0] "%(count)d aprendiz pasó al grupo por defecto \"%(group)s\"."
-msgstr[1] "%(count)d aprendices pasaron al grupo por defecto \"%(group)s\"."
+msgid "%(count)d trainee had no other group and went to the default group \"%(group)s\"."
+msgid_plural "%(count)d trainees had no other group and went to the default group \"%(group)s\"."
+msgstr[0] "%(count)d aprendiz no tenía otro grupo y pasó al grupo por defecto \"%(group)s\"."
+msgstr[1] "%(count)d aprendices no tenían otro grupo y pasaron al grupo por defecto \"%(group)s\"."
 
-msgid "%(count)d trainee moved to \"%(group)s\"."
-msgid_plural "%(count)d trainees moved to \"%(group)s\"."
-msgstr[0] "%(count)d aprendiz movido a \"%(group)s\"."
-msgstr[1] "%(count)d aprendices movidos a \"%(group)s\"."
+msgid "%(count)d trainee added to \"%(group)s\"."
+msgid_plural "%(count)d trainees added to \"%(group)s\"."
+msgstr[0] "%(count)d aprendiz agregado a \"%(group)s\"."
+msgstr[1] "%(count)d aprendices agregados a \"%(group)s\"."
+
+msgid "%(count)d trainee removed from \"%(group)s\"."
+msgid_plural "%(count)d trainees removed from \"%(group)s\"."
+msgstr[0] "%(count)d aprendiz quitado de \"%(group)s\"."
+msgstr[1] "%(count)d aprendices quitados de \"%(group)s\"."
+
+msgid "%(count)d trainee has no other group and stays in the default group."
+msgid_plural "%(count)d trainees have no other group and stay in the default group."
+msgstr[0] "%(count)d aprendiz no tiene otro grupo y sigue en el grupo por defecto."
+msgstr[1] "%(count)d aprendices no tienen otro grupo y siguen en el grupo por defecto."
 
 msgid "%(counter)s trainee"
 msgid_plural "%(counter)s trainees"

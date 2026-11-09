@@ -43,11 +43,15 @@ def make_group(name="Group A"):
     return TraineeGroup.objects.create(name_group=name, description="")
 
 
-def make_trainee(username, group, password=PASSWORD):
+def make_trainee(username, groups, password=PASSWORD):
+    """`groups`: un grupo, una lista de grupos o None (sin grupos)."""
     user = User.objects.create_user(
         username=username, password=password, email=f"{username}@example.com"
     )
-    return Trainee.objects.create(user=user, occupation="Tester", group=group)
+    trainee = Trainee.objects.create(user=user, occupation="Tester")
+    if groups is not None:
+        trainee.groups.set(groups if isinstance(groups, (list, tuple)) else [groups])
+    return trainee
 
 
 def make_training(
