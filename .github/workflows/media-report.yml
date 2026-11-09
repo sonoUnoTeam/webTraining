@@ -1,0 +1,70 @@
+name: Media report (read-only)
+
+# Corre a mano (pestaña Actions → "Media report" → Run workflow) el comando `media_report` en el servidor
+# de producción, con la base y el MEDIA_ROOT reales. Solo lee: no borra, no mueve ni modifica nada.
+# El resumen queda en el "Summary" de la ejecución; el detalle por archivo (CSV), como artifact.
+# Usa las mismas variables del repositorio que deploy.yml (DEPLOY_USER, DEPLOY_PATH, DEPLOY_VENV).
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_csv:
+        description: "Upload per-file CSV detail as an artifact (file names and question ids)"
+        type: boolean
+        default: true
+
+# No correr mientras se despliega (mismo grupo que deploy.yml)
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: self-hosted
+    env:
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      DEPLOY_VENV: ${{ vars.DEPLOY_VENV }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: /tmp
+
+    steps:
+      - name: Run media report
+        run: |
+          set -euo pipefail
+          for var in DEPLOY_USER DEPLOY_PATH DEPLOY_VENV; do
+            if [ -z "${!var}" ]; then echo "::error::Repository variable $var is not set"; exit 1; fi
+          done
+          csv_dir=$(sudo -u "$DEPLOY_USER" mktemp -d)
+          trap 'sudo -u "$DEPLOY_USER" rm -rf "$csv_dir"' EXIT
+
+          # El comando se agregó en un commit nuevo: avisar si el servidor todavía no lo tiene
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" help media_report > /dev/null \
+            || { echo "::error::The server does not have the media_report command yet; deploy main first"; exit 1; }
+
+          sudo -u "$DEPLOY_USER" "$DEPLOY_VENV/bin/python" "$DEPLOY_PATH/manage.py" media_report \
+            --csv "$csv_dir" --top 20 | tee "$RUNNER_TEMP/media-report.txt"
+
+          {
+            echo "## Media report"
+            echo '```'
+            grep -v '^Written: ' "$RUNNER_TEMP/media-report.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          mkdir -p "$RUNNER_TEMP/media-report"
+          sudo cp "$csv_dir"/*.csv "$RUNNER_TEMP/media-report/"
+          sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/media-report"
+
+      - name: Upload CSV detail
+        if: inputs.upload_csv
+        uses: actions/upload-artifact@v4
+        with:
+          name: media-report
+          path: ${{ runner.temp }}/media-report/
+          retention-days: 7
