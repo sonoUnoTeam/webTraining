@@ -24,6 +24,29 @@
     </div>
   {% endcomponent %}
 
+  {% translate "Who sees the course" as access_title %}
+  {% component "unfold/components/card.html" with title=access_title %}
+    {% if course_groups %}
+      <p class="text-sm">
+        {% if course.state_course == 'Active' %}
+          {% translate "Trainees in these groups see the course:" %}
+        {% else %}
+          {% translate "These groups are assigned, but nobody sees the course while it is inactive:" %}
+        {% endif %}
+      </p>
+      <ul class="content-options text-sm">
+        {% for group in course_groups %}
+        <li>
+          <a class="text-primary-600 dark:text-primary-500" href="{% url 'admin:trainingApp_traineegroup_change' group.pk %}">{{ group }}</a>
+          ({% blocktranslate count counter=group.member_count %}{{ counter }} trainee{% plural %}{{ counter }} trainees{% endblocktranslate %})
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-sm">{% translate "No group is assigned: nobody sees the course." %}</p>
+    {% endif %}
+  {% endcomponent %}
+
   {% for node in trainings %}
   {% url 'admin:trainingApp_training_change' node.training.pk as training_url %}
   {% url 'admin:trainingApp_training_preview' node.training.pk as preview_url %}

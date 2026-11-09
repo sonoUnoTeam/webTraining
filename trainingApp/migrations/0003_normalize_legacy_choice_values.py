@@ -8,19 +8,27 @@
 from django.db import migrations
 
 LEGACY_VALUES = [
-    ('Training', 'state_training', {'Activo': 'Active', 'Inactivo': 'Inactive'}),
-    ('Training', 'difficulty', {'Inicial': 'Easy', 'Intermedio': 'Intermediate', 'Avanzado': 'Advanced'}),
-    ('TrainingBlock', 'state_block', {'Activo': 'Active', 'Inactivo': 'Inactive'}),
-    ('TrainingBlockAnswer', 'state_block', {'En progreso': 'In progress', 'Completo': 'Completed'}),
+    ("Training", "state_training", {"Activo": "Active", "Inactivo": "Inactive"}),
+    (
+        "Training",
+        "difficulty",
+        {"Inicial": "Easy", "Intermedio": "Intermediate", "Avanzado": "Advanced"},
+    ),
+    ("TrainingBlock", "state_block", {"Activo": "Active", "Inactivo": "Inactive"}),
+    (
+        "TrainingBlockAnswer",
+        "state_block",
+        {"En progreso": "In progress", "Completo": "Completed"},
+    ),
     # Misma regla que la migración 0004_update_traineetraining_states que se perdió al
     # regenerar las migraciones: los intentos 'Completed' del modelo viejo eran aprobados
-    ('TraineeTraining', 'state', {'Completed': 'passed'}),
+    ("TraineeTraining", "state", {"Completed": "passed"}),
 ]
 
 
 def normalize(apps, schema_editor):
     for model_name, field, mapping in LEGACY_VALUES:
-        model = apps.get_model('trainingApp', model_name)
+        model = apps.get_model("trainingApp", model_name)
         for old, new in mapping.items():
             updated = model.objects.filter(**{field: old}).update(**{field: new})
             if updated:
@@ -30,7 +38,7 @@ def normalize(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trainingApp', '0002_initial'),
+        ("trainingApp", "0002_initial"),
     ]
 
     operations = [

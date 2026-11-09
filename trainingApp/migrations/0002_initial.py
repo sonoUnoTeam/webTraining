@@ -9,127 +9,183 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('trainingApp', '0001_initial'),
-        ('userApp', '0001_initial'),
+        ("trainingApp", "0001_initial"),
+        ("userApp", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='comment',
-            name='trainee',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='userApp.trainee'),
+            model_name="comment",
+            name="trainee",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="userApp.trainee"
+            ),
         ),
         migrations.AddField(
-            model_name='coursetraining',
-            name='course',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.course'),
+            model_name="coursetraining",
+            name="course",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.course"
+            ),
         ),
         migrations.AddField(
-            model_name='traineecourse',
-            name='course',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.course'),
+            model_name="traineecourse",
+            name="course",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.course"
+            ),
         ),
         migrations.AddField(
-            model_name='traineecourse',
-            name='trainee',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='userApp.trainee'),
+            model_name="traineecourse",
+            name="trainee",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="userApp.trainee"
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='groups',
-            field=models.ManyToManyField(to='trainingApp.traineegroup'),
+            model_name="course",
+            name="groups",
+            field=models.ManyToManyField(to="trainingApp.traineegroup"),
         ),
         migrations.AddField(
-            model_name='traineetraining',
-            name='course',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.course'),
+            model_name="traineetraining",
+            name="course",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.course"
+            ),
         ),
         migrations.AddField(
-            model_name='traineetraining',
-            name='trainee',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='userApp.trainee'),
+            model_name="traineetraining",
+            name="trainee",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="userApp.trainee"
+            ),
         ),
         migrations.AddField(
-            model_name='traineetraining',
-            name='trainee_course',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trainee_trainings', to='trainingApp.traineecourse'),
+            model_name="traineetraining",
+            name="trainee_course",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="trainee_trainings",
+                to="trainingApp.traineecourse",
+            ),
         ),
         migrations.AddField(
-            model_name='training',
-            name='groups',
-            field=models.ManyToManyField(to='trainingApp.traineegroup'),
+            model_name="training",
+            name="groups",
+            field=models.ManyToManyField(to="trainingApp.traineegroup"),
         ),
         migrations.AddField(
-            model_name='traineetraining',
-            name='training',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='trainingApp.training'),
+            model_name="traineetraining",
+            name="training",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, to="trainingApp.training"
+            ),
         ),
         migrations.AddField(
-            model_name='coursetraining',
-            name='training',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.training'),
+            model_name="coursetraining",
+            name="training",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.training"
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='final_exam',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='courses_as_final_exam', to='trainingApp.training'),
+            model_name="course",
+            name="final_exam",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="courses_as_final_exam",
+                to="trainingApp.training",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='trainings',
-            field=models.ManyToManyField(related_name='courses', through='trainingApp.CourseTraining', to='trainingApp.training'),
+            model_name="course",
+            name="trainings",
+            field=models.ManyToManyField(
+                related_name="courses",
+                through="trainingApp.CourseTraining",
+                to="trainingApp.training",
+            ),
         ),
         migrations.AddField(
-            model_name='comment',
-            name='training',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.training'),
+            model_name="comment",
+            name="training",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.training"
+            ),
         ),
         migrations.AddField(
-            model_name='trainingblock',
-            name='training',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.training'),
+            model_name="trainingblock",
+            name="training",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.training"
+            ),
         ),
         migrations.AddField(
-            model_name='trainingblockanswer',
-            name='block',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.trainingblock'),
+            model_name="trainingblockanswer",
+            name="block",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.trainingblock",
+            ),
         ),
         migrations.AddField(
-            model_name='trainingblockanswer',
-            name='trainee_Training',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.traineetraining'),
+            model_name="trainingblockanswer",
+            name="trainee_Training",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.traineetraining",
+            ),
         ),
         migrations.AddField(
-            model_name='trainingquestion',
-            name='block',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='trainingApp.trainingblock'),
+            model_name="trainingquestion",
+            name="block",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.trainingblock",
+            ),
         ),
         migrations.AddField(
-            model_name='choice',
-            name='deploy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.trainingquestion'),
+            model_name="choice",
+            name="deploy",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.trainingquestion",
+            ),
         ),
         migrations.AddField(
-            model_name='trainingquestionanswer',
-            name='block_answer',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='trainingApp.trainingblockanswer'),
+            model_name="trainingquestionanswer",
+            name="block_answer",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.trainingblockanswer",
+            ),
         ),
         migrations.AddField(
-            model_name='trainingquestionanswer',
-            name='deploy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.trainingquestion'),
+            model_name="trainingquestionanswer",
+            name="deploy",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="trainingApp.trainingquestion",
+            ),
         ),
         migrations.AddField(
-            model_name='trainingquestionanswer',
-            name='selectedChoice',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='trainingApp.choice'),
+            model_name="trainingquestionanswer",
+            name="selectedChoice",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="trainingApp.choice"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='traineecourse',
-            unique_together={('trainee', 'course')},
+            name="traineecourse",
+            unique_together={("trainee", "course")},
         ),
         migrations.AlterUniqueTogether(
-            name='coursetraining',
-            unique_together={('course', 'order'), ('course', 'training')},
+            name="coursetraining",
+            unique_together={("course", "order"), ("course", "training")},
         ),
     ]

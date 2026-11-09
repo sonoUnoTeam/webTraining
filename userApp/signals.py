@@ -1,7 +1,8 @@
+import logging
+
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth import get_user_model
-import logging
 
 from .models import Trainee
 
@@ -28,18 +29,13 @@ def create_trainee_for_superuser(sender, instance, created, **kwargs):
         # Import diferido: trainingApp.models importa userApp.models
         from trainingApp.models import TraineeGroup
 
-        group, _ = TraineeGroup.objects.get_or_create(
-            name_group="Group Defect",
-            defaults={"description": "Default group for superusers"},
-        )
-
         Trainee.objects.get_or_create(
             user=instance,
             defaults={
                 "occupation": "Administrator",
-                "group": group,
+                "group": TraineeGroup.get_default(),
             },
         )
-    except Exception as e:
+    except Exception:
         # Log but don't break the user creation flow
-        logger.exception("Failed creating Trainee for superuser %s: %s", instance, e)
+        logger.exception("Failed creating Trainee for superuser %s", instance)

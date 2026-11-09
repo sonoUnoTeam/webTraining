@@ -1,0 +1,25 @@
+# Configuración de las herramientas de calidad que corre el PR gate
+# (.github/workflows/django-pr-main.yml): black, isort y ruff.
+
+[tool.black]
+target-version = ["py310"]
+
+[tool.isort]
+# Mismo estilo de corte de líneas que black; sin esto isort y black se contradicen
+profile = "black"
+# Debe coincidir con [tool.ruff.lint.isort]: si no, ruff (I001) e isort piden órdenes distintos
+combine_as_imports = true
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint]
+ignore = [
+    # Las apps se llaman userApp / trainingApp / webTraining: renombrarlas rompería migraciones e imports
+    "N999",
+    # Django declara su configuración con listas en atributos de clase (Meta.fields, Meta.ordering, operations…)
+    "RUF012",
+]

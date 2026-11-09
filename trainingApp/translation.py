@@ -1,26 +1,50 @@
-from .models import TrainingQuestion, Choice, ChoiceSet, ChoiceSetOption, TrainingBlock, Training, Course
-from modeltranslation.translator import translator, TranslationOptions
+from modeltranslation.translator import TranslationOptions, translator
+
+from .models import (
+    Choice,
+    ChoiceSet,
+    ChoiceSetOption,
+    Course,
+    Training,
+    TrainingBlock,
+    TrainingQuestion,
+)
+
 
 class TrainingTranslationOptions(TranslationOptions):
-    fields = ('name_training',)  # campos para traducir
-    
+    fields = ("name_training",)  # campos para traducir
+
+
 class TrainingBlockTranslationOptions(TranslationOptions):
-    fields = ('name_block', 'description', 'default_question',)  # campos para traducir
-    
+    fields = (
+        "name_block",
+        "description",
+        "default_question",
+    )  # campos para traducir
+
+
 class TrainingQuestionTranslationOptions(TranslationOptions):
-    fields = ('question',)  # campos para traducir
+    fields = ("question",)  # campos para traducir
+
 
 class ChoiceTranslationOptions(TranslationOptions):
-    fields = ('choice',)
+    fields = ("choice",)
+
 
 class ChoiceSetTranslationOptions(TranslationOptions):
-    fields = ('name',)
+    fields = ("name",)
+
 
 class ChoiceSetOptionTranslationOptions(TranslationOptions):
-    fields = ('text',)
+    fields = ("text",)
+
 
 class CourseTranslationOptions(TranslationOptions):
-    fields = ('name_course', 'description',)
+    fields = (
+        "name_course",
+        "description",
+    )
+
 
 translator.register(Training, TrainingTranslationOptions)
 translator.register(TrainingBlock, TrainingBlockTranslationOptions)

@@ -1,0 +1,45 @@
+{% load i18n %}
+<style>
+  /* Resumen de lo que ve un grupo (campo de solo lectura en grupo, trainee y estructura del curso) */
+  .group-access { display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.875rem; }
+  .group-access p { margin: 0; }
+  .group-access-courses { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+  .group-access-course { padding-left: 0.75rem; border-left: 3px solid var(--color-primary-300); }
+  .group-access-course.is-hidden { border-left-color: var(--color-base-300); opacity: 0.75; }
+  .group-access-course h4 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0 0 0.25rem; font-size: 0.875rem; font-weight: 600; }
+  .group-access-course h4 a { color: var(--color-primary-600); }
+  .group-access-trainings { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .group-access-trainings li + li::before { content: "→"; margin-right: 0.5rem; color: var(--color-base-400); }
+  .dark .group-access-course h4 a { color: var(--color-primary-500); }
+  .dark .group-access-course.is-hidden { border-left-color: var(--color-base-700); }
+</style>
+<div class="group-access">
+  {% if group is None %}
+    <p>{% translate "Without a group the trainee does not see any course." %}</p>
+  {% elif not courses %}
+    <p>{% translate "This group does not see any course yet." %}</p>
+  {% else %}
+    <ul class="group-access-courses">
+      {% for item in courses %}
+      <li class="group-access-course{% if not item.active %} is-hidden{% endif %}">
+        <h4>
+          <a href="{% url 'admin:trainingApp_course_change' item.course.pk %}">{{ item.course }}</a>
+          {% if not item.active %}
+            {% translate "Inactive: trainees do not see it" as hidden_text %}
+            {% include "unfold/helpers/label.html" with type="danger" text=hidden_text %}
+          {% endif %}
+        </h4>
+        {% if item.trainings or item.final_exam %}
+          <ol class="group-access-trainings" aria-label="{% blocktranslate with name=item.course %}Order of the trainings of {{ name }}{% endblocktranslate %}">
+            {% for training in item.trainings %}<li>{{ forloop.counter }}. {{ training }}</li>{% endfor %}
+            {% if item.final_exam %}<li>{% blocktranslate with name=item.final_exam %}Final exam: {{ name }}{% endblocktranslate %}</li>{% endif %}
+          </ol>
+        {% else %}
+          {% translate "No active trainings" as empty_text %}
+          {% include "unfold/helpers/label.html" with type="warning" text=empty_text %}
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>

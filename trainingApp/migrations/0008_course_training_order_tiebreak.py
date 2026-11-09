@@ -6,12 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trainingApp', '0007_descriptive_names'),
+        ("trainingApp", "0007_descriptive_names"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='coursetraining',
-            options={'ordering': ['order', 'id'], 'verbose_name': 'training of the course', 'verbose_name_plural': 'trainings of the course'},
+            name="coursetraining",
+            options={
+                "ordering": ["order", "id"],
+                "verbose_name": "training of the course",
+                "verbose_name_plural": "trainings of the course",
+            },
         ),
     ]

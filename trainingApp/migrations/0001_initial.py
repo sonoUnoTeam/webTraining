@@ -8,143 +8,395 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Choice',
+            name="Choice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('choice', models.CharField(max_length=100, null=True)),
-                ('choice_en', models.CharField(max_length=100, null=True)),
-                ('choice_es', models.CharField(max_length=100, null=True)),
-                ('correctChoice', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("choice", models.CharField(max_length=100, null=True)),
+                ("choice_en", models.CharField(max_length=100, null=True)),
+                ("choice_es", models.CharField(max_length=100, null=True)),
+                ("correctChoice", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='Comment',
+            name="Comment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('course_rating', models.CharField(choices=[('very_interesting', 'Very interesting'), ('interesting', 'Interesting'), ('repetitive', 'Repetitive')], default='interesting', max_length=30)),
-                ('training_method', models.CharField(choices=[('novel', 'Novel'), ('indifferent', 'Indifferent'), ('unnecessary', 'Unnecessary')], default='novel', max_length=30)),
-                ('explanations', models.CharField(choices=[('very_useful', 'Very useful and easy to understand'), ('useful_confusing', 'Useful but confusing'), ('useful_excessive', 'Useful but excessive'), ('repetitive', 'Very repetitive')], default='very_useful', max_length=30)),
-                ('stars', models.IntegerField(choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)])),
-                ('pub_date', models.DateTimeField(verbose_name='upload date')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "course_rating",
+                    models.CharField(
+                        choices=[
+                            ("very_interesting", "Very interesting"),
+                            ("interesting", "Interesting"),
+                            ("repetitive", "Repetitive"),
+                        ],
+                        default="interesting",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "training_method",
+                    models.CharField(
+                        choices=[
+                            ("novel", "Novel"),
+                            ("indifferent", "Indifferent"),
+                            ("unnecessary", "Unnecessary"),
+                        ],
+                        default="novel",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "explanations",
+                    models.CharField(
+                        choices=[
+                            ("very_useful", "Very useful and easy to understand"),
+                            ("useful_confusing", "Useful but confusing"),
+                            ("useful_excessive", "Useful but excessive"),
+                            ("repetitive", "Very repetitive"),
+                        ],
+                        default="very_useful",
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "stars",
+                    models.IntegerField(
+                        choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+                    ),
+                ),
+                ("pub_date", models.DateTimeField(verbose_name="upload date")),
             ],
         ),
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_course', models.CharField(max_length=200)),
-                ('name_course_en', models.CharField(max_length=200, null=True)),
-                ('name_course_es', models.CharField(max_length=200, null=True)),
-                ('description', models.CharField(max_length=500)),
-                ('description_en', models.CharField(max_length=500, null=True)),
-                ('description_es', models.CharField(max_length=500, null=True)),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='upload date')),
-                ('modification_date', models.DateTimeField(auto_now=True)),
-                ('state_course', models.CharField(choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active', max_length=20)),
-                ('required_average_score', models.DecimalField(decimal_places=2, default=70.0, help_text='Minimum average score from best training attempts required to unlock the final exam', max_digits=5)),
-                ('final_exam_passing_score', models.DecimalField(decimal_places=2, default=70.0, help_text='Minimum score required to pass the final exam', max_digits=5)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name_course", models.CharField(max_length=200)),
+                ("name_course_en", models.CharField(max_length=200, null=True)),
+                ("name_course_es", models.CharField(max_length=200, null=True)),
+                ("description", models.CharField(max_length=500)),
+                ("description_en", models.CharField(max_length=500, null=True)),
+                ("description_es", models.CharField(max_length=500, null=True)),
+                (
+                    "pub_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="upload date"),
+                ),
+                ("modification_date", models.DateTimeField(auto_now=True)),
+                (
+                    "state_course",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("Inactive", "Inactive")],
+                        default="Active",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "required_average_score",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=70.0,
+                        help_text="Minimum average score from best training attempts required to unlock the final exam",
+                        max_digits=5,
+                    ),
+                ),
+                (
+                    "final_exam_passing_score",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=70.0,
+                        help_text="Minimum score required to pass the final exam",
+                        max_digits=5,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CourseTraining',
+            name="CourseTraining",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("order", models.PositiveIntegerField()),
             ],
             options={
-                'ordering': ['order'],
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='TraineeCourse',
+            name="TraineeCourse",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('state', models.CharField(choices=[('Not Started', 'Not Started'), ('In Progress', 'In Progress'), ('Completed', 'Completed'), ('Failed', 'Failed')], default='Not Started', max_length=20)),
-                ('current_training_index', models.PositiveIntegerField(default=0)),
-                ('exam_passed', models.BooleanField(default=False)),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='start date')),
-                ('completion_date', models.DateTimeField(blank=True, null=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("Not Started", "Not Started"),
+                            ("In Progress", "In Progress"),
+                            ("Completed", "Completed"),
+                            ("Failed", "Failed"),
+                        ],
+                        default="Not Started",
+                        max_length=20,
+                    ),
+                ),
+                ("current_training_index", models.PositiveIntegerField(default=0)),
+                ("exam_passed", models.BooleanField(default=False)),
+                (
+                    "pub_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="start date"),
+                ),
+                ("completion_date", models.DateTimeField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='TraineeGroup',
+            name="TraineeGroup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_group', models.CharField(max_length=100)),
-                ('description', models.CharField(max_length=300)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name_group", models.CharField(max_length=100)),
+                ("description", models.CharField(max_length=300)),
             ],
         ),
         migrations.CreateModel(
-            name='TraineeTraining',
+            name="TraineeTraining",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('pub_date', models.DateTimeField(verbose_name='upload date')),
-                ('state', models.CharField(choices=[('not_started', 'Not Started'), ('in_progress', 'In Progress'), ('passed', 'Passed'), ('failed', 'Failed')], default='in_progress', max_length=20)),
-                ('time_spent', models.DurationField(blank=True, null=True)),
-                ('is_final_exam_attempt', models.BooleanField(default=False)),
-                ('score_percentage', models.DecimalField(blank=True, decimal_places=2, default=0, max_digits=5, null=True)),
-                ('best_score', models.DecimalField(blank=True, decimal_places=2, default=0, max_digits=5, null=True)),
-                ('correct_answers', models.PositiveIntegerField(default=0)),
-                ('incorrect_answers', models.PositiveIntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("pub_date", models.DateTimeField(verbose_name="upload date")),
+                (
+                    "state",
+                    models.CharField(
+                        choices=[
+                            ("not_started", "Not Started"),
+                            ("in_progress", "In Progress"),
+                            ("passed", "Passed"),
+                            ("failed", "Failed"),
+                        ],
+                        default="in_progress",
+                        max_length=20,
+                    ),
+                ),
+                ("time_spent", models.DurationField(blank=True, null=True)),
+                ("is_final_exam_attempt", models.BooleanField(default=False)),
+                (
+                    "score_percentage",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, default=0, max_digits=5, null=True
+                    ),
+                ),
+                (
+                    "best_score",
+                    models.DecimalField(
+                        blank=True, decimal_places=2, default=0, max_digits=5, null=True
+                    ),
+                ),
+                ("correct_answers", models.PositiveIntegerField(default=0)),
+                ("incorrect_answers", models.PositiveIntegerField(default=0)),
             ],
         ),
         migrations.CreateModel(
-            name='Training',
+            name="Training",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_training', models.CharField(max_length=200)),
-                ('name_training_en', models.CharField(max_length=200, null=True)),
-                ('name_training_es', models.CharField(max_length=200, null=True)),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='upload date')),
-                ('modificationDate', models.DateTimeField(auto_now=True)),
-                ('difficulty', models.CharField(choices=[('Easy', 'Easy'), ('Intermediate', 'Intermediate'), ('Advanced', 'Advanced')], default='Easy', max_length=20)),
-                ('estimatedDuration', models.IntegerField(default=0)),
-                ('state_training', models.CharField(choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active', max_length=20)),
-                ('attempts_allowed', models.IntegerField(default=1)),
-                ('passing_score', models.DecimalField(decimal_places=2, default=70.0, max_digits=5)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name_training", models.CharField(max_length=200)),
+                ("name_training_en", models.CharField(max_length=200, null=True)),
+                ("name_training_es", models.CharField(max_length=200, null=True)),
+                (
+                    "pub_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="upload date"),
+                ),
+                ("modificationDate", models.DateTimeField(auto_now=True)),
+                (
+                    "difficulty",
+                    models.CharField(
+                        choices=[
+                            ("Easy", "Easy"),
+                            ("Intermediate", "Intermediate"),
+                            ("Advanced", "Advanced"),
+                        ],
+                        default="Easy",
+                        max_length=20,
+                    ),
+                ),
+                ("estimatedDuration", models.IntegerField(default=0)),
+                (
+                    "state_training",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("Inactive", "Inactive")],
+                        default="Active",
+                        max_length=20,
+                    ),
+                ),
+                ("attempts_allowed", models.IntegerField(default=1)),
+                (
+                    "passing_score",
+                    models.DecimalField(decimal_places=2, default=70.0, max_digits=5),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TrainingBlock',
+            name="TrainingBlock",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name_block', models.CharField(max_length=100)),
-                ('name_block_en', models.CharField(max_length=100, null=True)),
-                ('name_block_es', models.CharField(max_length=100, null=True)),
-                ('description', models.CharField(max_length=500)),
-                ('description_en', models.CharField(max_length=500, null=True)),
-                ('description_es', models.CharField(max_length=500, null=True)),
-                ('estimed_duration_block', models.IntegerField(default=0)),
-                ('state_block', models.CharField(choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Active', max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name_block", models.CharField(max_length=100)),
+                ("name_block_en", models.CharField(max_length=100, null=True)),
+                ("name_block_es", models.CharField(max_length=100, null=True)),
+                ("description", models.CharField(max_length=500)),
+                ("description_en", models.CharField(max_length=500, null=True)),
+                ("description_es", models.CharField(max_length=500, null=True)),
+                ("estimed_duration_block", models.IntegerField(default=0)),
+                (
+                    "state_block",
+                    models.CharField(
+                        choices=[("Active", "Active"), ("Inactive", "Inactive")],
+                        default="Active",
+                        max_length=20,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TrainingBlockAnswer',
+            name="TrainingBlockAnswer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('state_block', models.CharField(choices=[('In progress', 'In progress'), ('Completed', 'Completed')], default='In progress', max_length=20)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "state_block",
+                    models.CharField(
+                        choices=[
+                            ("In progress", "In progress"),
+                            ("Completed", "Completed"),
+                        ],
+                        default="In progress",
+                        max_length=20,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TrainingQuestion',
+            name="TrainingQuestion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=100, null=True)),
-                ('question_en', models.CharField(max_length=100, null=True)),
-                ('question_es', models.CharField(max_length=100, null=True)),
-                ('deploy_image', models.ImageField(blank=True, upload_to='trainingApp/images')),
-                ('deploy_sound', models.FileField(blank=True, upload_to='trainingApp/sound', validators=[django.core.validators.FileExtensionValidator(allowed_extensions=['mp3', 'wav'])])),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question", models.CharField(max_length=100, null=True)),
+                ("question_en", models.CharField(max_length=100, null=True)),
+                ("question_es", models.CharField(max_length=100, null=True)),
+                (
+                    "deploy_image",
+                    models.ImageField(blank=True, upload_to="trainingApp/images"),
+                ),
+                (
+                    "deploy_sound",
+                    models.FileField(
+                        blank=True,
+                        upload_to="trainingApp/sound",
+                        validators=[
+                            django.core.validators.FileExtensionValidator(
+                                allowed_extensions=["mp3", "wav"]
+                            )
+                        ],
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TrainingQuestionAnswer',
+            name="TrainingQuestionAnswer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
         ),
     ]
